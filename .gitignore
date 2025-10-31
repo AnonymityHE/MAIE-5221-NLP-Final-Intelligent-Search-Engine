@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.conda/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 环境变量
+.env
+.env.local
+
+# 文档和临时文件
+documents/*.pdf
+*.log
+.DS_Store
+
+# 用量监控数据
+usage_data.json
+test_results_*.json
+
+# 文件存储
+uploaded_files/
+file_index.json  # 文件索引（仅存储file_id -> file_path映射，详细元数据在Milvus中）
+file_metadata.json  # 文件元数据（临时文件）
+file_storage.db
+file_storage.db-journal
+
+# 配置文件（包含敏感信息）
+services/config.py  # 包含API密钥，不应提交到Git
+
+# Milvus数据
+milvus_data/
+etcd_data/
+minio_data/
+

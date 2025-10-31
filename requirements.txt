@@ -1,0 +1,67 @@
+# ============================================
+# RAG问答系统 - Python依赖包
+# ============================================
+
+# === 核心框架 ===
+# FastAPI Web框架
+fastapi==0.104.1
+uvicorn[standard]==0.24.0  # ASGI服务器，包含WebSocket支持
+pydantic==2.5.0  # 数据验证
+python-multipart==0.0.6  # 文件上传支持
+
+# === 向量数据库 ===
+# Milvus向量数据库客户端
+pymilvus==2.3.4
+
+# === AI模型和向量化 ===
+# Sentence Transformers用于生成文本向量
+sentence-transformers>=2.2.2
+# LangChain用于文本处理和RAG工作流
+langchain>=0.1.0
+langchain-community>=0.0.10
+# Token计数
+tiktoken>=0.5.2
+# Hugging Face模型下载
+huggingface-hub>=0.20.0
+# PyTorch（通过sentence-transformers自动安装，但明确列出）
+torch>=2.0.0
+
+# === 文档处理 ===
+# PDF处理
+PyMuPDF==1.23.8  # 快速PDF文本提取
+pypdf==3.17.0  # PDF备用库
+# Word文档处理
+python-docx==1.1.0
+
+# === 图片处理（可选）===
+# Pillow - 图片处理基础库
+Pillow>=10.0.0
+# pytesseract - OCR文字识别（可选）
+# 注意：需要系统安装Tesseract OCR
+#   macOS: brew install tesseract tesseract-lang
+#   Ubuntu: sudo apt-get install tesseract-ocr tesseract-ocr-chi-sim
+#   如果未安装，图片OCR功能将被禁用，但不影响其他功能
+pytesseract>=0.3.10
+
+# === 数据库支持（可选，用于传统数据库后端）===
+# SQLAlchemy - 支持SQLite和PostgreSQL
+# 默认使用Milvus后端，如需传统数据库可配置STORAGE_BACKEND="database"
+sqlalchemy==2.0.23
+
+# === HTTP客户端 ===
+# HTTP请求库
+requests==2.31.0  # 同步HTTP请求（用于LLM API调用）
+httpx==0.25.2  # 异步HTTP客户端（用于Agent工具）
+
+# === 工具库 ===
+# 环境变量管理
+python-dotenv==1.0.0
+
+# === 其他依赖 ===
+# 以下依赖会自动通过上述包安装，无需手动指定：
+# - numpy, scipy, scikit-learn (sentence-transformers依赖)
+# - transformers (sentence-transformers依赖)
+# - pandas (pymilvus依赖)
+# - pyarrow (pymilvus依赖)
+# - grpcio, protobuf (pymilvus依赖)
+

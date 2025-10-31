@@ -1,0 +1,709 @@
+# RAG问答系统 - 本地开发指南
+
+## 项目简介
+
+这是一个基于Milvus向量数据库和LLM的**智能搜索和问答系统**，支持多模态文件上传、RAG检索、Agent工具调用等功能。本项目采用"最小可行产品（MVP）优先"的开发策略，优先在本地环境完成核心功能。
+
+### 核心功能
+
+- ✅ **RAG检索增强生成**：基于Milvus向量数据库的语义检索
+- ✅ **多模态文件支持**：上传并处理PDF、图片、代码、文本等多种格式文件
+- ✅ **Agent智能工具**：自动选择RAG、网页搜索、天气查询等工具
+- ✅ **多LLM支持**：HKGAI（默认）、Gemini系列（备选）三个模型
+- ✅ **用量监控**：Gemini API的token使用量和配额管理
+- ✅ **可切换存储后端**：Milvus或传统数据库（SQLite/PostgreSQL）
+
+## 技术栈
+
+### 后端框架
+- **Web框架**: FastAPI + Uvicorn
+- **编程语言**: Python 3.10+
+
+### 数据存储
+- **向量数据库**: Milvus（用于向量检索和文本存储）
+- **元数据存储**: 
+  - Milvus后端（默认）：通过Milvus查询元数据
+  - 传统数据库后端（可选）：SQLite或PostgreSQL
+
+### AI模型
+- **Embedding模型**: sentence-transformers/all-MiniLM-L6-v2（384维向量）
+- **LLM (默认)**: HKGAI-V1 (HKGAI API)
+- **LLM (备选)**: Gemini系列模型 (支持用量监控和配额管理)
+  - Gemini 2.5 Pro (50 请求/天, 125K TPM)
+  - Gemini 2.5 Flash (250 请求/天, 250K TPM)
+  - Gemini 2.0 Flash (200 请求/天, 1M TPM)
+
+### 文档和文件处理
+- **PDF处理**: PyMuPDF, pypdf
+- **Word文档**: python-docx
+- **图片处理**: Pillow
+- **OCR识别**: pytesseract (可选，需要系统安装Tesseract OCR)
+- **文本处理**: LangChain
+
+### Agent工具
+- **本地RAG**: Milvus向量检索
+- **网页搜索**: DuckDuckGo API
+- **天气查询**: wttr.in API
+- **可扩展**: 支持添加更多工具
+
+### 前端（规划中）
+- Next.js + React
+- shadcn/ui组件库
+
+## 快速开始
+
+### 第一步：环境准备
+
+1. **安装Docker Desktop**
+   - 访问 https://www.docker.com/products/docker-desktop/ 下载并安装
+   - 启动Docker Desktop并确保Docker正在运行
+   - 验证安装：在终端运行 `docker --version`
+
+2. **配置API密钥**
+   ```bash
+   # 复制配置文件示例
+   cp services/config.example.py services/config.py
+   
+   # 编辑 config.py，填入你的API密钥
+   # 或创建 .env 文件（推荐）：
+   cp .env.example .env
+   # 然后编辑 .env 文件填入API密钥
+   ```
+   
+   **重要**：API密钥不应提交到Git仓库，`services/config.py` 和 `.env` 已添加到 `.gitignore`
+
+3. **安装Python依赖**
+   ```bash
+   # 建议使用conda创建虚拟环境
+   conda create -n rag_system python=3.10
+   conda activate rag_system
+   
+   # 安装所有依赖
+   pip install -r requirements.txt
+   
+   # 如果使用图片OCR功能，还需要安装系统级Tesseract OCR：
+   # macOS: brew install tesseract tesseract-lang
+   # Ubuntu: sudo apt-get install tesseract-ocr tesseract-ocr-chi-sim
+   ```
+   
+   **注意**：
+   - OCR功能（`pytesseract`）为可选依赖，如果未安装，图片上传功能仍可使用，但OCR识别会被禁用
+   - 如果遇到模块导入错误，请确保已激活正确的conda环境
+
+### 第三步：启动Milvus
+
+在项目根目录运行：
+
+```bash
+# Docker Compose V2 (推荐，新版本Docker)
+docker compose up -d
+
+# 或者使用旧版本的命令（如果上面命令不工作）
+docker-compose up -d
+```
+
+**注意**：Docker Compose V2使用 `docker compose`（没有连字符），V1使用 `docker-compose`（有连字符）。如果 `docker compose` 不工作，请使用 `docker-compose`。
+
+检查Milvus是否正常运行：
+
+```bash
+docker ps
+```
+
+你应该看到三个容器正在运行：
+- `milvus-standalone` (Milvus向量数据库)
+- `milvus-etcd` (元数据存储)
+- `milvus-minio` (对象存储)
+
+**验证Milvus连接**：
+```bash
+# 检查Milvus健康状态
+docker exec milvus-standalone curl http://localhost:9091/healthz
+```
+
+**停止Milvus**（如果需要）：
+```bash
+docker compose down
+# 或
+docker-compose down
+```
+
+**重启Milvus**：
+```bash
+docker compose restart
+# 或
+docker-compose restart
+```
+
+### 第三步：准备文档
+
+1. 创建文档目录（如果不存在）：
+   ```bash
+   mkdir -p documents
+   ```
+
+2. 将你的PDF文档放入 `documents/` 目录
+
+### 第四步：数据注入
+
+运行数据注入脚本：
+
+```bash
+python scripts/ingest.py
+```
+
+这个脚本会：
+- 加载 `documents/` 目录中的所有PDF文件
+- 将文本切分成小块
+- 使用embedding模型进行向量化
+- 将数据和向量插入Milvus
+
+### 第五步：启动API服务
+
+```bash
+uvicorn backend.main:app --reload
+```
+
+服务将在 `http://localhost:8000` 启动。
+
+### 第六步：测试API
+
+#### 方法1：使用curl
+
+```bash
+curl -X POST "http://localhost:8000/api/rag_query" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "你的问题"}'
+```
+
+#### 方法2：使用Postman
+
+1. 打开Postman
+2. 创建POST请求：`http://localhost:8000/api/rag_query`
+3. 在Body中选择raw -> JSON，输入：
+   ```json
+   {
+     "query": "你的问题"
+   }
+   ```
+4. 发送请求
+
+#### 方法3：访问API文档
+
+打开浏览器访问：`http://localhost:8000/docs`
+
+这是FastAPI自动生成的Swagger UI，你可以直接在页面上测试API。
+
+## 项目结构
+
+```
+.
+├── backend/                # FastAPI后端应用
+│   ├── main.py           # 应用入口
+│   ├── api.py            # API路由
+│   └── models.py         # Pydantic数据模型
+├── services/              # 服务层（模型和外部服务）
+│   ├── config.py         # 配置文件（所有配置项）
+│   ├── milvus_client.py  # Milvus向量数据库客户端
+│   ├── llm_client.py     # HKGAI LLM客户端
+│   ├── gemini_client.py  # Gemini LLM客户端
+│   ├── unified_llm_client.py  # 统一LLM客户端接口
+│   ├── retriever.py      # RAG检索器
+│   ├── agent.py          # Agent智能工具选择器
+│   ├── usage_monitor.py  # API用量监控（Gemini配额管理）
+│   ├── file_storage.py   # 文件存储管理系统
+│   ├── file_processor.py # 多模态文件处理器（PDF/图片/代码）
+│   ├── file_indexer.py   # 文件索引服务（向量化和Milvus索引）
+│   ├── storage_backend.py  # 存储后端抽象接口（Milvus/数据库）
+│   └── milvus_metadata.py  # Milvus元数据查询（用于Milvus后端）
+├── frontend/             # 前端项目（Next.js，规划中）
+│   └── README.md
+├── scripts/               # 工具脚本
+│   └── ingest.py         # 数据注入脚本
+├── docs/                  # 项目文档
+│   ├── Final WarmUp.md   # 项目计划文档
+│   └── Project Announcement.docx
+├── documents/            # 原始文档目录（用于批量导入）
+├── uploaded_files/       # 用户上传文件存储目录（存储实际的PDF、图片、代码等文件）
+├── file_index.json       # 文件索引（仅存储file_id -> file_path映射，详细元数据在Milvus中）
+├── docker-compose.yml    # Milvus Docker配置
+├── requirements.txt      # Python依赖
+└── README.md            # 本文件
+```
+
+## LLM提供商配置
+
+### 默认提供商：HKGAI
+系统默认使用 **HKGAI-V1** API，稳定可靠，无需额外配置。
+
+### 备选提供商：Gemini系列
+系统支持使用 **Google Gemini** 系列模型作为备选，支持多个模型和用量监控：
+
+#### Gemini模型列表
+
+- **Gemini 2.5 Pro**: 50 请求/天, 125,000 TPM，适合高质量回答
+- **Gemini 2.5 Flash**: 250 请求/天, 250,000 TPM，速度快
+- **Gemini 2.0 Flash**: 200 请求/天, 1,000,000 TPM（默认Gemini模型），平衡性能和速度
+
+#### 使用Gemini API
+
+在API请求中指定 `provider: "gemini"`：
+
+```bash
+# 使用默认Gemini模型 (2.0 Flash)
+curl -X POST "http://localhost:8000/api/rag_query" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "什么是RAG？", "provider": "gemini"}'
+
+# 指定使用Gemini 2.5 Pro（高质量回答）
+curl -X POST "http://localhost:8000/api/rag_query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "详细解释RAG的工作原理",
+    "provider": "gemini",
+    "model": "gemini-2.5-pro"
+  }'
+
+# 指定使用Gemini 2.5 Flash（快速响应）
+curl -X POST "http://localhost:8000/api/rag_query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "什么是RAG？",
+    "provider": "gemini",
+    "model": "gemini-2.5-flash"
+  }'
+```
+
+#### Agent模式（支持Gemini）
+
+Agent模式也支持指定Gemini模型：
+
+```bash
+curl -X POST "http://localhost:8000/api/agent_query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "香港今天天气怎么样？",
+    "provider": "gemini",
+    "model": "gemini-2.0-flash"
+  }'
+```
+
+#### 用量监控API
+
+Gemini API提供了完整的用量监控功能：
+
+**查看今日用量统计**：
+```bash
+# 查看所有模型的统计
+curl "http://localhost:8000/api/usage/stats"
+
+# 查看特定模型的统计
+curl "http://localhost:8000/api/usage/stats?model=gemini-2.0-flash"
+```
+
+**检查配额状态**：
+```bash
+curl "http://localhost:8000/api/usage/quota?model=gemini-2.0-flash"
+```
+
+**获取支持的模型列表**：
+```bash
+curl "http://localhost:8000/api/models"
+```
+
+#### API响应格式
+
+使用Gemini API时，响应包含详细的token使用量和配额信息：
+
+```json
+{
+  "answer": "回答内容...",
+  "context": [...],
+  "query": "用户问题",
+  "model_used": "gemini-2.0-flash",
+  "tokens_used": {
+    "input": 150,
+    "output": 200,
+    "total": 350
+  },
+  "quota_remaining": 195,
+  "answer_source": "rag"
+}
+```
+
+#### Gemini功能特性
+
+✅ **用量监控与控制**
+- 每日请求量监控（RPD - Requests Per Day）
+- Token使用量跟踪（输入、输出、总计）
+- 自动配额检查，防止超量使用
+- 用量数据持久化存储（`usage_data.json`）
+
+✅ **配额管理**
+- 系统会自动检查每日配额
+- 如果某个模型的配额用完，会返回429错误
+- 用量数据每天自动重置（按日期）
+
+✅ **Token计数**
+- Gemini API返回准确的token使用量
+- 系统会记录并累计每日token使用
+- 可在响应中查看每次请求的token消耗
+
+## 多模态文件上传功能
+
+系统支持用户上传多种格式的文件，文件会自动解析、向量化并索引到RAG知识库中。
+
+### 支持的文件类型
+
+- **PDF文件** (`.pdf`) - 自动提取文本内容
+- **图片文件** (`.png`, `.jpg`, `.jpeg`, `.gif`) - 使用OCR识别文字
+- **代码文件** (`.py`, `.js`, `.java`, `.cpp`, `.c`, `.go`, `.rs`等) - 直接读取代码内容
+- **文本文件** (`.txt`, `.md`, `.json`, `.csv`等) - 直接读取文本
+
+### 文件上传API
+
+#### 上传文件
+
+```bash
+curl -X POST "http://localhost:8000/api/upload" \
+  -F "file=@/path/to/your/file.pdf"
+```
+
+**响应示例**：
+```json
+{
+  "file_id": "abc123...",
+  "filename": "document.pdf",
+  "file_type": "pdf",
+  "file_size": 1024000,
+  "uploaded_at": "2025-10-30T21:00:00",
+  "processed": false,
+  "already_exists": false,
+  "message": "文件上传成功，正在后台处理和索引..."
+}
+```
+
+#### 列出所有上传的文件
+
+```bash
+# 列出所有文件
+curl "http://localhost:8000/api/files"
+
+# 按类型筛选
+curl "http://localhost:8000/api/files?file_type=pdf"
+
+# 列出未处理的文件
+curl "http://localhost:8000/api/files?processed=false"
+```
+
+#### 获取文件信息
+
+```bash
+curl "http://localhost:8000/api/files/{file_id}"
+```
+
+#### 删除文件
+
+```bash
+curl -X DELETE "http://localhost:8000/api/files/{file_id}"
+```
+
+#### 重新索引文件
+
+```bash
+curl -X POST "http://localhost:8000/api/files/{file_id}/reindex"
+```
+
+### 在查询中使用上传的文件
+
+上传的文件会自动索引到Milvus，与本地知识库文档一起参与RAG检索。
+
+**指定特定文件进行查询**：
+
+```bash
+curl -X POST "http://localhost:8000/api/rag_query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "总结这个文档的主要内容",
+    "file_ids": ["file_id_1", "file_id_2"]
+  }'
+```
+
+这样系统会优先在这些指定的文件中搜索，然后再搜索其他知识库内容。
+
+### 文件处理流程
+
+1. **上传** - 文件保存到 `uploaded_files/` 目录
+2. **解析** - 根据文件类型提取文本内容：
+   - PDF: 使用PyMuPDF提取文本
+   - 图片: 使用Tesseract OCR识别文字（需系统安装Tesseract）
+   - 代码: 直接读取源代码
+   - 文本: 直接读取内容
+3. **切分** - 使用LangChain的RecursiveCharacterTextSplitter切分文本
+4. **向量化** - 使用Embedding模型生成向量
+5. **索引** - 插入到Milvus向量数据库
+6. **标记** - 标记文件为"已处理"状态
+
+### 数据存储架构
+
+**文件存储分层**：
+
+1. **实际文件存储**（文件系统）：
+   - 二进制文件（PDF、图片、代码等）保存在：`uploaded_files/` 目录（项目根目录下）
+   - 文件按照hash ID命名存储，避免重复
+   - **为什么不在Milvus？** Milvus是向量数据库，设计用于存储向量和元数据，不适合存储大二进制文件
+
+2. **向量和文本存储**（Milvus）：
+   - 从文件提取的文本内容切分成chunks后向量化
+   - 向量存储在Milvus的`vector`字段
+   - 文本内容存储在Milvus的`text`字段
+   - 文件ID、文件名等信息存储在Milvus的`source_file`字段（作为metadata）
+
+3. **文件元数据存储**（可切换的后端）：
+   - **Milvus后端**（默认）：通过查询Milvus获取文件元数据
+     - 所有数据（向量、文本、元数据）统一在Milvus中管理
+     - 无需额外数据库，适合小到中等规模应用
+   - **传统数据库后端**（可选）：使用SQLite或PostgreSQL存储元数据
+     - 支持SQL查询和复杂过滤
+     - 更适合需要复杂查询和大规模数据管理
+     - 支持PostgreSQL，可扩展到生产环境
+   - **轻量级索引**：`file_index.json`仅存储文件ID到文件路径的映射，用于快速定位文件
+
+**为什么这样设计？**
+- **文件系统**：适合存储二进制文件，访问简单，不占用向量数据库资源
+- **Milvus**：擅长向量检索和元数据查询，用于RAG检索的核心
+- **轻量级索引**：快速查找文件路径，补充Milvus查询
+
+### OCR依赖
+
+如果使用图片OCR功能，需要系统安装Tesseract OCR：
+
+**macOS**:
+```bash
+brew install tesseract tesseract-lang
+```
+
+**Ubuntu/Debian**:
+```bash
+sudo apt-get install tesseract-ocr tesseract-ocr-chi-sim
+```
+
+**Windows**: 从 [Tesseract官网](https://github.com/UB-Mannheim/tesseract/wiki) 下载安装程序
+
+## 配置说明
+
+主要配置在 `services/config.py` 中，你可以根据需要修改：
+
+### Milvus配置
+- `MILVUS_HOST`: Milvus主机地址（本地开发使用localhost）
+- `MILVUS_PORT`: Milvus端口（默认19530）
+- `MILVUS_COLLECTION_NAME`: Milvus集合名称（默认knowledge_base）
+
+### RAG配置
+- `EMBEDDING_MODEL`: Embedding模型名称（默认sentence-transformers/all-MiniLM-L6-v2）
+- `TOP_K`: 检索返回的文档数量（默认5）
+- `CHUNK_SIZE`: 文本切块大小（默认500）
+- `CHUNK_OVERLAP`: 文本切块重叠（默认50）
+
+### LLM配置
+
+**HKGAI配置（默认）**：
+- `HKGAI_API_KEY`: HKGAI API密钥
+- `HKGAI_BASE_URL`: HKGAI API基础URL
+- `HKGAI_MODEL_ID`: HKGAI模型ID（默认HKGAI-V1）
+
+**Gemini配置（备选）**：
+- `GEMINI_API_KEY`: Gemini API密钥（需要在Google Cloud Console获取）
+- `GEMINI_DEFAULT_MODEL`: 默认Gemini模型（默认gemini-2.0-flash）
+- `GEMINI_ENABLED`: 是否启用Gemini API（默认True）
+- `GEMINI_PROJECT_NUMBER`: Google Cloud项目编号
+
+**文件上传配置**：
+- `UPLOAD_STORAGE_DIR`: 上传文件存储目录（默认`uploaded_files`，相对于项目根目录）
+- `MAX_UPLOAD_SIZE`: 最大上传文件大小（默认50MB）
+- `ALLOWED_EXTENSIONS`: 允许的文件扩展名列表
+
+**存储后端配置**（可切换）：
+- `STORAGE_BACKEND`: 存储后端类型，可选：
+  - `"milvus"`（默认）：通过查询Milvus获取文件元数据，无需额外数据库
+  - `"database"`：使用传统数据库（SQLite或PostgreSQL）存储元数据
+- `DATABASE_URL`: 数据库URL（仅用于`database`后端）
+  - SQLite示例：`"sqlite:///./file_storage.db"`
+  - PostgreSQL示例：`"postgresql://user:password@localhost/dbname"`
+
+## 常见问题
+
+### 1. Milvus连接失败
+
+**检查Docker状态**：
+```bash
+# 检查Docker是否运行
+docker ps
+
+# 检查Milvus容器状态
+docker compose ps
+# 或
+docker-compose ps
+```
+
+**常见问题排查**：
+- **Docker未启动**：启动Docker Desktop
+- **容器未运行**：运行 `docker compose up -d` 启动容器
+- **容器启动失败**：查看日志 `docker compose logs standalone`
+- **端口被占用**：检查19530端口是否被其他程序占用
+- **重启Milvus**：
+  ```bash
+  docker compose restart standalone
+  # 或完全重启
+  docker compose down
+  docker compose up -d
+  ```
+
+**查看Milvus日志**：
+```bash
+# 查看所有服务日志
+docker compose logs
+
+# 查看特定容器日志
+docker compose logs standalone
+docker compose logs etcd
+docker compose logs minio
+```
+
+### 2. 导入错误
+
+确保：
+- 已激活正确的conda环境
+- 已安装所有依赖：`pip install -r requirements.txt`
+- 在项目根目录运行命令
+- 使用正确的启动命令：`uvicorn backend.main:app --reload`
+
+### 3. 文档处理失败
+
+- 确保PDF文件没有加密
+- 检查PDF文件是否损坏
+- 查看脚本输出的错误信息
+
+### 4. API返回空结果
+
+- 确保已运行数据注入脚本
+- 检查Milvus中是否有数据：查看脚本输出的统计信息
+- 尝试使用更简单的查询问题
+
+### 5. Gemini API相关问题
+
+**配额已用完错误**：
+```json
+{
+  "detail": "模型 gemini-2.0-flash 今日配额已用完",
+  "headers": {
+    "X-Quota-Info": "{...}"
+  }
+}
+```
+- 解决方案：使用其他Gemini模型或切换回HKGAI（默认provider）
+
+**API Key无效**：
+- 检查 `services/config.py` 中的 `GEMINI_API_KEY` 是否正确
+- 确保API Key在Google Cloud Console中已启用"Generative Language API"
+- Google API Key通常以 `AIza` 开头
+
+**请求超时**：
+- Gemini API可能需要更长时间响应，已设置30秒超时
+- 如果经常超时，考虑使用更快的模型（如gemini-2.5-flash）
+
+### 6. 文件上传和处理问题
+
+**文件上传失败**：
+- 检查文件大小是否超过限制（默认50MB）
+- 检查文件类型是否在允许列表中
+- 查看终端错误日志
+
+**文件处理失败**：
+- PDF处理失败：确保PyMuPDF已安装（`pip install PyMuPDF`）
+- 图片OCR失败：检查是否安装了系统级Tesseract OCR
+- 代码文件处理失败：检查文件编码是否为UTF-8
+
+**存储后端问题**：
+- 如果使用database后端，检查数据库文件是否可写
+- 如果使用Milvus后端，确保Milvus服务正常运行
+
+## 依赖说明
+
+### 必需依赖
+
+所有核心功能需要的依赖已包含在`requirements.txt`中：
+- **FastAPI、Uvicorn**：Web框架和ASGI服务器
+- **PyMuPDF、python-docx**：文档处理
+- **sentence-transformers、langchain**：向量化和文本处理
+- **pymilvus**：向量数据库客户端
+- **sqlalchemy**：数据库支持（传统数据库后端）
+- **Pillow**：图片处理基础库
+
+### 可选依赖
+
+以下依赖为可选，未安装时相关功能会被禁用，但不影响系统运行：
+
+- **pytesseract**：图片OCR识别
+  - Python包：`pip install pytesseract`
+  - 系统依赖：需要安装Tesseract OCR
+    - macOS: `brew install tesseract tesseract-lang`
+    - Ubuntu: `sudo apt-get install tesseract-ocr tesseract-ocr-chi-sim`
+  - 如果未安装：图片上传功能仍可用，但无法进行OCR识别
+
+### 自动安装的依赖
+
+以下依赖会通过其他包自动安装，无需手动指定：
+- numpy, scipy, scikit-learn（sentence-transformers）
+- transformers（sentence-transformers）
+- pandas, pyarrow（pymilvus）
+- torch（sentence-transformers，可能需要较大空间）
+
+## 下一步开发
+
+当前已实现的核心功能：
+- ✅ RAG检索和问答
+- ✅ 多模态文件上传和处理
+- ✅ Agent智能工具选择（RAG、网页搜索、天气查询）
+- ✅ 多LLM支持（HKGAI + Gemini三个模型）
+- ✅ 用量监控和配额管理
+- ✅ 可切换存储后端（Milvus/数据库）
+
+未来可以继续完善：
+
+1. **添加前端界面** (Next.js + shadcn/ui) - 放在 `frontend/` 目录
+2. **实现二次排序 (Reranker)** - 提升检索结果相关性
+3. **增强Agent能力** - 添加更多工具（金融数据、交通信息等）
+4. **优化性能** - 缓存、批量处理、异步优化
+5. **部署到服务器** - 配置远程Milvus和生产环境部署
+
+详细计划请参考 `docs/Final WarmUp.md`。
+
+## 注意事项
+
+- **内存要求**: 本地开发建议至少16GB RAM（主要用于Embedding模型和向量检索）
+- **磁盘空间**: 
+  - Embedding模型和依赖：约2-3GB
+  - Milvus数据目录：根据文档数量增长
+  - 上传文件目录：根据用户上传文件大小
+- **API密钥安全**: 
+  - `services/config.py` 中的API密钥需要妥善保管
+  - 生产环境应使用环境变量而不是硬编码
+  - 建议将包含API密钥的配置文件加入`.gitignore`
+  - 使用密钥管理服务（如AWS Secrets Manager、Azure Key Vault）管理密钥
+- **数据安全**: 
+  - 本地开发时注意不要将敏感数据提交到Git
+  - 上传文件目录和数据库文件已加入`.gitignore`
+- **存储后端选择**:
+  - 开发/小规模：使用Milvus后端（默认），无需额外数据库
+  - 生产/大规模：使用PostgreSQL后端，获得更好的性能和扩展性
+- **Gemini用量数据**: 用量数据存储在`usage_data.json`（已加入`.gitignore`），每天按日期自动重置
+- **向后兼容**: 系统完全支持HKGAI API（默认），Gemini为可选备选方案
+
+## 获取帮助
+
+如有问题，请：
+1. 查看FastAPI文档：`http://localhost:8000/docs`
+2. 检查Milvus日志：`docker-compose logs milvus-standalone`
+3. 查看应用日志：终端输出的错误信息
+4. 参考项目文档：`docs/Final WarmUp.md`
