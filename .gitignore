@@ -41,6 +41,10 @@ file_metadata.json  # 文件元数据（临时文件）
 file_storage.db
 file_storage.db-journal
 
+# 配置文件备份（可能包含敏感信息）
+*.backup
+config.py.backup
+
 # Milvus数据
 milvus_data/
 etcd_data/
