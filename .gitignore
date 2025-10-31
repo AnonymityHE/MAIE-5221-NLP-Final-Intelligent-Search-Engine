@@ -38,9 +38,6 @@ file_metadata.json  # 文件元数据（临时文件）
 file_storage.db
 file_storage.db-journal
 
-# 配置文件（包含敏感信息）
-services/config.py  # 包含API密钥，不应提交到Git
-
 # Milvus数据
 milvus_data/
 etcd_data/
