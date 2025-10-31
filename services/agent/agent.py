@@ -1,22 +1,28 @@
 """
 智能Agent - 根据问题类型自动选择和使用合适的工具
+支持：本地RAG、网页搜索、天气、金融、交通查询
 """
 from typing import Dict, List, Optional
-from services.unified_llm_client import unified_llm_client
-from services.tools.local_rag_tool import get_local_knowledge_context
-from services.tools.web_search_tool import get_web_search_context
-from services.tools.weather_tool import get_weather_context
+from services.llm.unified_client import unified_llm_client
+from services.agent.tools.local_rag_tool import get_local_knowledge_context
+from services.agent.tools.web_search_tool import get_web_search_context
+from services.agent.tools.weather_tool import get_weather_context
+from services.agent.tools.finance_tool import get_finance_context
+from services.agent.tools.transport_tool import get_transport_context
+from services.core.logger import logger
 import re
 
 
 class RAGAgent:
-    """简单的RAG Agent - 根据问题类型智能选择工具"""
+    """RAG Agent - 根据问题类型智能选择工具（支持多种工具）"""
     
     def __init__(self):
         self.tools = {
             "local_rag": get_local_knowledge_context,
             "web_search": get_web_search_context,
-            "weather": get_weather_context
+            "weather": get_weather_context,
+            "finance": get_finance_context,
+            "transport": get_transport_context
         }
     
     def detect_question_type(self, query: str) -> List[str]:
@@ -32,6 +38,16 @@ class RAGAgent:
         query_lower = query.lower()
         tools_to_use = []
         
+        # 检测金融相关（股票、加密货币）
+        finance_keywords = ["stock", "股票", "price", "股价", "crypto", "加密货币", "bitcoin", "btc", "ethereum", "eth"]
+        if any(keyword in query_lower for keyword in finance_keywords):
+            tools_to_use.append("finance")
+        
+        # 检测交通相关（旅行、路线、时间）
+        transport_keywords = ["travel", "旅行", "route", "路线", "time", "时间", "how long", "多久", "distance", "距离", "driving", "驾车"]
+        if any(keyword in query_lower for keyword in transport_keywords):
+            tools_to_use.append("transport")
+        
         # 检测天气相关
         weather_keywords = ["weather", "天气", "rain", "下雨", "temperature", "温度", "forecast", "预报"]
         if any(keyword in query_lower for keyword in weather_keywords):
@@ -46,8 +62,9 @@ class RAGAgent:
             tools_to_use.insert(0, "web_search")  # 插入到最前面，最高优先级
         
         # 只在没有特定查询类型时才添加本地知识库
-        # 对于天气和实时查询，不自动添加local_rag（避免混淆）
-        if not tools_to_use or "weather" not in tools_to_use:
+        # 对于特定领域的查询，不自动添加local_rag（避免混淆）
+        specific_domain_queries = ["weather", "finance", "transport"]
+        if not any(tool in tools_to_use for tool in specific_domain_queries):
             tools_to_use.append("local_rag")
         
         # 确保至少有一个工具
@@ -122,17 +139,38 @@ class RAGAgent:
         # 对于特定类型的问题，只使用对应的工具（不fallback）
         query_lower = query.lower()
         is_weather_query = any(kw in query_lower for kw in ["weather", "天气", "rain", "下雨", "temperature", "温度", "forecast", "预报"])
+        is_finance_query = any(kw in query_lower for kw in ["stock", "股票", "price", "股价", "crypto", "加密货币", "bitcoin", "btc"])
+        is_transport_query = any(kw in query_lower for kw in ["travel", "旅行", "route", "路线", "time", "时间", "how long", "多久"])
         is_realtime_query = any(kw in query_lower for kw in ["latest", "最新", "news", "新闻", "current", "现在", "today", "今天", "recent", "最近"])
         
         for tool_name in tools_to_use:
             context = ""
             
-            if tool_name == "weather":
+            if tool_name == "finance":
+                context = self.tools["finance"](query, num_results=3)
+                if context:
+                    contexts.append(f"[金融信息]\n{context}")
+                    tools_used.append("finance")
+                    logger.info("使用金融工具获取信息")
+                    if is_finance_query:
+                        break
+            
+            elif tool_name == "transport":
+                context = self.tools["transport"](query, num_results=3)
+                if context:
+                    contexts.append(f"[交通信息]\n{context}")
+                    tools_used.append("transport")
+                    logger.info("使用交通工具获取信息")
+                    if is_transport_query:
+                        break
+            
+            elif tool_name == "weather":
                 location = self.extract_location(query) or "Hong Kong"
                 context = self.tools["weather"](location)
                 if context:
                     contexts.append(f"[天气信息]\n{context}")
                     tools_used.append("weather")
+                    logger.info(f"使用天气工具获取 {location} 的天气信息")
                     # 天气查询是确定的，找到就停止
                     if is_weather_query:
                         break
@@ -142,6 +180,7 @@ class RAGAgent:
                 if context:
                     contexts.append(f"[网络搜索结果]\n{context}")
                     tools_used.append("web_search")
+                    logger.info("使用网页搜索工具获取信息")
                     # 对于实时信息查询，如果网页搜索有结果就使用
                     if is_realtime_query:
                         break
@@ -150,6 +189,7 @@ class RAGAgent:
                     # 对于实时查询，如果没有搜索到结果，应该直接使用LLM回答（因为它可能知道）
                     if is_realtime_query:
                         tools_used.append("web_search_attempted")
+                        logger.info("网页搜索无结果，但对实时查询将使用LLM回答")
                         # 对于实时查询，即使搜索无结果，也直接使用LLM（不尝试local_rag）
                         break
             
@@ -158,12 +198,13 @@ class RAGAgent:
                 if context:
                     contexts.append(f"[本地知识库]\n{context}")
                     tools_used.append("local_rag")
+                    logger.info("使用本地RAG工具获取信息")
                     # 如果是确定的知识库查询，有结果就使用
-                    if not is_weather_query and not is_realtime_query:
+                    if not is_weather_query and not is_realtime_query and not is_finance_query and not is_transport_query:
                         break
             
             # 如果已经收集到相关上下文，停止搜索
-            if contexts and (is_weather_query or (is_realtime_query and "web_search" in tools_used)):
+            if contexts and (is_weather_query or is_finance_query or is_transport_query or (is_realtime_query and "web_search" in tools_used)):
                 break
         
         # 3. 构建Prompt并调用LLM

@@ -3,10 +3,11 @@
 """
 from typing import List, Dict
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from services.file_storage import file_storage
-from services.file_processor import file_processor
-from services.milvus_client import milvus_client
-from services.config import settings
+from services.storage.file_storage import file_storage
+from services.storage.file_processor import file_processor
+from services.vector.milvus_client import milvus_client
+from services.core.config import settings
+from services.core.logger import logger
 import json
 
 
@@ -31,7 +32,7 @@ class FileIndexer:
             索引结果信息
         """
         # 1. 处理文件，提取文本
-        print(f"开始处理文件: {file_id}")
+        logger.info(f"开始处理文件: {file_id}")
         processed_result = file_processor.process_file(file_id)
         text = processed_result.get("text", "")
         metadata = processed_result.get("metadata", {})

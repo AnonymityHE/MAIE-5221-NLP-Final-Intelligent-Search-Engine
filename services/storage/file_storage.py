@@ -9,8 +9,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, List
 from threading import Lock
-from services.config import settings
-from services.storage_backend import get_storage_backend
+from services.core.config import settings
+from services.core.logger import logger
+from services.storage.backend import get_storage_backend
 
 # 使用可切换的存储后端
 
@@ -30,7 +31,9 @@ class FileStorageManager:
         )
         
         # 简单的文件索引JSON（仅用于快速查询文件路径，不存储详细元数据）
-        self.index_file = Path("file_index.json")  # 轻量级索引，只存储file_id -> file_path映射
+        # 使用项目根目录
+        project_root = Path(__file__).parent.parent.parent
+        self.index_file = project_root / "file_index.json"  # 轻量级索引，只存储file_id -> file_path映射
         self.lock = Lock()
         
         self._init_index()
@@ -48,7 +51,7 @@ class FileStorageManager:
             with open(self.index_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            print(f"加载文件索引失败: {e}")
+            logger.error(f"加载文件索引失败: {e}")
             return {}
     
     def _save_index(self, index: Dict):
@@ -57,7 +60,7 @@ class FileStorageManager:
             with open(self.index_file, 'w', encoding='utf-8') as f:
                 json.dump(index, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            print(f"保存文件索引失败: {e}")
+            logger.error(f"保存文件索引失败: {e}")
     
     def _generate_file_id(self, file_content: bytes, filename: str) -> str:
         """生成文件唯一ID"""
@@ -267,7 +270,7 @@ class FileStorageManager:
                 try:
                     os.remove(file_path)
                 except Exception as e:
-                    print(f"删除文件失败: {e}")
+                    logger.error(f"删除文件失败: {e}")
             
             # 删除索引
             del index[file_id]

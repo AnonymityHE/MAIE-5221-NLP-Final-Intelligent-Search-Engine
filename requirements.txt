@@ -14,7 +14,7 @@ python-multipart==0.0.6  # 文件上传支持
 pymilvus==2.3.4
 
 # === AI模型和向量化 ===
-# Sentence Transformers用于生成文本向量
+# Sentence Transformers用于生成文本向量（包含CrossEncoder用于Reranker）
 sentence-transformers>=2.2.2
 # LangChain用于文本处理和RAG工作流
 langchain>=0.1.0

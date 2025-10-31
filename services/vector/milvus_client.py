@@ -3,7 +3,8 @@ Milvus客户端 - 封装Milvus连接和操作
 """
 from pymilvus import connections, Collection, utility
 from typing import List, Dict, Optional
-from services.config import settings
+from services.core.config import settings
+from services.core.logger import logger
 from sentence_transformers import SentenceTransformer
 
 
@@ -29,7 +30,7 @@ class MilvusClient:
             self.connected = True
             return True
         except Exception as e:
-            print(f"连接Milvus失败: {e}")
+            logger.error(f"连接Milvus失败: {e}")
             return False
     
     def disconnect(self):
@@ -50,7 +51,7 @@ class MilvusClient:
         
         # 检查集合是否存在
         if utility.has_collection(self.collection_name):
-            print(f"集合 {self.collection_name} 已存在")
+            logger.info(f"集合 {self.collection_name} 已存在")
             return
         
         # 定义集合schema
@@ -79,7 +80,7 @@ class MilvusClient:
             index_params=index_params
         )
         
-        print(f"集合 {self.collection_name} 创建成功")
+        logger.info(f"集合 {self.collection_name} 创建成功")
     
     def insert(self, texts: List[str], vectors: List[List[float]], 
                source_files: List[str]) -> bool:
@@ -109,10 +110,10 @@ class MilvusClient:
             
             collection.insert(data)
             collection.flush()
-            print(f"成功插入 {len(texts)} 条数据")
+            logger.info(f"成功插入 {len(texts)} 条数据")
             return True
         except Exception as e:
-            print(f"插入数据失败: {e}")
+            logger.error(f"插入数据失败: {e}")
             return False
     
     def search(self, query_vector: List[float], top_k: int = 5) -> List[Dict]:
@@ -158,7 +159,7 @@ class MilvusClient:
             
             return formatted_results
         except Exception as e:
-            print(f"搜索失败: {e}")
+            logger.error(f"搜索失败: {e}")
             return []
     
     def get_embedding(self, text: str) -> List[float]:
@@ -172,7 +173,7 @@ class MilvusClient:
             向量列表
         """
         if self._embedding_model is None:
-            print(f"正在加载embedding模型: {settings.EMBEDDING_MODEL}")
+            logger.info(f"正在加载embedding模型: {settings.EMBEDDING_MODEL}")
             self._embedding_model = SentenceTransformer(settings.EMBEDDING_MODEL)
         
         vector = self._embedding_model.encode([text])[0].tolist()
@@ -212,9 +213,9 @@ class MilvusClient:
             
             collection.insert(data)
             collection.flush()
-            print(f"成功插入 {len(texts)} 条数据")
+            logger.info(f"成功插入 {len(texts)} 条数据")
         except Exception as e:
-            print(f"插入数据失败: {e}")
+            logger.error(f"插入数据失败: {e}")
             raise
     
     def search(self, query: str, top_k: int = 5) -> List[Dict]:
@@ -276,7 +277,7 @@ class MilvusClient:
             
             return formatted_results
         except Exception as e:
-            print(f"搜索失败: {e}")
+            logger.error(f"搜索失败: {e}")
             return []
     
     def get_collection_stats(self) -> Optional[Dict]:
@@ -293,7 +294,7 @@ class MilvusClient:
                 "num_entities": num_entities
             }
         except Exception as e:
-            print(f"获取统计信息失败: {e}")
+            logger.error(f"获取统计信息失败: {e}")
             return None
 
 

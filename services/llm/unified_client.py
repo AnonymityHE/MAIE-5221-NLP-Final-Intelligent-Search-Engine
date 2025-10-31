@@ -2,9 +2,9 @@
 统一LLM客户端 - 支持HKGAI和Gemini，根据配置选择
 """
 from typing import Dict, Optional
-from services.config import settings
-from services.llm_client import HKGAIClient
-from services.gemini_client import GeminiClient
+from services.core.config import settings
+from services.llm.hkgai_client import HKGAIClient
+from services.llm.gemini_client import GeminiClient
 
 
 class UnifiedLLMClient:

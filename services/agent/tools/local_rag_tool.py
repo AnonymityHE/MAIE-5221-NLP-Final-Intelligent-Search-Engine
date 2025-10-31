@@ -2,7 +2,7 @@
 本地知识库RAG工具 - 将RAG封装成Agent工具
 """
 from typing import Dict, List
-from services.retriever import retriever
+from services.vector.retriever import retriever
 
 
 def local_knowledge_base_search(query: str) -> Dict:

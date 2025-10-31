@@ -12,8 +12,8 @@ sys.path.insert(0, str(project_root))
 import fitz  # PyMuPDF
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
-from services.milvus_client import milvus_client
-from services.config import settings
+from services.vector import milvus_client
+from services.core import settings
 
 
 def load_pdf(file_path: str) -> str:

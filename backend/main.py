@@ -4,23 +4,25 @@ FastAPI应用入口
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from backend.api import router
-from services.milvus_client import milvus_client
+from services.vector import milvus_client
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
+    from services.core import logger
+    
     # 启动时
-    print("正在连接Milvus...")
+    logger.info("正在连接Milvus...")
     if milvus_client.connect():
-        print("Milvus连接成功")
+        logger.info("Milvus连接成功")
     else:
-        print("警告: Milvus连接失败，请确保Milvus服务正在运行")
+        logger.warning("Milvus连接失败，请确保Milvus服务正在运行")
     
     yield
     
     # 关闭时
-    print("正在断开Milvus连接...")
+    logger.info("正在断开Milvus连接...")
     milvus_client.disconnect()
 
 

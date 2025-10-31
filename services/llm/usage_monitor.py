@@ -13,7 +13,9 @@ class UsageMonitor:
     """API用量监控器"""
     
     def __init__(self, storage_file: str = "usage_data.json"):
-        self.storage_file = Path(storage_file)
+        # 使用项目根目录
+        project_root = Path(__file__).parent.parent.parent
+        self.storage_file = project_root / storage_file
         self.lock = Lock()
         
         # Gemini模型每日请求限制（免费层级）

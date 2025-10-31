@@ -3,6 +3,7 @@
 """
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, List
+from services.core.logger import logger
 
 
 class StorageBackend(ABC):
@@ -39,7 +40,7 @@ class MilvusStorageBackend(StorageBackend):
     """Milvus存储后端 - 通过查询Milvus获取元数据"""
     
     def __init__(self):
-        from services.milvus_metadata import milvus_metadata
+        from services.storage.milvus_metadata import milvus_metadata
         self.milvus_metadata = milvus_metadata
     
     def save_file_metadata(self, file_id: str, metadata: Dict) -> bool:
@@ -157,7 +158,7 @@ class DatabaseStorageBackend(StorageBackend):
             db.commit()
             return True
         except Exception as e:
-            print(f"保存文件元数据到数据库失败: {e}")
+            logger.error(f"保存文件元数据到数据库失败: {e}")
             db.rollback()
             return False
         finally:
@@ -270,7 +271,7 @@ class DatabaseStorageBackend(StorageBackend):
             db.commit()
             return True
         except Exception as e:
-            print(f"更新文件元数据失败: {e}")
+            logger.error(f"更新文件元数据失败: {e}")
             db.rollback()
             return False
         finally:
@@ -288,7 +289,7 @@ class DatabaseStorageBackend(StorageBackend):
             db.commit()
             return True
         except Exception as e:
-            print(f"删除文件元数据失败: {e}")
+            logger.error(f"删除文件元数据失败: {e}")
             db.rollback()
             return False
         finally:

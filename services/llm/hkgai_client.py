@@ -3,7 +3,7 @@ LLM客户端 - 封装HKGAIClient
 """
 import requests
 from typing import Dict, Optional
-from services.config import settings
+from services.core.config import settings
 
 
 class HKGAIClient:

@@ -4,7 +4,7 @@ Gemini API客户端 - 支持多模型选择和用量监控
 import requests
 from typing import Dict, Optional
 import json
-from services.usage_monitor import usage_monitor
+from services.llm.usage_monitor import usage_monitor
 
 
 class GeminiClient:
@@ -27,7 +27,8 @@ class GeminiClient:
         
         # 验证API key格式（Google API key必须以AIza开头）
         if not self.api_key.startswith("AIza"):
-            print(f"警告: API Key格式可能不正确。Google API Key必须以'AIza'开头，当前: {self.api_key[:10]}...")
+            from services.core.logger import logger
+            logger.warning(f"API Key格式可能不正确。Google API Key必须以'AIza'开头，当前: {self.api_key[:10]}...")
     
     def _count_tokens(self, text: str) -> int:
         """

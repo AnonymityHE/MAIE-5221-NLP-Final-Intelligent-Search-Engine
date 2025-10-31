@@ -12,7 +12,12 @@ try:
     PDF_AVAILABLE = True
 except ImportError:
     PDF_AVAILABLE = False
-    print("警告: PyMuPDF 未安装，PDF处理功能将被禁用。请运行: pip install PyMuPDF")
+    # 延迟导入logger避免循环依赖
+    try:
+        from services.core.logger import logger
+        logger.warning("PyMuPDF 未安装，PDF处理功能将被禁用。请运行: pip install PyMuPDF")
+    except:
+        print("警告: PyMuPDF 未安装，PDF处理功能将被禁用。请运行: pip install PyMuPDF")
 
 # Pillow依赖（图片处理）
 try:
@@ -20,7 +25,12 @@ try:
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
-    print("警告: Pillow 未安装，图片处理功能将被禁用。请运行: pip install Pillow")
+    # 延迟导入logger避免循环依赖
+    try:
+        from services.core.logger import logger
+        logger.warning("Pillow 未安装，图片处理功能将被禁用。请运行: pip install Pillow")
+    except:
+        print("警告: Pillow 未安装，图片处理功能将被禁用。请运行: pip install Pillow")
 
 # OCR依赖可选，如果没有安装pytesseract，图片OCR功能将被禁用
 try:
@@ -28,9 +38,14 @@ try:
     OCR_AVAILABLE = True
 except ImportError:
     OCR_AVAILABLE = False
-    print("警告: pytesseract 未安装，图片OCR功能将被禁用。如需使用OCR，请运行: pip install pytesseract")
+    # 延迟导入logger避免循环依赖
+    try:
+        from services.core.logger import logger
+        logger.warning("pytesseract 未安装，图片OCR功能将被禁用。如需使用OCR，请运行: pip install pytesseract")
+    except:
+        print("警告: pytesseract 未安装，图片OCR功能将被禁用。如需使用OCR，请运行: pip install pytesseract")
 
-from services.file_storage import file_storage
+from services.storage.file_storage import file_storage
 
 
 class FileProcessor:

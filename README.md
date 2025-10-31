@@ -6,12 +6,14 @@
 
 ### 核心功能
 
-- ✅ **RAG检索增强生成**：基于Milvus向量数据库的语义检索
+- ✅ **RAG检索增强生成**：基于Milvus向量数据库的语义检索，支持Reranker重排序
 - ✅ **多模态文件支持**：上传并处理PDF、图片、代码、文本等多种格式文件
-- ✅ **Agent智能工具**：自动选择RAG、网页搜索、天气查询等工具
+- ✅ **Agent智能工具**：自动选择RAG、网页搜索、天气、金融、交通等工具
 - ✅ **多LLM支持**：HKGAI（默认）、Gemini系列（备选）三个模型
 - ✅ **用量监控**：Gemini API的token使用量和配额管理
 - ✅ **可切换存储后端**：Milvus或传统数据库（SQLite/PostgreSQL）
+- ✅ **日志系统**：统一的日志管理，支持文件输出和日志轮转
+- ✅ **环境变量配置**：支持从`.env`文件和环境变量加载配置
 
 ## 技术栈
 
@@ -44,6 +46,8 @@
 - **本地RAG**: Milvus向量检索
 - **网页搜索**: DuckDuckGo API
 - **天气查询**: wttr.in API
+- **金融数据**: 股票和加密货币价格查询（Yahoo Finance, CoinGecko）
+- **交通查询**: 旅行时间和路线查询（OpenRouteService）
 - **可扩展**: 支持添加更多工具
 
 ### 前端（规划中）
@@ -75,8 +79,8 @@
 3. **安装Python依赖**
    ```bash
    # 建议使用conda创建虚拟环境
-   conda create -n rag_system python=3.10
-   conda activate rag_system
+   conda create -n ise python=3.10
+   conda activate ise
    
    # 安装所有依赖
    pip install -r requirements.txt
@@ -202,33 +206,76 @@ curl -X POST "http://localhost:8000/api/rag_query" \
 │   ├── main.py           # 应用入口
 │   ├── api.py            # API路由
 │   └── models.py         # Pydantic数据模型
-├── services/              # 服务层（模型和外部服务）
-│   ├── config.py         # 配置文件（所有配置项）
-│   ├── milvus_client.py  # Milvus向量数据库客户端
-│   ├── llm_client.py     # HKGAI LLM客户端
-│   ├── gemini_client.py  # Gemini LLM客户端
-│   ├── unified_llm_client.py  # 统一LLM客户端接口
-│   ├── retriever.py      # RAG检索器
-│   ├── agent.py          # Agent智能工具选择器
-│   ├── usage_monitor.py  # API用量监控（Gemini配额管理）
-│   ├── file_storage.py   # 文件存储管理系统
-│   ├── file_processor.py # 多模态文件处理器（PDF/图片/代码）
-│   ├── file_indexer.py   # 文件索引服务（向量化和Milvus索引）
-│   ├── storage_backend.py  # 存储后端抽象接口（Milvus/数据库）
-│   └── milvus_metadata.py  # Milvus元数据查询（用于Milvus后端）
+├── services/              # 服务层（按功能模块化组织）
+│   ├── __init__.py       # 统一导出接口（支持向后兼容）
+│   ├── core/             # 核心基础设施
+│   │   ├── config.py     # 配置管理（支持环境变量）
+│   │   └── logger.py     # 日志系统
+│   ├── llm/              # LLM相关模块
+│   │   ├── hkgai_client.py      # HKGAI客户端
+│   │   ├── gemini_client.py     # Gemini客户端
+│   │   ├── unified_client.py    # 统一LLM客户端接口
+│   │   └── usage_monitor.py     # API用量监控（Gemini配额管理）
+│   ├── vector/           # 向量数据库相关
+│   │   ├── milvus_client.py     # Milvus向量数据库客户端
+│   │   ├── retriever.py         # RAG检索器
+│   │   └── reranker.py          # 重排序器（交叉编码器）
+│   ├── storage/            # 存储相关
+│   │   ├── file_storage.py      # 文件存储管理系统
+│   │   ├── file_processor.py    # 多模态文件处理器（PDF/图片/代码）
+│   │   ├── file_indexer.py      # 文件索引服务（向量化和Milvus索引）
+│   │   ├── backend.py            # 存储后端抽象接口（Milvus/数据库）
+│   │   └── milvus_metadata.py   # Milvus元数据查询
+│   └── agent/           # Agent相关
+│       ├── agent.py      # Agent智能工具选择器
+│       └── tools/        # Agent工具
+│           ├── local_rag_tool.py     # 本地RAG工具
+│           ├── web_search_tool.py    # 网页搜索工具
+│           ├── weather_tool.py       # 天气查询工具
+│           ├── finance_tool.py       # 金融数据工具
+│           └── transport_tool.py    # 交通路线工具
 ├── frontend/             # 前端项目（Next.js，规划中）
 │   └── README.md
 ├── scripts/               # 工具脚本
-│   └── ingest.py         # 数据注入脚本
+│   ├── ingest.py         # 数据注入脚本
+│   ├── start_api.sh      # 启动API服务脚本
+│   └── test_improvements.py  # 功能测试脚本
 ├── docs/                  # 项目文档
-│   ├── Final WarmUp.md   # 项目计划文档
-│   └── Project Announcement.docx
+│   └── README.md         # 文档索引
 ├── documents/            # 原始文档目录（用于批量导入）
 ├── uploaded_files/       # 用户上传文件存储目录（存储实际的PDF、图片、代码等文件）
-├── file_index.json       # 文件索引（仅存储file_id -> file_path映射，详细元数据在Milvus中）
+├── file_index.json       # 文件索引（仅存储file_id -> file_path映射）
+├── usage_data.json       # Gemini API用量数据（已加入.gitignore）
+├── logs/                 # 日志文件目录
 ├── docker-compose.yml    # Milvus Docker配置
 ├── requirements.txt      # Python依赖
 └── README.md            # 本文件
+```
+
+### 代码组织说明
+
+项目采用模块化设计，`services/` 目录按功能分类：
+
+- **`core/`**：核心基础设施（配置、日志）
+- **`llm/`**：LLM客户端和用量监控
+- **`vector/`**：向量数据库和检索相关
+- **`storage/`**：文件存储和处理
+- **`agent/`**：Agent逻辑和工具
+
+#### 导入方式
+
+**推荐的新导入方式**：
+```python
+from services.core import settings, logger
+from services.llm import unified_llm_client
+from services.vector import retriever, reranker
+from services.agent import agent
+from services.storage import file_storage
+```
+
+**向后兼容的旧导入方式**（仍支持）：
+```python
+from services import settings, logger, unified_llm_client, retriever, agent
 ```
 
 ## LLM提供商配置
@@ -446,33 +493,100 @@ curl -X POST "http://localhost:8000/api/rag_query" \
 
 ### 数据存储架构
 
-**文件存储分层**：
+系统采用分层存储架构，充分利用各存储介质的优势：
 
-1. **实际文件存储**（文件系统）：
-   - 二进制文件（PDF、图片、代码等）保存在：`uploaded_files/` 目录（项目根目录下）
-   - 文件按照hash ID命名存储，避免重复
-   - **为什么不在Milvus？** Milvus是向量数据库，设计用于存储向量和元数据，不适合存储大二进制文件
+#### 1. 二进制文件存储（文件系统）
 
-2. **向量和文本存储**（Milvus）：
-   - 从文件提取的文本内容切分成chunks后向量化
-   - 向量存储在Milvus的`vector`字段
-   - 文本内容存储在Milvus的`text`字段
-   - 文件ID、文件名等信息存储在Milvus的`source_file`字段（作为metadata）
+**存储位置**：`uploaded_files/` 目录
 
-3. **文件元数据存储**（可切换的后端）：
-   - **Milvus后端**（默认）：通过查询Milvus获取文件元数据
-     - 所有数据（向量、文本、元数据）统一在Milvus中管理
-     - 无需额外数据库，适合小到中等规模应用
-   - **传统数据库后端**（可选）：使用SQLite或PostgreSQL存储元数据
-     - 支持SQL查询和复杂过滤
-     - 更适合需要复杂查询和大规模数据管理
-     - 支持PostgreSQL，可扩展到生产环境
-   - **轻量级索引**：`file_index.json`仅存储文件ID到文件路径的映射，用于快速定位文件
+**存储内容**：
+- PDF文件（`.pdf`）
+- 图片文件（`.png`, `.jpg`, `.jpeg`, `.gif`）
+- 代码文件（`.py`, `.js`, `.java`等）
+- 文本文件（`.txt`, `.md`, `.json`等）
 
-**为什么这样设计？**
-- **文件系统**：适合存储二进制文件，访问简单，不占用向量数据库资源
-- **Milvus**：擅长向量检索和元数据查询，用于RAG检索的核心
-- **轻量级索引**：快速查找文件路径，补充Milvus查询
+**设计原理**：
+- 文件系统适合存储二进制数据
+- 不占用向量数据库资源
+- 访问简单，支持直接文件读取
+- **为什么不在Milvus？** Milvus是向量数据库，设计用于存储向量和元数据，不适合存储大量二进制文件
+
+#### 2. 向量和文本存储（Milvus）
+
+**存储位置**：Milvus向量数据库
+
+**存储内容**：
+- **向量字段**（`vector`）：文本内容向量化后的embedding（384维）
+- **文本字段**（`text`）：从文件提取的文本内容chunks
+- **元数据字段**（`source_file`）：文件信息（格式：`"filename||file_id:xxx||file_type:xxx"`）
+
+**存储格式**：
+```
+Collection: knowledge_base
+Fields:
+  - id: INT64 (自动生成)
+  - text: VARCHAR (文本chunk)
+  - vector: FLOAT_VECTOR[384] (embedding向量)
+  - source_file: VARCHAR (文件元数据)
+  - file_id: VARCHAR (文件ID)
+  - file_type: VARCHAR (文件类型)
+```
+
+#### 3. 文件元数据存储（可切换后端）
+
+系统支持两种元数据存储方式，可通过配置切换：
+
+**Milvus后端（默认）**：
+- 通过查询Milvus的`source_file`字段获取文件元数据
+- 所有数据（向量、文本、元数据）统一在Milvus中管理
+- 无需额外数据库，适合小到中等规模应用
+- 配置：`STORAGE_BACKEND = "milvus"`
+
+**传统数据库后端（可选）**：
+- 使用SQLite或PostgreSQL存储文件元数据
+- 支持标准SQL查询和复杂过滤
+- 更好的并发性能（PostgreSQL）
+- 适合大规模数据管理
+- 配置：`STORAGE_BACKEND = "database"`，`DATABASE_URL = "sqlite:///./file_storage.db"`
+
+**数据库表结构**（database后端）：
+```sql
+CREATE TABLE file_metadata (
+    file_id VARCHAR PRIMARY KEY,
+    filename VARCHAR NOT NULL,
+    file_path VARCHAR NOT NULL,
+    file_type VARCHAR NOT NULL,
+    file_size INTEGER NOT NULL,
+    uploaded_at DATETIME,
+    processed BOOLEAN DEFAULT FALSE,
+    chunk_count INTEGER DEFAULT 0,
+    metadata_json TEXT
+);
+```
+
+#### 4. 轻量级索引（JSON文件）
+
+**存储位置**：`file_index.json`
+
+**存储内容**：仅存储`file_id -> file_path`的映射
+
+**用途**：
+- 快速查找文件的物理路径
+- 补充Milvus查询（获取文件大小、上传时间等静态信息）
+- 用于未处理文件的快速查找
+
+#### 存储架构优势
+
+- **分层清晰**：各层职责明确，互不干扰
+- **性能优化**：向量检索用Milvus，文件存储用文件系统
+- **灵活扩展**：可切换存储后端适应不同规模需求
+- **资源高效**：不浪费向量数据库空间存储二进制文件
+
+#### 使用建议
+
+- **开发/测试环境**：使用`milvus`后端（简单，无需额外数据库）
+- **生产环境（小规模）**：使用`milvus`后端或SQLite
+- **生产环境（大规模）**：使用PostgreSQL后端，获得更好的性能和扩展性
 
 ### OCR依赖
 
@@ -659,25 +773,51 @@ docker compose logs minio
 - pandas, pyarrow（pymilvus）
 - torch（sentence-transformers，可能需要较大空间）
 
-## 下一步开发
+## 已完成的改进功能
 
-当前已实现的核心功能：
-- ✅ RAG检索和问答
-- ✅ 多模态文件上传和处理
-- ✅ Agent智能工具选择（RAG、网页搜索、天气查询）
-- ✅ 多LLM支持（HKGAI + Gemini三个模型）
-- ✅ 用量监控和配额管理
-- ✅ 可切换存储后端（Milvus/数据库）
+### ✅ 高优先级功能（全部完成）
 
-未来可以继续完善：
+1. **✅ 日志系统改进**
+   - 统一的日志管理（`services/core/logger.py`）
+   - 支持控制台和文件输出（`logs/rag_system.log`）
+   - 日志轮转（最大10MB，保留5个备份）
+   - 可通过`LOG_LEVEL`环境变量配置日志级别
 
-1. **添加前端界面** (Next.js + shadcn/ui) - 放在 `frontend/` 目录
-2. **实现二次排序 (Reranker)** - 提升检索结果相关性
-3. **增强Agent能力** - 添加更多工具（金融数据、交通信息等）
-4. **优化性能** - 缓存、批量处理、异步优化
-5. **部署到服务器** - 配置远程Milvus和生产环境部署
+2. **✅ 环境变量支持完善**
+   - 所有配置项支持环境变量覆盖
+   - 自动加载`.env`文件
+   - 配置加载辅助函数（`get_env()`, `get_env_bool()`, `get_env_int()`）
 
-详细计划请参考 `docs/Final WarmUp.md`。
+3. **✅ Reranker功能实现**
+   - 交叉编码器重排序（`cross-encoder/ms-marco-MiniLM-L-6-v2`）
+   - 集成到检索流程，提升结果相关性
+   - 可通过`USE_RERANKER`环境变量启用/禁用（默认启用）
+
+4. **✅ Agent工具扩展**
+   - 金融数据工具：股票价格查询（Yahoo Finance）、加密货币价格查询（CoinGecko）
+   - 交通查询工具：旅行时间和路线查询（OpenRouteService）
+   - Agent现在支持5种工具：本地RAG、网页搜索、天气、金融、交通
+
+5. **✅ 代码重构**
+   - Services目录模块化重构
+   - 按功能分类：`core/`, `llm/`, `vector/`, `storage/`, `agent/`
+   - 保持向后兼容，旧导入方式仍可用
+
+### 🟡 中优先级功能（待实现）
+
+- 测试覆盖（pytest）
+- API速率限制
+- 统一错误处理
+- 配置文件验证
+
+### 🟢 低优先级功能（待实现）
+
+- 缓存机制
+- 批量处理优化
+- 健康检查增强
+- API文档增强
+
+详细改进建议请参考代码注释或开发文档。
 
 ## 注意事项
 

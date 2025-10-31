@@ -1,0 +1,102 @@
+"""
+项目配置文件 - 支持从环境变量和.env文件加载
+"""
+from pydantic import BaseModel
+from typing import Optional
+import os
+from pathlib import Path
+
+# 加载.env文件（如果存在）
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent.parent.parent / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+        # 延迟导入logger避免循环依赖
+        try:
+            from services.core.logger import logger
+            logger.info(f"已加载环境变量文件: {env_path}")
+        except:
+            print(f"已加载环境变量文件: {env_path}")
+    else:
+        load_dotenv()  # 尝试加载项目根目录的.env
+except ImportError:
+    # 延迟导入logger避免循环依赖
+    try:
+        from services.core.logger import logger
+        logger.warning("python-dotenv未安装，无法从.env文件加载配置")
+    except:
+        print("警告: python-dotenv未安装，无法从.env文件加载配置")
+
+
+def get_env(key: str, default: str = None) -> str:
+    """从环境变量获取值，如果不存在则返回默认值"""
+    return os.getenv(key, default)
+
+
+def get_env_bool(key: str, default: bool = False) -> bool:
+    """从环境变量获取布尔值"""
+    value = os.getenv(key, str(default)).lower()
+    return value in ("true", "1", "yes", "on")
+
+
+def get_env_int(key: str, default: int = 0) -> int:
+    """从环境变量获取整数值"""
+    try:
+        return int(os.getenv(key, str(default)))
+    except ValueError:
+        return default
+
+
+class Settings(BaseModel):
+    """应用配置"""
+    
+    # Milvus 配置
+    MILVUS_HOST: str = get_env("MILVUS_HOST", "localhost")
+    MILVUS_PORT: int = get_env_int("MILVUS_PORT", 19530)
+    MILVUS_COLLECTION_NAME: str = get_env("MILVUS_COLLECTION_NAME", "knowledge_base")
+    
+    # Embedding 模型配置
+    EMBEDDING_MODEL: str = get_env("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    EMBEDDING_DIMENSION: int = get_env_int("EMBEDDING_DIMENSION", 384)
+    
+    # LLM API 配置 - HKGAI
+    HKGAI_BASE_URL: str = get_env("HKGAI_BASE_URL", "https://oneapi.hkgai.net/v1")
+    HKGAI_API_KEY: str = get_env("HKGAI_API_KEY", "your-hkgai-api-key-here")
+    HKGAI_MODEL_ID: str = get_env("HKGAI_MODEL_ID", "HKGAI-V1")
+    
+    # Gemini API 配置
+    GEMINI_API_KEY: str = get_env("GEMINI_API_KEY", "your-gemini-api-key-here")
+    GEMINI_DEFAULT_MODEL: str = get_env("GEMINI_DEFAULT_MODEL", "gemini-2.0-flash")
+    GEMINI_ENABLED: bool = get_env_bool("GEMINI_ENABLED", True)
+    GEMINI_PROJECT_NUMBER: str = get_env("GEMINI_PROJECT_NUMBER", "your-project-number-here")
+    
+    # RAG 配置
+    TOP_K: int = get_env_int("TOP_K", 5)
+    CHUNK_SIZE: int = get_env_int("CHUNK_SIZE", 500)
+    CHUNK_OVERLAP: int = get_env_int("CHUNK_OVERLAP", 50)
+    USE_RERANKER: bool = get_env_bool("USE_RERANKER", True)  # 是否使用Reranker
+    
+    # 文件上传存储配置
+    UPLOAD_STORAGE_DIR: str = get_env("UPLOAD_STORAGE_DIR", "uploaded_files")
+    MAX_UPLOAD_SIZE: int = get_env_int("MAX_UPLOAD_SIZE", 50 * 1024 * 1024)
+    ALLOWED_EXTENSIONS: list = [
+        ".pdf", ".png", ".jpg", ".jpeg", ".gif", ".py", ".txt", ".md", ".json", ".csv"
+    ]
+    
+    # 存储后端配置
+    STORAGE_BACKEND: str = get_env("STORAGE_BACKEND", "milvus")
+    DATABASE_URL: str = get_env("DATABASE_URL", "sqlite:///./file_storage.db")
+    
+    # 日志配置
+    LOG_LEVEL: str = get_env("LOG_LEVEL", "INFO")
+    
+    # 金融和交通工具API配置（可选）
+    OPENROUTESERVICE_API_KEY: Optional[str] = get_env("OPENROUTESERVICE_API_KEY", None)
+    
+    class Config:
+        case_sensitive = True
+
+
+settings = Settings()
+

@@ -3,8 +3,9 @@ Milvus元数据管理 - 使用Milvus存储文件元数据
 利用Milvus的查询能力来存储和检索文件元数据
 """
 from typing import Optional, Dict, List
-from services.milvus_client import milvus_client
-from services.config import settings
+from services.vector.milvus_client import milvus_client
+from services.core.config import settings
+from services.core.logger import logger
 
 
 class MilvusMetadataManager:
@@ -88,7 +89,7 @@ class MilvusMetadataManager:
             
             return None
         except Exception as e:
-            print(f"从Milvus查询文件元数据失败: {e}")
+            logger.error(f"从Milvus查询文件元数据失败: {e}")
             return None
     
     def list_files_from_milvus(self) -> List[Dict]:
@@ -146,7 +147,7 @@ class MilvusMetadataManager:
             
             return list(seen_files.values())
         except Exception as e:
-            print(f"从Milvus列出文件失败: {e}")
+            logger.error(f"从Milvus列出文件失败: {e}")
             return []
 
 

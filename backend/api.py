@@ -5,15 +5,11 @@ from typing import Optional, List
 from fastapi import APIRouter, HTTPException, UploadFile, File as FastAPIFile
 from fastapi.responses import JSONResponse
 from backend.models import QueryRequest, QueryResponse, DocumentResult, FileUploadResponse
-from services.retriever import retriever
-from services.llm_client import llm_client
-from services.unified_llm_client import unified_llm_client
+from services.vector import retriever
+from services.llm import llm_client, unified_llm_client, usage_monitor
 from services.agent import agent
-from services.usage_monitor import usage_monitor
-from services.file_storage import file_storage
-from services.file_processor import file_processor
-from services.file_indexer import file_indexer
-from services.config import settings
+from services.storage import file_storage, file_processor, file_indexer
+from services.core import settings, logger
 import asyncio
 
 router = APIRouter()
@@ -97,8 +93,8 @@ async def rag_query(request: QueryRequest):
                     detail=error_msg,
                     headers={"X-Quota-Info": str(llm_result.get("quota_info", {}))}
                 )
-            # 打印详细错误（用于调试）
-            print(f"LLM调用错误: {error_msg}")
+            # 记录详细错误（用于调试）
+            logger.error(f"LLM调用错误: {error_msg}")
             raise HTTPException(status_code=500, detail=f"LLM调用失败: {error_msg}")
         
         answer = llm_result.get("content", "无法生成答案")
@@ -149,10 +145,10 @@ async def rag_query(request: QueryRequest):
         # 重新抛出HTTP异常（如配额错误）
         raise
     except Exception as e:
-        # 打印详细错误信息到控制台（用于调试）
+        # 记录详细错误信息（用于调试）
         import traceback
         error_trace = traceback.format_exc()
-        print(f"RAG查询错误详情:\n{error_trace}")
+        logger.error(f"RAG查询错误详情:\n{error_trace}")
         raise HTTPException(status_code=500, detail=f"处理请求时出错: {str(e)}")
 
 
@@ -197,10 +193,10 @@ async def agent_query(request: QueryRequest):
         # 重新抛出HTTP异常（如配额错误）
         raise
     except Exception as e:
-        # 打印详细错误信息到控制台（用于调试）
+        # 记录详细错误信息（用于调试）
         import traceback
         error_trace = traceback.format_exc()
-        print(f"RAG查询错误详情:\n{error_trace}")
+        logger.error(f"Agent查询错误详情:\n{error_trace}")
         raise HTTPException(status_code=500, detail=f"处理请求时出错: {str(e)}")
 
 
@@ -288,9 +284,9 @@ async def _process_and_index_file(file_id: str):
     """异步处理和索引文件"""
     try:
         index_result = file_indexer.index_file(file_id)
-        print(f"文件 {file_id} 处理完成: {index_result}")
+        logger.info(f"文件 {file_id} 处理完成: {index_result}")
     except Exception as e:
-        print(f"文件 {file_id} 处理失败: {e}")
+        logger.error(f"文件 {file_id} 处理失败: {e}")
 
 
 @router.get("/files")
