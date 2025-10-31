@@ -235,7 +235,7 @@ def main():
     print("\n请确保:")
     print("1. Milvus服务正在运行 (docker compose up -d)")
     print("2. API服务正在运行 (uvicorn backend.main:app --reload)")
-    print("3. 已经运行过数据注入脚本 (python scripts/ingest.py)")
+    print("3. 已经运行过数据注入脚本 (python scripts/utils/ingest.py)")
     print("\n开始测试...\n")
     
     # 先检查健康状态

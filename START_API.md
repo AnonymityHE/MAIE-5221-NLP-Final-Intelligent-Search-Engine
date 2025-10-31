@@ -7,7 +7,7 @@
 使用启动脚本：
 
 ```bash
-bash scripts/start_api.sh
+bash scripts/utils/start_api.sh
 ```
 
 ## 手动启动步骤

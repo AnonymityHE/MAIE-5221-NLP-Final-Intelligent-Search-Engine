@@ -153,7 +153,7 @@ docker-compose restart
 运行数据注入脚本：
 
 ```bash
-python scripts/ingest.py
+python scripts/utils/ingest.py
 ```
 
 这个脚本会：
@@ -236,10 +236,16 @@ curl -X POST "http://localhost:8000/api/rag_query" \
 │           └── transport_tool.py    # 交通路线工具
 ├── frontend/             # 前端项目（Next.js，规划中）
 │   └── README.md
-├── scripts/               # 工具脚本
-│   ├── ingest.py         # 数据注入脚本
-│   ├── start_api.sh      # 启动API服务脚本
-│   └── test_improvements.py  # 功能测试脚本
+├── scripts/               # 工具脚本（按用途分类）
+│   ├── utils/            # 常用工具脚本
+│   │   ├── ingest.py     # 数据注入脚本
+│   │   ├── start_api.sh  # 启动API服务脚本
+│   │   ├── create_test_doc.py  # 创建测试文档
+│   │   └── read_project_announcement.py  # 读取项目公告
+│   └── tests/            # 测试脚本
+│       ├── test_improvements.py  # 完整功能测试
+│       ├── test_refactoring.sh   # 重构验证测试
+│       └── quick_test.sh         # 快速功能测试
 ├── docs/                  # 项目文档
 │   └── README.md         # 文档索引
 ├── documents/            # 原始文档目录（用于批量导入）

@@ -85,13 +85,13 @@ if curl -s http://localhost:8000/api/health > /dev/null 2>&1; then
     echo "============================================================"
     
     # 运行Python测试脚本
-    python3 scripts/test_improvements.py
+    python3 scripts/tests/test_improvements.py
     
 else
     echo "⚠️  API服务未运行"
     echo ""
     echo "请先启动API服务："
-    echo "  bash scripts/start_api.sh"
+    echo "  bash scripts/utils/start_api.sh"
     echo ""
     echo "或手动启动："
     echo "  conda activate ise"

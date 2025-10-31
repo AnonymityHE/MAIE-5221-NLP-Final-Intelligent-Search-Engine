@@ -33,10 +33,10 @@ uvicorn backend.main:app --reload
 
 ```bash
 # 快速测试（bash脚本，无需Python依赖）
-bash scripts/quick_test.sh
+bash scripts/tests/quick_test.sh
 
 # 详细测试（Python脚本，需要API运行）
-python scripts/test_improvements.py
+python scripts/tests/test_improvements.py
 ```
 
 ### 手动测试
