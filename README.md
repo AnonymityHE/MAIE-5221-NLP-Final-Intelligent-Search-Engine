@@ -7,9 +7,10 @@
 ### 核心功能
 
 - ✅ **RAG检索增强生成**：基于Milvus向量数据库的语义检索，支持Reranker重排序
+- ✅ **多语言RAG支持**：支持粤语、普通话、英语的混合检索和生成 ⭐ 新增
 - ✅ **多模态文件支持**：上传并处理PDF、图片、代码、文本等多种格式文件
 - ✅ **Agent智能工具**：自动选择RAG、网页搜索、天气、金融、交通等工具
-- ✅ **多LLM支持**：HKGAI（默认）、Gemini系列（备选）三个模型
+- ✅ **多LLM支持**：HKGAI（默认，支持多语言）、Gemini系列（备选）三个模型
 - ✅ **用量监控**：Gemini API的token使用量和配额管理
 - ✅ **可切换存储后端**：Milvus或传统数据库（SQLite/PostgreSQL）
 - ✅ **日志系统**：统一的日志管理，支持文件输出和日志轮转
@@ -28,8 +29,10 @@
   - 传统数据库后端（可选）：SQLite或PostgreSQL
 
 ### AI模型
-- **Embedding模型**: sentence-transformers/all-MiniLM-L6-v2（384维向量）
-- **LLM (默认)**: HKGAI-V1 (HKGAI API)
+- **Embedding模型**: 
+  - 默认：sentence-transformers/all-MiniLM-L6-v2（384维向量）
+  - 多语言：paraphrase-multilingual-MiniLM-L12-v2（支持100+语言，包括粤语、普通话、英语）⭐
+- **LLM (默认)**: HKGAI-V1 (HKGAI API) - 支持粤语、普通话、英语多语言生成
 - **LLM (备选)**: Gemini系列模型 (支持用量监控和配额管理)
   - Gemini 2.5 Pro (50 请求/天, 125K TPM)
   - Gemini 2.5 Flash (250 请求/天, 250K TPM)
@@ -593,6 +596,137 @@ CREATE TABLE file_metadata (
 - **开发/测试环境**：使用`milvus`后端（简单，无需额外数据库）
 - **生产环境（小规模）**：使用`milvus`后端或SQLite
 - **生产环境（大规模）**：使用PostgreSQL后端，获得更好的性能和扩展性
+
+---
+
+## 多语言RAG支持 ⭐
+
+系统现已支持**多语言检索增强生成**，特别针对**粤语、普通话、英语**进行了优化，符合HKGAI-V1论文中提到的多语言环境需求。
+
+### 功能特点
+
+- ✅ **多语言Embedding**：自动检测查询语言并优化检索
+- ✅ **混合语言支持**：支持同一查询中包含多种语言
+- ✅ **语言检测**：自动识别粤语、普通话、英语及其混合文本
+- ✅ **无缝切换**：可在单语言和多语言模式间切换
+
+### 配置多语言RAG
+
+#### 方法1：环境变量（推荐）
+
+在`.env`文件中添加：
+
+```bash
+# 启用多语言embedding模型
+USE_MULTILINGUAL_EMBEDDING=true
+
+# 多语言embedding模型（默认：paraphrase-multilingual-MiniLM-L12-v2）
+MULTILINGUAL_EMBEDDING_MODEL=paraphrase-multilingual-MiniLM-L12-v2
+```
+
+#### 方法2：直接修改配置
+
+编辑`services/core/config.py`：
+
+```python
+USE_MULTILINGUAL_EMBEDDING = True
+MULTILINGUAL_EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"
+```
+
+### 使用示例
+
+系统会自动检测查询语言并优化检索：
+
+```python
+# 普通话查询
+query = "什么是RAG系统？"
+results = retriever.search(query)
+
+# 粤语查询
+query = "RAG系统係乜嘢？"
+results = retriever.search(query)
+
+# 英语查询
+query = "What is RAG system?"
+results = retriever.search(query)
+
+# 混合语言查询
+query = "RAG系统是检索增强生成，What does it mean?"
+results = retriever.search(query)
+```
+
+### 语言检测功能
+
+系统内置语言检测器，可以识别：
+
+- **粤语特征**：嘅、咗、係、啲、佢、咁、咩等特有字符
+- **普通话特征**：标准中文
+- **英语特征**：ASCII字符
+- **混合语言**：同时包含多种语言
+
+### 测试多语言功能
+
+运行测试脚本：
+
+```bash
+conda activate ise
+python scripts/tests/test_multilingual_rag.py
+```
+
+### 性能说明
+
+- **多语言模型**：`paraphrase-multilingual-MiniLM-L12-v2`
+  - 支持100+语言
+  - 向量维度：384
+  - 速度：略慢于单语言模型，但支持多语言混合检索
+
+- **单语言模型**：`all-MiniLM-L6-v2`
+  - 向量维度：384
+  - 速度：更快
+  - 适用：仅处理英语或单一语言
+
+### 建议
+
+- **香港本地化应用**：使用多语言模型（支持粤语、普通话、英语）
+- **纯英文应用**：使用单语言模型（速度更快）
+- **混合内容知识库**：必须使用多语言模型
+
+### 最新优化 ⭐
+
+系统已实现以下优化以提升多语言RAG性能：
+
+#### 1. 改进的混合语言检测
+- ✅ 降低混合语言检测阈值（从0.2到0.15）
+- ✅ 改进评分算法，更准确识别混合语言文本
+- ✅ 优化主要语言判断逻辑
+
+#### 2. 粤语查询优化
+- ✅ **检索阶段**：粤语查询自动增加50%候选数量以提高召回率
+- ✅ **Reranker阶段**：粤语查询匹配粤语文档时，语言权重提升15%
+- ✅ **日志记录**：详细记录优化过程便于调试
+
+#### 3. 多语言知识库
+- ✅ 创建了三个测试文档（粤语、普通话、英语）
+- ✅ 提供快速索引脚本：`python scripts/utils/index_multilingual_docs.py`
+- ✅ 平衡知识库语言分布
+
+#### 使用优化后的系统
+
+1. **索引多语言文档**：
+```bash
+conda activate ise
+python scripts/utils/index_multilingual_docs.py
+```
+
+2. **测试优化效果**：
+```bash
+python scripts/tests/test_multilingual_optimizations.py
+```
+
+3. **查询示例**：
+   - 普通话：`"什么是RAG系统？"`
+   - 粤语：`"RAG系統係乜嘢？"`（会自动优化）
+   - 英语：`"What is RAG system?"`
 
 ### OCR依赖
 

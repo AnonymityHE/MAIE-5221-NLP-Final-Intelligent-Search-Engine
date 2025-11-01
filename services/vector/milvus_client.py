@@ -236,14 +236,14 @@ class MilvusClient:
     
     def search_vectors(self, query_vector: List[float], top_k: int = 5) -> List[Dict]:
         """
-        向量搜索
+        向量搜索（支持高级Reranker的credibility和freshness）
         
         Args:
             query_vector: 查询向量
             top_k: 返回最相似的k个结果
             
         Returns:
-            搜索结果列表
+            搜索结果列表，包含所有元数据字段
         """
         if not self.connected:
             self.connect()
@@ -257,23 +257,41 @@ class MilvusClient:
                 "params": {"nprobe": 10}
             }
             
+            # 获取所有字段以支持高级Reranker（credibility和freshness）
+            # 检查collection schema中是否有这些字段
+            schema_fields = [field.name for field in collection.schema.fields]
+            output_fields = ["text", "source_file"]
+            
+            # 添加可选字段（如果存在）
+            optional_fields = ["file_id", "file_type", "uploaded_at"]
+            for field in optional_fields:
+                if field in schema_fields:
+                    output_fields.append(field)
+            
             results = collection.search(
                 data=[query_vector],
                 anns_field="vector",
                 param=search_params,
                 limit=top_k,
-                output_fields=["text", "source_file"]
+                output_fields=output_fields
             )
             
-            # 格式化结果
+            # 格式化结果（包含所有元数据字段以支持高级Reranker）
             formatted_results = []
             for hits in results:
                 for hit in hits:
-                    formatted_results.append({
-                        "text": hit.entity.get("text"),
-                        "source_file": hit.entity.get("source_file"),
+                    entity = hit.entity
+                    result = {
+                        "text": entity.get("text"),
+                        "source_file": entity.get("source_file"),
                         "score": hit.score
-                    })
+                    }
+                    # 添加可选字段（如果存在）
+                    for field in optional_fields:
+                        if field in schema_fields:
+                            result[field] = entity.get(field, "")
+                    
+                    formatted_results.append(result)
             
             return formatted_results
         except Exception as e:

@@ -10,6 +10,7 @@ from services.llm import llm_client, unified_llm_client, usage_monitor
 from services.agent import agent
 from services.storage import file_storage, file_processor, file_indexer
 from services.core import settings, logger
+from services.core.cache import get_cache_stats, clear_cache
 import asyncio
 
 router = APIRouter()
@@ -343,4 +344,42 @@ async def health_check():
         "milvus_port": settings.MILVUS_PORT,
         "default_model": settings.GEMINI_DEFAULT_MODEL if settings.GEMINI_ENABLED else settings.HKGAI_MODEL_ID
     }
+
+
+@router.get("/cache/stats")
+async def get_cache_statistics():
+    """获取缓存统计信息"""
+    try:
+        stats = get_cache_stats()
+        return {
+            "cache_enabled": settings.USE_CACHE,
+            "statistics": stats
+        }
+    except Exception as e:
+        logger.error(f"获取缓存统计失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取缓存统计失败: {str(e)}")
+
+
+@router.post("/cache/clear")
+async def clear_cache_endpoint(cache_type: str = "all"):
+    """
+    清空缓存
+    
+    Args:
+        cache_type: 缓存类型 ("query", "embedding", "all")
+    """
+    try:
+        if cache_type not in ("query", "embedding", "all"):
+            raise HTTPException(status_code=400, detail="cache_type必须是'query'、'embedding'或'all'")
+        
+        clear_cache(cache_type)
+        return {
+            "message": f"缓存已清空: {cache_type}",
+            "cache_type": cache_type
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"清空缓存失败: {e}")
+        raise HTTPException(status_code=500, detail=f"清空缓存失败: {str(e)}")
 

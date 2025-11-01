@@ -73,12 +73,16 @@ class FileIndexer:
             # 将file_id和file_type信息添加到source_file中，便于识别和过滤
             source_file_str = f"{file_info['filename']}||file_id:{file_id}||file_type:{file_info['file_type']}"
             
+            # 获取文件上传时间
+            uploaded_at = file_info.get('uploaded_at', '')
+            
             data_to_insert.append({
                 "text": chunk,
                 "vector": vector,
                 "source_file": source_file_str,
                 "file_id": file_id,  # 保留用于后续过滤
-                "file_type": file_info['file_type']
+                "file_type": file_info['file_type'],
+                "uploaded_at": uploaded_at  # 用于freshness计算
             })
         
         # 批量插入
@@ -149,6 +153,8 @@ class FileIndexer:
                     original_filename = source_file.split('||')[0]
                     result['source_file'] = original_filename
                     result['file_id'] = file_id
+                    # 添加uploaded_at字段以支持freshness计算
+                    result['uploaded_at'] = file_info.get('uploaded_at', '')
                     uploaded_results.append(result)
                     if len(uploaded_results) >= top_k:
                         break

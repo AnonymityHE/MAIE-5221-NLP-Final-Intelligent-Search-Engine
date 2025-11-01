@@ -19,6 +19,8 @@ sentence-transformers>=2.2.2
 # LangChain用于文本处理和RAG工作流
 langchain>=0.1.0
 langchain-community>=0.0.10
+# LangGraph用于工作流和状态管理
+langgraph>=0.0.20
 # Token计数
 tiktoken>=0.5.2
 # Hugging Face模型下载

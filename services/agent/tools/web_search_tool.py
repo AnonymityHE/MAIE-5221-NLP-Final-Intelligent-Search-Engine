@@ -1,14 +1,16 @@
 """
-网页搜索工具 - 使用DuckDuckGo或其他免费API进行网页搜索
+网页搜索工具 - 使用Google Custom Search API或DuckDuckGo进行网页搜索
 """
 import requests
 from typing import Dict, List, Optional
 from urllib.parse import quote
+from services.core.config import settings
+from services.core.logger import logger
 
 
 def web_search(query: str, num_results: int = 5) -> Dict:
     """
-    网页搜索工具（使用DuckDuckGo Instant Answer API）
+    网页搜索工具（优先使用Google Custom Search API，如果不可用则回退到DuckDuckGo）
     
     Args:
         query: 搜索查询
@@ -17,9 +19,47 @@ def web_search(query: str, num_results: int = 5) -> Dict:
     Returns:
         搜索结果字典
     """
+    # 优先使用Google Custom Search API
+    google_api_key = getattr(settings, 'GOOGLE_SEARCH_API_KEY', None)
+    google_cse_id = getattr(settings, 'GOOGLE_CSE_ID', None)
+    
+    # Google Custom Search API需要API Key和CSE ID
+    if google_api_key and google_api_key != "your-google-search-api-key-here" and google_cse_id:
+        try:
+            # 使用Google Custom Search API
+            url = "https://www.googleapis.com/customsearch/v1"
+            params = {
+                "key": google_api_key,
+                "cx": google_cse_id,
+                "q": query,
+                "num": min(num_results, 10)  # Google API最多返回10个结果
+            }
+            
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            results = []
+            for item in data.get("items", [])[:num_results]:
+                results.append({
+                    "title": item.get("title", ""),
+                    "snippet": item.get("snippet", ""),
+                    "url": item.get("link", ""),
+                    "type": "google_search"
+                })
+            
+            if results:
+                logger.info(f"使用Google搜索API获取 {len(results)} 个结果")
+                return {
+                    "success": True,
+                    "query": query,
+                    "results": results
+                }
+        except Exception as e:
+            logger.warning(f"Google搜索API失败: {e}，回退到DuckDuckGo")
+    
+    # 回退到DuckDuckGo API (免费，无需API key)
     try:
-        # 使用DuckDuckGo API (免费，无需API key)
-        # 注意：这是一个简化版本，实际可以使用更强大的搜索API
         url = f"https://api.duckduckgo.com/?q={quote(query)}&format=json&no_html=1&skip_disambig=1"
         
         response = requests.get(url, timeout=10)
@@ -57,6 +97,7 @@ def web_search(query: str, num_results: int = 5) -> Dict:
                 "type": "definition"
             })
         
+        logger.info(f"使用DuckDuckGo API获取 {len(results)} 个结果")
         return {
             "success": True,
             "query": query,
@@ -64,6 +105,7 @@ def web_search(query: str, num_results: int = 5) -> Dict:
         }
         
     except Exception as e:
+        logger.error(f"DuckDuckGo搜索失败: {e}")
         return {
             "success": False,
             "error": str(e),
@@ -90,8 +132,11 @@ def get_web_search_context(query: str, num_results: int = 3) -> str:
     context_parts = []
     for i, result in enumerate(search_result["results"], 1):
         snippet = result.get("snippet", "")
+        title = result.get("title", "")
         if snippet:
-            context_parts.append(f"[搜索结果{i}]: {snippet}")
+            if title:
+                context_parts.append(f"[搜索结果{i} - {title}]: {snippet}")
+            else:
+                context_parts.append(f"[搜索结果{i}]: {snippet}")
     
     return "\n\n".join(context_parts)
-

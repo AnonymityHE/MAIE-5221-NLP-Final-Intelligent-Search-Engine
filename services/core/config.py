@@ -60,13 +60,21 @@ class Settings(BaseModel):
     EMBEDDING_MODEL: str = get_env("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
     EMBEDDING_DIMENSION: int = get_env_int("EMBEDDING_DIMENSION", 384)
     
+    # 多语言Embedding模型配置（支持粤语、普通话、英语）
+    USE_MULTILINGUAL_EMBEDDING: bool = get_env("USE_MULTILINGUAL_EMBEDDING", "true").lower() == "true"
+    MULTILINGUAL_EMBEDDING_MODEL: str = get_env(
+        "MULTILINGUAL_EMBEDDING_MODEL", 
+        "paraphrase-multilingual-MiniLM-L12-v2"  # 支持100+语言，包括粤语、普通话、英语
+    )
+    MULTILINGUAL_EMBEDDING_DIMENSION: int = get_env_int("MULTILINGUAL_EMBEDDING_DIMENSION", 384)
+    
     # LLM API 配置 - HKGAI
     HKGAI_BASE_URL: str = get_env("HKGAI_BASE_URL", "https://oneapi.hkgai.net/v1")
-    HKGAI_API_KEY: str = get_env("HKGAI_API_KEY", "your-hkgai-api-key-here")
+    HKGAI_API_KEY: str = get_env("HKGAI_API_KEY", "sk-iqA1pjC48rpFXdkU7cCaE3BfBc9145B4BfCbEe0912126646")
     HKGAI_MODEL_ID: str = get_env("HKGAI_MODEL_ID", "HKGAI-V1")
     
     # Gemini API 配置
-    GEMINI_API_KEY: str = get_env("GEMINI_API_KEY", "your-gemini-api-key-here")
+    GEMINI_API_KEY: str = get_env("GEMINI_API_KEY", "AIzaSyBGHRyctkSmbEnc2-2eHcEePw-mAKCpz04")
     GEMINI_DEFAULT_MODEL: str = get_env("GEMINI_DEFAULT_MODEL", "gemini-2.0-flash")
     GEMINI_ENABLED: bool = get_env_bool("GEMINI_ENABLED", True)
     GEMINI_PROJECT_NUMBER: str = get_env("GEMINI_PROJECT_NUMBER", "your-project-number-here")
@@ -93,6 +101,15 @@ class Settings(BaseModel):
     
     # 金融和交通工具API配置（可选）
     OPENROUTESERVICE_API_KEY: Optional[str] = get_env("OPENROUTESERVICE_API_KEY", None)
+    
+    # 网页搜索API配置
+    GOOGLE_SEARCH_API_KEY: Optional[str] = get_env("GOOGLE_SEARCH_API_KEY", "247520e58efa7b02a382ea53355b23a843dc182c8be3b6c05b0cfd139caeb807")
+    GOOGLE_CSE_ID: Optional[str] = get_env("GOOGLE_CSE_ID", "72654d7b67f3b424a")  # Custom Search Engine ID
+    
+    # 性能优化配置
+    USE_CACHE: bool = get_env("USE_CACHE", "true").lower() == "true"  # 是否启用查询缓存
+    CACHE_MAX_SIZE: int = int(get_env("CACHE_MAX_SIZE", "200"))  # 缓存最大条目数
+    CACHE_TTL: int = int(get_env("CACHE_TTL", "3600"))  # 缓存过期时间（秒），默认1小时
     
     class Config:
         case_sensitive = True
