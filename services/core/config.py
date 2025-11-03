@@ -111,6 +111,13 @@ class Settings(BaseModel):
     CACHE_MAX_SIZE: int = int(get_env("CACHE_MAX_SIZE", "200"))  # 缓存最大条目数
     CACHE_TTL: int = int(get_env("CACHE_TTL", "3600"))  # 缓存过期时间（秒），默认1小时
     
+    # 语音识别和合成配置（Jarvis语音助手）
+    ENABLE_SPEECH: bool = get_env("ENABLE_SPEECH", "true").lower() == "true"  # 是否启用语音功能
+    WHISPER_MODEL_SIZE: str = get_env("WHISPER_MODEL_SIZE", "medium")  # Whisper模型大小 (tiny/base/small/medium/large)，默认medium提高准确度
+    WAKE_WORD: str = get_env("WAKE_WORD", "jarvis")  # 唤醒词（默认：jarvis）
+    USE_EDGE_TTS: bool = get_env("USE_EDGE_TTS", "true").lower() == "true"  # 是否使用edge-tts（多语言支持）
+    TTS_LANGUAGE: str = get_env("TTS_LANGUAGE", "zh-CN")  # TTS默认语言（zh-CN/yue-HK/en-US）
+    
     class Config:
         case_sensitive = True
 

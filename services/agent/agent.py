@@ -65,6 +65,11 @@ class RAGAgent:
         query_lower = query.lower()
         tools = []
         
+        # 检测历史时间关键词（昨天、上周、上月等）
+        # 历史查询通常需要web_search，因为实时工具可能不支持历史数据
+        historical_keywords = ["yesterday", "昨天", "last week", "上周", "last month", "上月", "past", "过去", "以前", "之前"]
+        is_historical_query = any(kw in query_lower for kw in historical_keywords)
+        
         # 检测金融查询
         if any(kw in query_lower for kw in ["stock", "股票", "price", "股价", "crypto", "加密货币", "bitcoin", "btc", "ethereum", "eth"]):
             tools.append("finance")
@@ -74,11 +79,19 @@ class RAGAgent:
             tools.append("transport")
         
         # 检测天气查询
-        if any(kw in query_lower for kw in ["weather", "天气", "rain", "下雨", "temperature", "温度", "forecast", "预报", "cloud", "云"]):
-            tools.append("weather")
+        # 注意：如果是历史天气查询，应该使用web_search而不是weather工具
+        if any(kw in query_lower for kw in ["weather", "天气", "rain", "下雨", "temperature", "温度", "forecast", "预报", "cloud", "云", "怎麼樣", "怎么样"]):
+            if is_historical_query:
+                # 历史天气查询：使用web_search（weather工具只支持当前天气）
+                tools.append("web_search")
+                logger.info("检测到历史天气查询，使用web_search工具")
+            else:
+                # 当前天气查询：使用weather工具
+                tools.append("weather")
         
         # 检测实时/新闻查询（需要网页搜索）
-        if any(kw in query_lower for kw in ["latest", "最新", "news", "新闻", "current", "现在", "today", "今天", "recent", "最近", "recently"]):
+        # 注意：如果已经有weather/finance/transport工具且不是历史查询，不要添加web_search
+        if not tools and any(kw in query_lower for kw in ["latest", "最新", "news", "新闻", "current", "现在", "today", "今天", "recent", "最近", "recently"]):
             tools.append("web_search")
         
         # 默认使用本地RAG（如果还没有工具）
@@ -144,10 +157,22 @@ class RAGAgent:
         
         # 对于特定类型的问题，只使用对应的工具（不fallback）
         query_lower = query.lower()
-        is_weather_query = any(kw in query_lower for kw in ["weather", "天气", "rain", "下雨", "temperature", "温度", "forecast", "预报"])
+        
+        # 检测历史时间关键词
+        historical_keywords = ["yesterday", "昨天", "last week", "上周", "last month", "上月", "past", "过去", "以前", "之前"]
+        is_historical_query = any(kw in query_lower for kw in historical_keywords)
+        
+        is_weather_query = any(kw in query_lower for kw in ["weather", "天气", "rain", "下雨", "temperature", "温度", "forecast", "预报", "怎麼樣", "怎么样"])
         is_finance_query = any(kw in query_lower for kw in ["stock", "股票", "price", "股价", "crypto", "加密货币", "bitcoin", "btc"])
         is_transport_query = any(kw in query_lower for kw in ["travel", "旅行", "route", "路线", "time", "时间", "how long", "多久"])
-        is_realtime_query = any(kw in query_lower for kw in ["latest", "最新", "news", "新闻", "current", "现在", "today", "今天", "recent", "最近"])
+        
+        # 实时查询：只有在没有特定工具（weather/finance/transport）时才使用web_search
+        # 但是历史天气查询应该使用web_search，所以需要特殊处理
+        is_realtime_query = not (is_weather_query or is_finance_query or is_transport_query) and any(kw in query_lower for kw in ["latest", "最新", "news", "新闻", "current", "现在", "today", "今天", "recent", "最近"])
+        
+        # 如果天气查询是历史查询，应该使用web_search而不是weather工具
+        if is_weather_query and is_historical_query:
+            logger.info("检测到历史天气查询，优先使用web_search工具")
         
         for tool_name in tools_to_use:
             context = ""
@@ -171,6 +196,11 @@ class RAGAgent:
                         break
             
             elif tool_name == "weather":
+                # 如果是历史天气查询，跳过weather工具，应该使用web_search
+                if is_historical_query:
+                    logger.info("历史天气查询跳过weather工具，将使用web_search")
+                    continue
+                
                 location = self.extract_location(query) or "Hong Kong"
                 context = self.tools["weather"](location)
                 if context:
@@ -180,6 +210,12 @@ class RAGAgent:
                     # 天气查询是确定的，找到就停止
                     if is_weather_query:
                         break
+                else:
+                    # 如果weather工具失败，对于历史查询应该fallback到web_search
+                    if is_historical_query:
+                        logger.info("weather工具失败，历史天气查询fallback到web_search")
+                        # 不break，继续尝试web_search
+                        continue
             
             elif tool_name == "web_search":
                 context = self.tools["web_search"](query, num_results=3)
@@ -187,16 +223,16 @@ class RAGAgent:
                     contexts.append(f"[网络搜索结果]\n{context}")
                     tools_used.append("web_search")
                     logger.info("使用网页搜索工具获取信息")
-                    # 对于实时信息查询，如果网页搜索有结果就使用
-                    if is_realtime_query:
+                    # 对于实时信息查询或历史天气查询，如果网页搜索有结果就使用
+                    if is_realtime_query or (is_weather_query and is_historical_query):
                         break
                 else:
                     # 即使没有搜索结果，也标记尝试了web_search
-                    # 对于实时查询，如果没有搜索到结果，应该直接使用LLM回答（因为它可能知道）
-                    if is_realtime_query:
+                    # 对于实时查询或历史天气查询，如果没有搜索到结果，应该直接使用LLM回答
+                    if is_realtime_query or (is_weather_query and is_historical_query):
                         tools_used.append("web_search_attempted")
-                        logger.info("网页搜索无结果，但对实时查询将使用LLM回答")
-                        # 对于实时查询，即使搜索无结果，也直接使用LLM（不尝试local_rag）
+                        logger.info("网页搜索无结果，但对实时查询/历史天气查询将使用LLM回答")
+                        # 对于实时查询或历史天气查询，即使搜索无结果，也直接使用LLM（不尝试local_rag）
                         break
             
             elif tool_name == "local_rag":
@@ -223,11 +259,18 @@ class RAGAgent:
             )
             user_prompt = f"上下文信息：\n\n{all_context}\n\n问题：{query}\n\n请基于上下文回答上述问题。"
         elif "web_search_attempted" in tools_used:
-            # 尝试了网页搜索但没有结果，对于实时查询直接用LLM回答
-            system_prompt = (
-                "你是一个专业的AI助手。用户询问的是实时信息或最新新闻。"
-                "虽然网页搜索没有返回结果，但请基于你的知识尽可能回答问题。"
-            )
+            # 尝试了网页搜索但没有结果，对于实时查询或历史天气查询直接用LLM回答
+            if is_weather_query and is_historical_query:
+                system_prompt = (
+                    "你是一个专业的AI助手。用户询问的是历史天气信息。"
+                    "虽然网页搜索没有返回结果，但请基于你的知识尽可能回答问题。"
+                    "如果无法提供准确的历史天气数据，请诚实说明。"
+                )
+            else:
+                system_prompt = (
+                    "你是一个专业的AI助手。用户询问的是实时信息或最新新闻。"
+                    "虽然网页搜索没有返回结果，但请基于你的知识尽可能回答问题。"
+                )
             user_prompt = query
             tools_used = ["web_search_attempted", "direct_llm"]
         else:
@@ -238,6 +281,7 @@ class RAGAgent:
                 tools_used = ["direct_llm"]
         
         # 4. 调用LLM（使用统一客户端，默认使用HKGAI）
+        logger.info(f"🤖 准备调用LLM（HKGAI），查询: '{query[:50]}...'")
         llm_result = unified_llm_client.chat(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
@@ -247,7 +291,13 @@ class RAGAgent:
             provider="hkgai"  # Agent默认使用HKGAI
         )
         
-        answer = llm_result.get("content", "无法生成答案")
+        if "error" in llm_result:
+            logger.error(f"❌ LLM调用失败: {llm_result['error']}")
+            answer = f"LLM调用失败: {llm_result['error']}"
+        else:
+            answer = llm_result.get("content", "无法生成答案")
+            logger.info(f"✅ LLM返回答案，长度: {len(answer)} 字符")
+            logger.debug(f"答案预览: {answer[:100]}...")
         
         # 提取token使用信息
         tokens_info = None

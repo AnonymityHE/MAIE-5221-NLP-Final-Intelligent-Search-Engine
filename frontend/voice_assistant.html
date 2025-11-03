@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis 语音助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .status.disconnected {
+            background: #fee;
+            color: #c33;
+        }
+        
+        .status.connected {
+            background: #efe;
+            color: #3c3;
+        }
+        
+        .status.recording {
+            background: #ffe;
+            color: #c93;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-record {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .btn-record:hover {
+            background: #ff3838;
+        }
+        
+        .btn-record:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-stop {
+            background: #2ed573;
+            color: white;
+        }
+        
+        .btn-stop:hover {
+            background: #26d66f;
+        }
+        
+        .btn-connect {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-disconnect {
+            background: #999;
+            color: white;
+        }
+        
+        .transcript {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 100px;
+        }
+        
+        .transcript-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-left: 4px solid #667eea;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .transcript-item.user {
+            border-left-color: #2ed573;
+        }
+        
+        .transcript-item.jarvis {
+            border-left-color: #ff4757;
+        }
+        
+        .label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .text {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .wake-word-hint {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Jarvis 语音助手</h1>
+        <p class="subtitle">说 "Jarvis" 唤醒助手，然后提问</p>
+        
+        <div id="status" class="status disconnected">未连接</div>
+        
+        <div class="controls">
+            <button id="btnConnect" class="btn-connect" onclick="connect()">连接</button>
+            <button id="btnRecord" class="btn-record" onclick="startRecording()" disabled>开始录音</button>
+            <button id="btnStop" class="btn-stop" onclick="stopRecording()" disabled>停止录音</button>
+            <button id="btnDisconnect" class="btn-disconnect" onclick="disconnect()" disabled>断开</button>
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div class="transcript" id="transcript"></div>
+        
+        <div class="wake-word-hint">
+            💡 提示：说 "Jarvis, [你的问题]" 来唤醒助手<br>
+            例如："Jarvis, 今天天气怎么样？"<br>
+            <small>✨ 已启用VAD自动检测：说话结束后2秒自动停止录音</small>
+        </div>
+    </div>
+    
+    <script>
+        let ws = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let vadCheckInterval = null;
+        let silenceStartTime = null;
+        const API_BASE = window.location.origin.replace('http://', 'ws://').replace('https://', 'wss://');
+        
+        // VAD配置
+        const VAD_CONFIG = {
+            threshold: 0.02,  // 音量阈值（0-1）
+            minSpeechDuration: 500,  // 最小语音持续时间（毫秒）
+            maxSilenceDuration: 2000,  // 最大静音持续时间（毫秒），超过此时间自动停止
+            checkInterval: 100  // 检测间隔（毫秒）
+        };
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            console.error('错误:', message);
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function updateStatus(status, text) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${status}`;
+            statusDiv.textContent = text;
+        }
+        
+        function addTranscript(type, label, text) {
+            const transcriptDiv = document.getElementById('transcript');
+            const item = document.createElement('div');
+            item.className = `transcript-item ${type}`;
+            item.innerHTML = `
+                <div class="label">${label}</div>
+                <div class="text">${text}</div>
+            `;
+            transcriptDiv.appendChild(item);
+            transcriptDiv.scrollTop = transcriptDiv.scrollHeight;
+        }
+        
+        async function connect() {
+            try {
+                ws = new WebSocket(`${API_BASE}/api/voice/ws`);
+                
+                ws.onopen = () => {
+                    updateStatus('connected', '已连接');
+                    document.getElementById('btnConnect').disabled = true;
+                    document.getElementById('btnDisconnect').disabled = false;
+                    document.getElementById('btnRecord').disabled = false;
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('收到WebSocket消息:', data); // 调试信息
+                        
+                        if (data.type === 'connected') {
+                            addTranscript('system', '系统', `已连接到Jarvis（唤醒词: ${data.wake_word}）`);
+                        } else if (data.type === 'response') {
+                            if (data.transcribed_text) {
+                                addTranscript('user', '你说', data.transcribed_text);
+                                console.log('转录文本:', data.transcribed_text);
+                            }
+                            
+                            if (data.wake_word_detected) {
+                                const queryDisplay = data.query_text || '(查询文本为空)';
+                                addTranscript('jarvis', 'Jarvis', `检测到唤醒词，查询: "${queryDisplay}"`);
+                                console.log('唤醒词检测:', true, '查询文本:', queryDisplay);
+                            } else {
+                                console.log('未检测到唤醒词');
+                            }
+                            
+                            if (data.answer && data.answer.trim() !== '') {
+                                addTranscript('jarvis', 'Jarvis回答', data.answer);
+                                console.log('收到回答:', data.answer.substring(0, 100) + '...');
+                            } else if (data.query_text) {
+                                // 如果有查询但没有答案，显示处理中
+                                addTranscript('jarvis', 'Jarvis', '正在处理查询，请稍候...');
+                                console.log('查询已发送，等待回答...');
+                            } else {
+                                console.warn('收到响应但没有查询文本和答案');
+                            }
+                            
+                            // 显示工具使用情况
+                            if (data.tools_used && data.tools_used.length > 0) {
+                                addTranscript('system', '系统', `使用的工具: ${data.tools_used.join(', ')}`);
+                                console.log('使用的工具:', data.tools_used);
+                            }
+                        } else if (data.type === 'error' || data.type === 'transcription_error') {
+                            const errorMsg = data.message || data.error || '未知错误';
+                            showError(errorMsg);
+                            addTranscript('system', '错误', errorMsg);
+                            console.error('服务器错误:', errorMsg);
+                        } else {
+                            console.warn('未知的消息类型:', data.type);
+                        }
+                    } catch (e) {
+                        console.error('解析WebSocket消息失败:', e, event.data);
+                        showError('解析服务器消息失败');
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    showError('WebSocket连接错误');
+                    console.error(error);
+                };
+                
+                ws.onclose = () => {
+                    updateStatus('disconnected', '已断开');
+                    document.getElementById('btnConnect').disabled = false;
+                    document.getElementById('btnDisconnect').disabled = true;
+                    document.getElementById('btnRecord').disabled = true;
+                    document.getElementById('btnStop').disabled = true;
+                };
+                
+            } catch (error) {
+                showError('连接失败: ' + error.message);
+            }
+        }
+        
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+                
+                audioChunks = [];
+                silenceStartTime = null;
+                
+                // 设置Web Audio API用于VAD检测
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                let speechStartTime = null;
+                
+                // VAD检测函数
+                function checkVoiceActivity() {
+                    if (!isRecording) return;
+                    
+                    analyser.getByteFrequencyData(dataArray);
+                    const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                    const normalizedVolume = average / 255;
+                    
+                    // 检测到语音
+                    if (normalizedVolume > VAD_CONFIG.threshold) {
+                        if (speechStartTime === null) {
+                            speechStartTime = Date.now();
+                        }
+                        silenceStartTime = null;
+                        updateStatus('recording', '正在录音... (检测到语音)');
+                    } else {
+                        // 检测到静音
+                        if (speechStartTime !== null) {
+                            // 已经说过话，开始计时静音
+                            if (silenceStartTime === null) {
+                                silenceStartTime = Date.now();
+                            }
+                            
+                            const silenceDuration = Date.now() - silenceStartTime;
+                            const speechDuration = silenceStartTime - speechStartTime;
+                            
+                            // 如果已经说过话且静音时间超过阈值，自动停止
+                            if (speechDuration >= VAD_CONFIG.minSpeechDuration && 
+                                silenceDuration >= VAD_CONFIG.maxSilenceDuration) {
+                                console.log('VAD检测到静音，自动停止录音');
+                                stopRecording();
+                                return;
+                            }
+                            
+                            updateStatus('recording', `正在录音... (静音 ${Math.round(silenceDuration/1000)}s)`);
+                        }
+                    }
+                }
+                
+                // 开始VAD检测
+                vadCheckInterval = setInterval(checkVoiceActivity, VAD_CONFIG.checkInterval);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    // 停止VAD检测
+                    if (vadCheckInterval) {
+                        clearInterval(vadCheckInterval);
+                        vadCheckInterval = null;
+                    }
+                    
+                    // 清理Web Audio API
+                    if (microphone) {
+                        microphone.disconnect();
+                        microphone = null;
+                    }
+                    if (analyser) {
+                        analyser.disconnect();
+                        analyser = null;
+                    }
+                    if (audioContext && audioContext.state !== 'closed') {
+                        await audioContext.close();
+                        audioContext = null;
+                    }
+                    
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    console.log('录音停止，音频大小:', audioBlob.size, 'bytes');
+                    
+                    if (audioBlob.size === 0) {
+                        showError('录音为空，请重新录音');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onloadend = () => {
+                        const base64Audio = reader.result.split(',')[1];
+                        
+                        if (ws && ws.readyState === WebSocket.OPEN) {
+                            console.log('发送音频数据，base64长度:', base64Audio.length, 'bytes'); // 调试信息
+                            try {
+                                ws.send(JSON.stringify({
+                                    type: 'audio',
+                                    data: base64Audio,
+                                    format: 'webm',
+                                    is_final: true
+                                }));
+                                console.log('音频数据已发送');
+                            } catch (e) {
+                                console.error('发送音频数据失败:', e);
+                                showError('发送音频数据失败: ' + e.message);
+                            }
+                        } else {
+                            const state = ws ? ws.readyState : 'null';
+                            console.error('WebSocket未连接，状态:', state);
+                            showError('WebSocket未连接，请先点击"连接"');
+                        }
+                    };
+                    
+                    reader.onerror = (e) => {
+                        console.error('读取音频文件失败:', e);
+                        showError('读取音频文件失败');
+                    };
+                    
+                    reader.readAsDataURL(audioBlob);
+                    
+                    // 停止所有音频轨道
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                updateStatus('recording', '正在录音... (等待语音)');
+                document.getElementById('btnRecord').disabled = true;
+                document.getElementById('btnStop').disabled = false;
+                
+            } catch (error) {
+                showError('无法访问麦克风: ' + error.message);
+            }
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                // 停止VAD检测
+                if (vadCheckInterval) {
+                    clearInterval(vadCheckInterval);
+                    vadCheckInterval = null;
+                }
+                
+                mediaRecorder.stop();
+                isRecording = false;
+                updateStatus('connected', '已连接');
+                document.getElementById('btnRecord').disabled = false;
+                document.getElementById('btnStop').disabled = true;
+            }
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+        
+        // 页面关闭时断开连接
+        window.addEventListener('beforeunload', () => {
+            disconnect();
+        });
+    </script>
+</body>
+</html>
+

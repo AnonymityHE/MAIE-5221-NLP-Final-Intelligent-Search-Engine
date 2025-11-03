@@ -59,6 +59,22 @@ httpx==0.25.2  # 异步HTTP客户端（用于Agent工具）
 # 环境变量管理
 python-dotenv==1.0.0
 
+# === 语音识别和合成（Jarvis语音助手，可选）===
+# OpenAI Whisper - 高质量语音识别（支持多语言：粤语、普通话、英语）
+openai-whisper>=20231117
+# 音频文件处理
+soundfile>=0.12.1  # 处理音频文件格式转换
+# pydub - 音频格式转换（WebM转WAV，提高识别准确度）
+pydub>=0.25.1  # 需要ffmpeg（macOS: brew install ffmpeg）
+# PyAudio - 音频录制和播放（可选，用于实时录音）
+# pyaudio>=0.2.14  # 注意：需要系统安装PortAudio（macOS: brew install portaudio）
+# 文本转语音
+edge-tts>=6.1.0  # Edge TTS（免费，支持多语言，包括粤语、普通话、英语）
+# pyttsx3>=2.90  # 离线TTS（可选备用方案）
+# Silero VAD - 语音活动检测（可选，用于后端VAD）
+# silero-vad>=4.0.0  # 需要torch，可以通过pip install silero-vad安装
+# onnxruntime>=1.16.0  # Silero VAD依赖（可选）
+
 # === 其他依赖 ===
 # 以下依赖会自动通过上述包安装，无需手动指定：
 # - numpy, scipy, scikit-learn (sentence-transformers依赖)

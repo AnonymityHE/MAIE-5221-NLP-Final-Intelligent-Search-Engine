@@ -3,6 +3,9 @@ FastAPI应用入口
 """
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 from backend.api import router
 from services.vector import milvus_client
 
@@ -36,6 +39,20 @@ app = FastAPI(
 # 注册路由
 app.include_router(router, prefix="/api", tags=["RAG"])
 
+# 静态文件服务（用于前端页面）
+frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+if os.path.exists(frontend_dir):
+    app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+
+
+@app.get("/voice")
+async def voice_assistant_page():
+    """语音助手前端页面"""
+    frontend_file = os.path.join(frontend_dir, "voice_assistant.html")
+    if os.path.exists(frontend_file):
+        return FileResponse(frontend_file)
+    return {"message": "前端页面未找到，请确保frontend/voice_assistant.html存在"}
+
 
 @app.get("/")
 async def root():
@@ -43,6 +60,7 @@ async def root():
     return {
         "message": "RAG问答系统API",
         "docs": "/docs",
-        "health": "/api/health"
+        "health": "/api/health",
+        "voice_assistant": "/voice"
     }
 
