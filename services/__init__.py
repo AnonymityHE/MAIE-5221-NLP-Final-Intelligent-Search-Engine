@@ -5,6 +5,15 @@ Services模块 - 提供统一的服务接口
 新版导入：使用模块化的导入方式
 """
 
+# 兼容性补丁：在导入其他模块之前修复transformers版本问题
+try:
+    import transformers
+    # 修复旧版本transformers缺少is_torch_npu_available的问题
+    if not hasattr(transformers, 'is_torch_npu_available'):
+        transformers.is_torch_npu_available = lambda: False
+except ImportError:
+    pass
+
 # 核心基础设施
 from services.core import settings, logger
 from services.core.config import Settings

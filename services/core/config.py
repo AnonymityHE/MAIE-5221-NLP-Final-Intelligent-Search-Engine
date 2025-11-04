@@ -118,6 +118,17 @@ class Settings(BaseModel):
     USE_EDGE_TTS: bool = get_env("USE_EDGE_TTS", "true").lower() == "true"  # 是否使用edge-tts（多语言支持）
     TTS_LANGUAGE: str = get_env("TTS_LANGUAGE", "zh-CN")  # TTS默认语言（zh-CN/yue-HK/en-US）
     
+    # 流式处理配置
+    ENABLE_STREAMING_STT: bool = get_env("ENABLE_STREAMING_STT", "true").lower() == "true"  # 是否启用流式STT
+    ENABLE_STREAMING_TTS: bool = get_env("ENABLE_STREAMING_TTS", "true").lower() == "true"  # 是否启用流式TTS
+    STREAMING_STT_CHUNK_SIZE: int = get_env_int("STREAMING_STT_CHUNK_SIZE", 16000)  # 流式STT块大小（采样数）
+    
+    # Mac MLX优化配置
+    USE_MLX: bool = get_env("USE_MLX", "false").lower() == "true"  # 是否使用MLX（Mac优化）
+    MLX_STT_MODEL: str = get_env("MLX_STT_MODEL", "tiny")  # MLX STT模型大小
+    MLX_LM_MODEL: str = get_env("MLX_LM_MODEL", "mlx-community/Meta-Llama-3.1-8B-Instruct-4bit")  # MLX LM模型
+    TTS_TYPE: str = get_env("TTS_TYPE", "parler")  # TTS类型（parler/melo/edge）
+    
     class Config:
         case_sensitive = True
 

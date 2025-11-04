@@ -1,6 +1,6 @@
 """
 实时语音交互 - WebSocket支持
-用于实现类似"Hey Siri"的实时语音交互
+支持流式STT和流式TTS，降低延迟
 """
 from fastapi import WebSocket, WebSocketDisconnect
 from services.core.logger import logger
@@ -9,15 +9,47 @@ from services.agent import agent
 from services.core.config import settings
 import json
 import asyncio
-from typing import Optional
+import numpy as np
+from typing import Optional, Dict
 
 
 class VoiceWebSocketHandler:
-    """WebSocket语音交互处理器"""
+    """WebSocket语音交互处理器（支持流式输入输出）"""
     
     def __init__(self):
         self.voice_service = None
         self.active_connections: dict = {}
+        self.streaming_stt = None
+        self.streaming_tts = None
+        self.audio_buffers: dict = {}  # 客户端音频缓冲区
+        
+        # 初始化流式组件（如果启用）
+        if settings.ENABLE_STREAMING_STT:
+            try:
+                from services.speech.streaming_stt import get_streaming_stt
+                device = "mps" if settings.USE_MLX else "cpu"
+                self.streaming_stt = get_streaming_stt(
+                    model_size=settings.WHISPER_MODEL_SIZE,
+                    use_mlx=settings.USE_MLX,
+                    device=device
+                )
+                if self.streaming_stt:
+                    logger.info("✅ 流式STT已启用")
+            except Exception as e:
+                logger.warning(f"流式STT初始化失败: {e}")
+        
+        if settings.ENABLE_STREAMING_TTS:
+            try:
+                from services.speech.streaming_tts import get_streaming_tts
+                device = "mps" if settings.USE_MLX else "cpu"
+                self.streaming_tts = get_streaming_tts(
+                    tts_type=settings.TTS_TYPE,
+                    device=device
+                )
+                if self.streaming_tts:
+                    logger.info("✅ 流式TTS已启用")
+            except Exception as e:
+                logger.warning(f"流式TTS初始化失败: {e}")
     
     async def connect(self, websocket: WebSocket, client_id: str):
         """接受WebSocket连接"""
@@ -45,7 +77,7 @@ class VoiceWebSocketHandler:
     
     async def handle_audio_chunk(self, client_id: str, audio_data: bytes, is_final: bool = False, audio_format: str = "wav"):
         """
-        处理音频数据块
+        处理音频数据块（支持流式处理）
         
         Args:
             client_id: 客户端ID
@@ -54,26 +86,72 @@ class VoiceWebSocketHandler:
             audio_format: 音频格式（wav/webm/mp3等）
         """
         try:
-            logger.info(f"收到音频数据块 (client_id={client_id}, is_final={is_final}, format={audio_format}, data_size={len(audio_data) if isinstance(audio_data, (bytes, str)) else 'unknown'})")
+            logger.debug(f"收到音频数据块 (client_id={client_id}, is_final={is_final}, format={audio_format})")
             
-            # 这里可以实现流式音频处理
-            # 当前实现：累积音频数据，当is_final=True时处理
-            # 实际应用中可以使用流式Whisper或其他实时处理方案
-            
-            if is_final:
-                # 处理完整的音频
-                logger.info(f"开始处理完整音频 (client_id={client_id})")
-                result = await self._process_audio(audio_data, audio_format)
-                logger.info(f"音频处理完成 (client_id={client_id}, result_type={result.get('type')})")
-                await self.send_message(client_id, result)
+            # 解码音频数据
+            import base64
+            if isinstance(audio_data, str):
+                audio_bytes = base64.b64decode(audio_data)
             else:
-                logger.debug(f"收到非最终音频块，等待更多数据 (client_id={client_id})")
+                audio_bytes = audio_data
+            
+            # 如果启用流式STT，实时处理
+            if settings.ENABLE_STREAMING_STT and self.streaming_stt and not is_final:
+                # 流式处理：实时转录音频块
+                await self._process_streaming_audio(client_id, audio_bytes, audio_format)
+            else:
+                # 累积音频数据
+                if client_id not in self.audio_buffers:
+                    self.audio_buffers[client_id] = []
+                self.audio_buffers[client_id].append(audio_bytes)
+            
+            # 如果是最终块，处理完整音频
+            if is_final:
+                logger.info(f"开始处理完整音频 (client_id={client_id})")
+                if client_id in self.audio_buffers:
+                    full_audio = b"".join(self.audio_buffers[client_id])
+                    del self.audio_buffers[client_id]
+                else:
+                    full_audio = audio_bytes
+                
+                result = await self._process_audio(full_audio, audio_format)
+                logger.info(f"音频处理完成 (client_id={client_id})")
+                await self.send_message(client_id, result)
+                
         except Exception as e:
             logger.error(f"处理音频数据失败 (client_id={client_id}): {e}", exc_info=True)
             await self.send_message(client_id, {
                 "type": "error",
                 "message": f"处理音频失败: {str(e)}"
             })
+    
+    async def _process_streaming_audio(self, client_id: str, audio_bytes: bytes, audio_format: str):
+        """流式处理音频（实时转录）"""
+        try:
+            # 转换音频为numpy数组
+            import soundfile as sf
+            from io import BytesIO
+            
+            # 读取音频
+            audio_array, sample_rate = sf.read(BytesIO(audio_bytes))
+            
+            # 流式转录
+            if self.streaming_stt:
+                # 创建音频块迭代器
+                audio_chunk = np.array([audio_array], dtype=np.float32)
+                chunks_iter = iter([audio_chunk])
+                
+                # 转录
+                for result in self.streaming_stt.transcribe_stream(chunks_iter, sample_rate):
+                    if result and "text" in result and result["text"]:
+                        # 发送实时转录结果
+                        await self.send_message(client_id, {
+                            "type": "transcription_partial",
+                            "text": result["text"],
+                            "language": result.get("language", "unknown")
+                        })
+        except Exception as e:
+            logger.debug(f"流式音频处理失败: {e}")
     
     async def _process_audio(self, audio_data: bytes, audio_format: str = "wav") -> dict:
         """处理音频并返回结果"""
@@ -151,6 +229,11 @@ class VoiceWebSocketHandler:
                     except Exception as e:
                         logger.error(f"直接查询失败: {e}")
             
+            # 如果启用流式TTS，流式生成语音
+            if settings.ENABLE_STREAMING_TTS and self.streaming_tts and answer:
+                # 流式生成TTS
+                await self._stream_tts_response(client_id, answer, detected_language)
+            
             return {
                 "type": "response",
                 "transcribed_text": transcribed_text,
@@ -158,15 +241,34 @@ class VoiceWebSocketHandler:
                 "wake_word_detected": wake_word_detected,
                 "query_text": query_text or "",
                 "answer": answer or "",
-                "tools_used": tools_used
+                "tools_used": tools_used,
+                "streaming_tts": settings.ENABLE_STREAMING_TTS and self.streaming_tts is not None
             }
+    
+    async def _stream_tts_response(self, client_id: str, text: str, language: str):
+        """流式生成TTS响应"""
+        try:
+            logger.info(f"开始流式生成TTS (client_id={client_id}, text_length={len(text)})")
             
+            # 流式生成音频
+            for audio_chunk in self.streaming_tts.generate_stream(text, language=language):
+                if audio_chunk:
+                    # 发送音频块
+                    import base64
+                    audio_base64 = base64.b64encode(audio_chunk).decode('utf-8')
+                    await self.send_message(client_id, {
+                        "type": "audio_chunk",
+                        "audio": audio_base64,
+                        "format": "wav"
+                    })
+            
+            # 发送TTS完成信号
+            await self.send_message(client_id, {
+                "type": "audio_complete"
+            })
+            logger.info(f"流式TTS生成完成 (client_id={client_id})")
         except Exception as e:
-            logger.error(f"处理音频失败: {e}")
-            return {
-                "type": "error",
-                "message": str(e)
-            }
+            logger.error(f"流式TTS生成失败: {e}")
 
 
 # 全局WebSocket处理器

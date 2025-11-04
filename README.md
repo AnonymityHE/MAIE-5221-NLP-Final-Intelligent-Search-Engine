@@ -8,10 +8,12 @@
 
 - ✅ **RAG检索增强生成**：基于Milvus向量数据库的语义检索，支持Reranker重排序
 - ✅ **多语言RAG支持**：支持粤语、普通话、英语的混合检索和生成 ⭐
-- ✅ **Jarvis语音助手**：语音识别、唤醒词检测（"Jarvis"）、文本转语音 🎤 新增
+- ✅ **Jarvis语音助手**：语音识别、唤醒词检测（"Jarvis"）、文本转语音 🎤
+- ✅ **流式STT/TTS**：实时语音转文本和文本转语音，降低延迟 🚀 新增
+- ✅ **Mac MLX优化**：Lightning Whisper MLX和MLX LM，充分利用Apple Silicon 🍎 新增
 - ✅ **多模态文件支持**：上传并处理PDF、图片、代码、文本等多种格式文件
 - ✅ **Agent智能工具**：自动选择RAG、网页搜索、天气、金融、交通等工具
-- ✅ **多LLM支持**：HKGAI（默认，支持多语言）、Gemini系列（备选）三个模型
+- ✅ **多LLM支持**：HKGAI（默认，支持多语言）、Gemini系列（备选）、MLX LM（Mac优化）
 - ✅ **用量监控**：Gemini API的token使用量和配额管理
 - ✅ **性能优化**：查询缓存、结果过滤、高级重排序
 - ✅ **可切换存储后端**：Milvus或传统数据库（SQLite/PostgreSQL）
@@ -47,17 +49,29 @@
 - **OCR识别**: pytesseract (可选，需要系统安装Tesseract OCR)
 - **文本处理**: LangChain
 
+### 语音处理
+- **语音识别 (STT)**: 
+  - Whisper (支持多语言：粤语、普通话、英语)
+  - Faster Whisper (流式处理，内存占用低95%) 🚀
+  - Lightning Whisper MLX (Mac优化，Apple Silicon加速) 🍎
+- **语音合成 (TTS)**: 
+  - Edge TTS (免费，多语言，云端处理)
+  - Parler-TTS (流式输出，降低延迟) 🚀
+  - MeloTTS (多语言，Mac优化) 🍎
+- **流式处理**: 实时STT/TTS，降低延迟，提升用户体验 🚀
+- **VAD**: 前端Web Audio API + 后端Silero VAD（自动检测语音活动）
+
 ### Agent工具
 - **本地RAG**: Milvus向量检索
-- **网页搜索**: DuckDuckGo API
-- **天气查询**: wttr.in API
+- **网页搜索**: DuckDuckGo API / Google Search API
+- **天气查询**: wttr.in API（实时和历史天气）
 - **金融数据**: 股票和加密货币价格查询（Yahoo Finance, CoinGecko）
 - **交通查询**: 旅行时间和路线查询（OpenRouteService）
 - **可扩展**: 支持添加更多工具
 
-### 前端（规划中）
-- Next.js + React
-- shadcn/ui组件库
+### 前端
+- **语音助手页面**: `frontend/voice_assistant.html` - 实时语音交互界面
+- **WebSocket**: 实时双向通信，支持流式音频处理
 
 ## 快速开始
 
@@ -693,6 +707,75 @@ python scripts/tests/test_multilingual_rag.py
 - **纯英文应用**：使用单语言模型（速度更快）
 - **混合内容知识库**：必须使用多语言模型
 
+## 🎤 Jarvis语音助手
+
+系统现已实现完整的语音交互功能，支持实时语音识别、唤醒词检测和语音合成。
+
+### 功能特点
+
+- ✅ **多语言语音识别**：Whisper支持粤语、普通话、英语
+- ✅ **唤醒词检测**：检测"Jarvis"唤醒词并提取查询
+- ✅ **文本转语音**：支持多语言语音回复
+- ✅ **流式处理**：实时STT/TTS，降低延迟 🚀
+- ✅ **Mac MLX优化**：Lightning Whisper MLX和MLX LM，充分利用Apple Silicon 🍎
+- ✅ **VAD语音活动检测**：自动检测说话开始和结束
+- ✅ **完整集成**：与Agent系统无缝集成
+
+### 快速开始
+
+#### 方式1：实时语音交互（推荐）
+
+访问：`http://localhost:8000/voice`
+
+1. 点击"连接"建立WebSocket连接
+2. 点击"开始录音"，授予麦克风权限
+3. 说："Jarvis, [你的问题]"
+4. 系统自动检测静音并停止录音
+5. 查看转录文本和回答
+
+#### 方式2：文件上传
+
+```bash
+curl -X POST "http://localhost:8000/api/voice/query" \
+  -F "audio=@voice_query.wav" \
+  -F 'request={"use_wake_word": true, "use_agent": true}'
+```
+
+### 配置说明
+
+在`.env`文件中配置：
+
+```bash
+# 启用语音功能
+ENABLE_SPEECH=true
+
+# Whisper模型大小（tiny/base/small/medium/large）
+WHISPER_MODEL_SIZE=medium
+
+# 唤醒词
+WAKE_WORD=jarvis
+
+# 流式处理（推荐）
+ENABLE_STREAMING_STT=true
+ENABLE_STREAMING_TTS=true
+
+# Mac MLX优化（Mac用户推荐）
+USE_MLX=true
+MLX_STT_MODEL=base
+TTS_TYPE=parler  # 或 melo 或 edge
+```
+
+### 内存优化建议
+
+根据测试结果，推荐使用：
+- **Faster Whisper**：内存占用降低95%（从4GB降到183MB）
+- **Mac用户**：使用MLX优化，内存占用更低
+- **Edge TTS**：无需加载模型，内存占用为0
+
+详细说明请参考：`docs/USER_GUIDE.md` 和 `docs/MEMORY_USAGE_RESULTS.md`
+
+---
+
 ### 最新优化 ⭐
 
 系统已实现以下优化以提升多语言RAG性能：
@@ -944,6 +1027,27 @@ docker compose logs minio
    - Services目录模块化重构
    - 按功能分类：`core/`, `llm/`, `vector/`, `storage/`, `agent/`
    - 保持向后兼容，旧导入方式仍可用
+
+6. **✅ Jarvis语音助手** 🎤
+   - 语音识别（Whisper，支持多语言）
+   - 唤醒词检测（"Jarvis"）
+   - 文本转语音（Edge TTS）
+   - WebSocket实时交互
+
+7. **✅ 流式STT/TTS** 🚀
+   - Faster Whisper（流式语音识别，内存占用低95%）
+   - Parler-TTS / MeloTTS（流式语音合成）
+   - 实时处理，降低延迟
+
+8. **✅ Mac MLX优化** 🍎
+   - Lightning Whisper MLX（Mac优化的语音识别）
+   - MLX LM（Mac优化的语言模型，4bit量化）
+   - 充分利用Apple Silicon性能
+
+9. **✅ 依赖兼容性修复**
+   - 修复transformers版本兼容性问题
+   - 添加兼容性补丁
+   - 确保所有模块正常导入
 
 ### 🟡 中优先级功能（待实现）
 
