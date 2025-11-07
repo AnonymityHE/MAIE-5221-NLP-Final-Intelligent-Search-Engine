@@ -6,11 +6,18 @@
 
 ### 用户文档
 - **[USER_GUIDE.md](USER_GUIDE.md)** - 用户使用指南（语音助手、RAG、Agent等）
-- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - 配置和安装指南（环境配置、API密钥、依赖安装）
+- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - 配置和安装指南（环境配置、API密钥、依赖安装、流式STT/TTS、MLX优化）
 
 ### 项目文档
-- **[Project Announcement The Intelligent Search Engine.md](Project%20Announcement%20The%20Intelligent%20Search%20Engine.md)** - 项目公告和需求说明
-- **[Final WarmUp.md](Final%20WarmUp.md)** - 项目执行规划和技术栈说明
+- **[PROJECT_INFO.md](PROJECT_INFO.md)** - 项目公告、执行规划和当前状态
+
+### 故障排查
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - 故障排查指南（Docker、Milvus、知识库索引、流式语音、依赖问题）
+
+### 技术文档
+- **[TECHNICAL_ARCHIVE.md](TECHNICAL_ARCHIVE.md)** - 技术文档归档（依赖修复、内存测试、技术对比、MLX优化、流式安装）
+
+---
 
 ## 🗂️ 文档分类
 
@@ -19,19 +26,25 @@
 - **SETUP_GUIDE.md** - 详细的配置和安装说明
 
 ### 项目文档
-- **Project Announcement The Intelligent Search Engine.md** - 项目需求和规范
-- **Final WarmUp.md** - 项目初始规划
+- **PROJECT_INFO.md** - 项目需求和规划
 
-### 技术文档（已归档）
-详细的技术文档已归档到 `archive/technical/` 目录：
-- `STREAMING_MLX_SETUP.md` - 流式STT/TTS和MLX优化安装指南
-- `MLX_OPTIMIZATION_SETUP.md` - MLX优化配置说明
-- `MEMORY_USAGE_RESULTS.md` - 内存占用测试结果
-- `DEPENDENCY_FIX.md` - 依赖兼容性问题修复
-- `HF_S2S_COMPARISON.md` - Hugging Face Speech-to-Speech对比
+### 故障排查
+- **TROUBLESHOOTING.md** - 常见问题和解决方案
 
-### 历史文档（已归档）
-- `archive/` - 历史开发记录和架构文档
+### 技术文档
+- **TECHNICAL_ARCHIVE.md** - 技术细节和优化记录
+
+---
+
+## 📖 快速导航
+
+- **新用户**：先看 [USER_GUIDE.md](USER_GUIDE.md)
+- **配置问题**：查看 [SETUP_GUIDE.md](SETUP_GUIDE.md)
+- **遇到错误**：查看 [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- **项目需求**：查看 [PROJECT_INFO.md](PROJECT_INFO.md)
+- **技术细节**：查看 [TECHNICAL_ARCHIVE.md](TECHNICAL_ARCHIVE.md)
+
+---
 
 ## 📝 文档维护
 
@@ -39,23 +52,43 @@
 - **文档格式**：Markdown（.md）
 - **Word文档**：建议使用Markdown版本，Word文档仅作备份
 
+---
+
 ## 🗂️ 文件清单
 
 ### Markdown文档
 - `README.md` - 本文档（文档索引）
 - `USER_GUIDE.md` - 用户使用指南
 - `SETUP_GUIDE.md` - 配置和安装指南
-- `Project Announcement The Intelligent Search Engine.md` - 项目公告
-- `Final WarmUp.md` - 项目规划
-- `archive/` - 历史和技术文档归档目录
+- `PROJECT_INFO.md` - 项目信息
+- `TROUBLESHOOTING.md` - 故障排查指南
+- `TECHNICAL_ARCHIVE.md` - 技术文档归档
 
 ### 其他文件
+- `fictional_knowledge_base.md` - 虚构知识库（数据文件）
 - `Project Announcement.docx` - 项目公告Word版本（备用）
-- `Test Questions Set 1.docx` - 测试题集
+- `Test Questions Set 1.docx` - 测试题集1
+- `Test Questions Set 2.docx` - 测试题集2
 
-## 📖 快速导航
+---
 
-- **新用户**：先看 [USER_GUIDE.md](USER_GUIDE.md)
-- **配置问题**：查看 [SETUP_GUIDE.md](SETUP_GUIDE.md)
-- **项目需求**：查看 [Project Announcement The Intelligent Search Engine.md](Project%20Announcement%20The%20Intelligent%20Search%20Engine.md)
-- **技术细节**：查看 `archive/technical/` 目录
+## 📚 文档结构
+
+```
+docs/
+├── README.md                    # 文档索引（本文件）
+├── USER_GUIDE.md                # 用户使用指南
+├── SETUP_GUIDE.md               # 配置和安装指南
+├── PROJECT_INFO.md               # 项目信息
+├── TROUBLESHOOTING.md            # 故障排查指南
+├── TECHNICAL_ARCHIVE.md          # 技术文档归档
+├── fictional_knowledge_base.md   # 虚构知识库（数据）
+└── *.docx                        # Word文档（备用）
+```
+
+---
+
+## 🔄 文档更新历史
+
+- **2025-11-06**: 文档整理，合并为5个核心文档
+- **之前**: 多个分散的技术文档，已归档到TECHNICAL_ARCHIVE.md

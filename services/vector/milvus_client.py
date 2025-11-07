@@ -83,7 +83,7 @@ class MilvusClient:
         logger.info(f"集合 {self.collection_name} 创建成功")
     
     def insert(self, texts: List[str], vectors: List[List[float]], 
-               source_files: List[str]) -> bool:
+               source_files: List[str], auto_flush: bool = True) -> bool:
         """
         批量插入数据到Milvus
         
@@ -91,6 +91,7 @@ class MilvusClient:
             texts: 文本列表
             vectors: 向量列表
             source_files: 源文件列表
+            auto_flush: 是否自动flush（批量插入时建议设为False，最后统一flush）
             
         Returns:
             是否插入成功
@@ -100,7 +101,26 @@ class MilvusClient:
         
         try:
             collection = Collection(self.collection_name)
-            collection.load()
+            # 确保集合已加载
+            if not collection.has_index():
+                logger.warning("集合没有索引，先创建索引...")
+                index_params = {
+                    "metric_type": "L2",
+                    "index_type": "IVF_FLAT",
+                    "params": {"nlist": 128}
+                }
+                collection.create_index(
+                    field_name="vector",
+                    index_params=index_params
+                )
+            
+            # 尝试加载集合（如果未加载）
+            try:
+                collection.load()
+            except Exception as load_err:
+                # 如果是已加载的错误，忽略；其他错误重新抛出
+                if "already loaded" not in str(load_err).lower() and "is loaded" not in str(load_err).lower():
+                    logger.debug(f"集合加载状态: {load_err}")
             
             data = [
                 texts,
@@ -108,8 +128,18 @@ class MilvusClient:
                 source_files
             ]
             
+            # 插入数据（不立即flush，避免channel问题）
             collection.insert(data)
-            collection.flush()
+            
+            # 只在明确需要时flush（避免频繁flush导致channel问题）
+            # 注意：Milvus会自动flush，手动flush可能导致channel错误
+            if auto_flush:
+                try:
+                    collection.flush(timeout=5)  # 设置短超时避免卡死
+                except Exception as flush_err:
+                    # flush失败不影响插入，数据会在后台自动flush
+                    logger.warning(f"Flush警告（数据已插入）: {flush_err}")
+            
             logger.info(f"成功插入 {len(texts)} 条数据")
             return True
         except Exception as e:

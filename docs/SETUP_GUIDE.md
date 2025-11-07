@@ -6,6 +6,7 @@
 3. [模型配置](#模型配置)
 4. [知识库配置](#知识库配置)
 5. [依赖安装](#依赖安装)
+6. [流式STT/TTS和MLX优化](#流式stttts和mlx优化)
 
 ---
 
@@ -153,48 +154,31 @@ USE_SILERO_VAD=false
 
 **使用Docker启动**：
 ```bash
-docker run -d \
-  --name milvus-standalone \
-  -p 19530:19530 \
-  -p 9091:9091 \
-  -v /tmp/milvus:/var/lib/milvus \
-  milvusdb/milvus:latest
+docker compose up -d
 ```
 
 **配置.env**：
 ```bash
 MILVUS_HOST=localhost
 MILVUS_PORT=19530
-MILVUS_COLLECTION_NAME=rag_documents
+MILVUS_COLLECTION_NAME=knowledge_base
 ```
 
 ### 索引文档
 
-1. **准备文档**：放入 `documents/` 目录（支持PDF、TXT、MD）
+1. **准备文档**：放入 `docs/` 目录（支持PDF、TXT、MD、DOCX）
 2. **索引文档**：
    ```bash
-   # 单个文件
-   python scripts/utils/ingest.py documents/your_file.pdf
+   # 索引虚构知识库
+   python scripts/utils/index_fictional_kb.py
    
-   # 批量索引
-   python scripts/utils/ingest.py documents/
+   # 或使用通用索引脚本
+   python scripts/utils/ingest.py documents/your_file.pdf
    ```
 3. **检查索引**：
    ```bash
    python scripts/utils/check_knowledge_base.py
    ```
-
-### 多语言文档推荐
-
-为重要内容创建多语言版本：
-- `documents/multilingual_rag_guide_zh.md`（普通话）
-- `documents/multilingual_rag_guide_yue.md`（粤语）
-- `documents/multilingual_rag_guide_en.md`（英语）
-
-快速索引：
-```bash
-python scripts/utils/index_multilingual_docs.py
-```
 
 ---
 
@@ -216,7 +200,7 @@ pip install sentence-transformers
 pip install requests openai
 
 # 文档处理
-pip install PyPDF2 python-docx
+pip install PyPDF2 python-docx python-docx2txt
 
 # 语音识别（如果启用）
 pip install openai-whisper soundfile edge-tts pydub
@@ -225,24 +209,118 @@ pip install openai-whisper soundfile edge-tts pydub
 pip install torch silero-vad onnxruntime
 ```
 
-### 可选依赖
-
-```bash
-# 实时录音（可选）
-pip install pyaudio
-# macOS需要先安装：brew install portaudio
-
-# 其他工具
-pip install beautifulsoup4 lxml  # 网页解析
-```
-
 ### 完整安装
 
 ```bash
 # 安装所有依赖
 pip install -r requirements.txt
+```
 
-# 如果requirements.txt不完整，手动安装上述依赖
+---
+
+## 🚀 流式STT/TTS和MLX优化
+
+### 1. 基础流式STT（必需）
+
+```bash
+# Faster Whisper（更快的流式STT）
+pip install faster-whisper
+```
+
+### 2. 流式TTS（可选）
+
+#### 选项A：Parler-TTS（推荐，流式输出）
+```bash
+# 安装Parler-TTS
+pip install parler-tts
+
+# 还需要安装transformers（通常已安装）
+pip install transformers
+```
+
+#### 选项B：MeloTTS（多语言，Mac优化）
+```bash
+# MeloTTS需要从GitHub安装（不是标准pip包）
+pip install git+https://github.com/myshell-ai/MeloTTS.git
+
+# 安装unidic（日语支持，可选）
+python -m unidic download
+```
+
+**注意**：MeloTTS不是标准PyPI包，必须从GitHub安装。
+
+### 3. Mac MLX优化（可选，仅Mac）
+
+```bash
+# MLX框架
+pip install mlx
+
+# MLX语言模型
+pip install mlx-lm
+
+# Lightning Whisper MLX（Mac优化的Whisper）
+pip install lightning-whisper-mlx
+```
+
+### 配置
+
+在`.env`文件中配置：
+
+```bash
+# 启用流式处理
+ENABLE_STREAMING_STT=true
+ENABLE_STREAMING_TTS=true
+
+# Mac MLX优化（仅Mac用户）
+USE_MLX=true
+MLX_STT_MODEL=base
+MLX_LM_MODEL=mlx-community/Meta-Llama-3.1-8B-Instruct-4bit
+
+# TTS类型选择
+TTS_TYPE=parler  # 或 melo 或 edge
+```
+
+### 推荐的安装方案
+
+#### 方案1：基础流式（推荐）
+```bash
+pip install faster-whisper
+pip install parler-tts
+```
+
+#### 方案2：Mac优化（Mac用户）
+```bash
+pip install faster-whisper
+pip install mlx mlx-lm lightning-whisper-mlx
+pip install parler-tts  # 或使用MeloTTS
+```
+
+#### 方案3：完整功能（所有平台）
+```bash
+pip install faster-whisper
+pip install parler-tts
+pip install git+https://github.com/myshell-ai/MeloTTS.git
+```
+
+### MLX优化优势
+
+- **内存占用**：Lightning Whisper MLX比标准Whisper占用更少内存
+- **性能**：利用Apple Silicon GPU加速
+- **流式处理**：降低延迟，实时反馈
+- **本地运行**：无需API调用
+
+### 依赖兼容性
+
+如果遇到依赖冲突：
+
+```bash
+# 升级transformers版本（解决兼容性问题）
+pip install transformers==4.46.1
+
+# 如果仍有问题，创建新的conda环境
+conda create -n ise python=3.10
+conda activate ise
+pip install -r requirements.txt
 ```
 
 ---
@@ -268,8 +346,11 @@ python scripts/utils/check_knowledge_base.py
 # 测试Whisper
 python -c "from services.speech.whisper_stt import get_whisper_stt; stt = get_whisper_stt(); print('✅ Whisper可用' if stt.is_available() else '❌ Whisper不可用')"
 
-# 测试Silero VAD
-python -c "from services.speech.vad_silero import get_silero_vad; vad = get_silero_vad(); print('✅ Silero VAD可用' if vad and vad.model else '⚠️ Silero VAD未安装（可选）')"
+# 测试流式STT
+python -c "from services.speech.streaming_stt import get_streaming_stt; stt = get_streaming_stt(); print('✅ 流式STT可用' if stt else '❌ 流式STT不可用')"
+
+# 测试流式TTS
+python -c "from services.speech.streaming_tts import get_streaming_tts; tts = get_streaming_tts(); print('✅ 流式TTS可用' if tts else '❌ 流式TTS不可用')"
 ```
 
 ---
@@ -289,9 +370,6 @@ uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 # 使用gunicorn（推荐）
 pip install gunicorn
 gunicorn backend.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
-
-# 或使用systemd服务
-# 见 docs/deployment.md（如果有）
 ```
 
 ---
@@ -314,48 +392,6 @@ echo "WHISPER_MODEL_SIZE=small" >> .env
 
 ---
 
-## ⚠️ 常见问题
-
-### 问题1：Milvus连接失败
-
-**解决方案**：
-```bash
-# 检查Milvus是否运行
-docker ps | grep milvus
-
-# 检查端口
-netstat -an | grep 19530
-
-# 重启Milvus
-docker restart milvus-standalone
-```
-
-### 问题2：Whisper模型下载慢
-
-**解决方案**：
-- 使用国内镜像（如果可用）
-- 手动下载模型到 `~/.cache/whisper/`
-- 或使用较小的模型（`base`或`tiny`）
-
-### 问题3：API密钥无效
-
-**解决方案**：
-- 检查密钥是否正确复制（前后空格）
-- 检查API配额是否用完
-- 验证API端点URL是否正确
-
-### 问题4：依赖冲突
-
-**解决方案**：
-```bash
-# 创建新的conda环境
-conda create -n ise python=3.10
-conda activate ise
-pip install -r requirements.txt
-```
-
----
-
 ## ✅ 配置检查清单
 
 - [ ] conda环境已创建并激活
@@ -365,6 +401,8 @@ pip install -r requirements.txt
 - [ ] Milvus已启动并连接成功
 - [ ] 知识库已索引（至少一个文档）
 - [ ] Whisper模型已下载（如果启用语音）
+- [ ] 流式STT/TTS已配置（可选）
+- [ ] MLX优化已配置（Mac用户，可选）
 - [ ] API服务可以正常启动
 - [ ] 健康检查通过：`curl http://localhost:8000/api/health`
 
@@ -375,4 +413,4 @@ pip install -r requirements.txt
 - 查看日志：`logs/rag_system.log`
 - 检查配置：`python -c "from services.core.config import settings; print(settings)"`
 - 查看文档：`README.md` 和 `docs/USER_GUIDE.md`
-
+- 故障排查：`docs/TROUBLESHOOTING.md`
