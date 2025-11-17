@@ -70,11 +70,11 @@ class Settings(BaseModel):
     
     # LLM API 配置 - HKGAI
     HKGAI_BASE_URL: str = get_env("HKGAI_BASE_URL", "https://oneapi.hkgai.net/v1")
-    HKGAI_API_KEY: str = get_env("HKGAI_API_KEY", "sk-iqA1pjC48rpFXdkU7cCaE3BfBc9145B4BfCbEe0912126646")
+    HKGAI_API_KEY: str = get_env("HKGAI_API_KEY", "")  # 请在.env文件中设置
     HKGAI_MODEL_ID: str = get_env("HKGAI_MODEL_ID", "HKGAI-V1")
     
     # Gemini API 配置
-    GEMINI_API_KEY: str = get_env("GEMINI_API_KEY", "AIzaSyBGHRyctkSmbEnc2-2eHcEePw-mAKCpz04")
+    GEMINI_API_KEY: str = get_env("GEMINI_API_KEY", "")  # 请在.env文件中设置
     GEMINI_DEFAULT_MODEL: str = get_env("GEMINI_DEFAULT_MODEL", "gemini-2.0-flash")
     GEMINI_ENABLED: bool = get_env_bool("GEMINI_ENABLED", True)
     GEMINI_PROJECT_NUMBER: str = get_env("GEMINI_PROJECT_NUMBER", "your-project-number-here")
@@ -103,8 +103,8 @@ class Settings(BaseModel):
     OPENROUTESERVICE_API_KEY: Optional[str] = get_env("OPENROUTESERVICE_API_KEY", None)
     
     # 网页搜索API配置
-    GOOGLE_SEARCH_API_KEY: Optional[str] = get_env("GOOGLE_SEARCH_API_KEY", "247520e58efa7b02a382ea53355b23a843dc182c8be3b6c05b0cfd139caeb807")
-    GOOGLE_CSE_ID: Optional[str] = get_env("GOOGLE_CSE_ID", "72654d7b67f3b424a")  # Custom Search Engine ID
+    GOOGLE_SEARCH_API_KEY: Optional[str] = get_env("GOOGLE_SEARCH_API_KEY", None)  # 请在.env文件中设置
+    GOOGLE_CSE_ID: Optional[str] = get_env("GOOGLE_CSE_ID", None)  # Custom Search Engine ID
     
     # 性能优化配置
     USE_CACHE: bool = get_env("USE_CACHE", "true").lower() == "true"  # 是否启用查询缓存
@@ -117,6 +117,11 @@ class Settings(BaseModel):
     WAKE_WORD: str = get_env("WAKE_WORD", "jarvis")  # 唤醒词（默认：jarvis）
     USE_EDGE_TTS: bool = get_env("USE_EDGE_TTS", "true").lower() == "true"  # 是否使用edge-tts（多语言支持）
     TTS_LANGUAGE: str = get_env("TTS_LANGUAGE", "zh-CN")  # TTS默认语言（zh-CN/yue-HK/en-US）
+    
+    # 粤语Speech API配置
+    CANTONESE_SPEECH_API_KEY: str = get_env("CANTONESE_SPEECH_API_KEY", "TzmW5eWvGWphlubmavEIRtG5U6OwS9wF02AwtEHWx0stLvtqZWpz5LK2q7lRQhDY")
+    CANTONESE_SPEECH_API_URL: str = get_env("CANTONESE_SPEECH_API_URL", "https://api.speech.hkust.edu.hk/v1/recognize")  # 默认URL，可根据实际API调整
+    USE_CANTONESE_API: bool = get_env("USE_CANTONESE_API", "true").lower() == "true"  # 是否启用粤语专用API
     
     # 流式处理配置
     ENABLE_STREAMING_STT: bool = get_env("ENABLE_STREAMING_STT", "true").lower() == "true"  # 是否启用流式STT

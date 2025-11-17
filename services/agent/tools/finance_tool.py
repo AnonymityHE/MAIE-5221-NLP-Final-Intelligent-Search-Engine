@@ -145,8 +145,33 @@ def get_finance_context(query: str, num_results: int = 3) -> str:
     query_lower = query.lower()
     contexts = []
     
-    # 提取股票代码（简单模式匹配）
+    # 提取股票代码（增强的智能匹配）
     import re
+    
+    # 公司名到股票代码的映射（中英文）
+    company_to_ticker = {
+        # 美股
+        "apple": "AAPL", "苹果": "AAPL",
+        "microsoft": "MSFT", "微软": "MSFT",
+        "google": "GOOGL", "alphabet": "GOOGL", "谷歌": "GOOGL",
+        "amazon": "AMZN", "亚马逊": "AMZN",
+        "tesla": "TSLA", "特斯拉": "TSLA",
+        "meta": "META", "facebook": "META",
+        "nvidia": "NVDA", "英伟达": "NVDA",
+        "amd": "AMD",
+        "intel": "INTC", "英特尔": "INTC",
+        "netflix": "NFLX",
+        # 中概股/港股
+        "alibaba": "BABA", "阿里巴巴": "BABA", "阿里": "BABA",
+        "tencent": "0700.HK", "腾讯": "0700.HK",
+        "byd": "002594.SZ", "比亚迪": "002594.SZ",
+        "xiaomi": "1810.HK", "小米": "1810.HK",
+        "baidu": "BIDU", "百度": "BIDU",
+        "jd": "JD", "京东": "JD",
+        "nio": "NIO", "蔚来": "NIO",
+        "xpeng": "XPEV", "小鹏": "XPEV",
+        "li auto": "LI", "理想": "LI",
+    }
     
     # 匹配股票代码模式（如 AAPL, TSLA, 0700.HK）
     stock_patterns = [
@@ -165,26 +190,38 @@ def get_finance_context(query: str, num_results: int = 3) -> str:
     
     # 检测股票相关查询
     if any(kw in query_lower for kw in ["stock", "股票", "股价", "price", "price of"]):
-        for pattern in stock_patterns:
-            matches = re.findall(pattern, query, re.IGNORECASE)
-            for match in matches[:num_results]:
-                if isinstance(match, tuple):
-                    symbol = match[0]
-                else:
-                    symbol = match
-                
-                # 判断地区
-                region = "HK" if ".HK" in symbol else "US"
-                if ".SS" in symbol or ".SZ" in symbol:
-                    region = "CN"
-                
-                stock_info = get_stock_price(symbol, region)
-                if stock_info:
-                    contexts.append(stock_info)
-                    if len(contexts) >= num_results:
-                        break
-            if len(contexts) >= num_results:
-                break
+        # 优先尝试从公司名映射中查找
+        tickers_found = []
+        for company_name, ticker in company_to_ticker.items():
+            if company_name in query_lower:
+                tickers_found.append(ticker)
+                logger.info(f"从公司名'{company_name}'识别股票代码: {ticker}")
+        
+        # 如果没有找到公司名，尝试从查询中提取股票代码
+        if not tickers_found:
+            for pattern in stock_patterns:
+                matches = re.findall(pattern, query, re.IGNORECASE)
+                for match in matches:
+                    if isinstance(match, tuple):
+                        symbol = match[0]
+                    else:
+                        symbol = match
+                    # 过滤掉常见的非股票代码词
+                    if symbol.upper() not in ["STOCK", "PRICE", "OF", "THE", "AND", "OR", "FOR", "TO", "IN", "ON", "AT"]:
+                        tickers_found.append(symbol)
+        
+        # 获取股票信息
+        for ticker in tickers_found[:num_results]:
+            # 判断地区
+            region = "HK" if ".HK" in ticker else "US"
+            if ".SS" in ticker or ".SZ" in ticker:
+                region = "CN"
+            
+            stock_info = get_stock_price(ticker, region)
+            if stock_info:
+                contexts.append(stock_info)
+                if len(contexts) >= num_results:
+                    break
     
     # 检测加密货币相关查询
     if any(kw in query_lower for kw in ["crypto", "加密货币", "bitcoin", "ethereum", "btc", "eth"]):

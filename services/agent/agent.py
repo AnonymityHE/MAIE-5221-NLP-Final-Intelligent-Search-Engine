@@ -2,6 +2,8 @@
 智能Agent - 根据问题类型自动选择和使用合适的工具
 支持：本地RAG、网页搜索、天气、金融、交通查询
 新增：动态工作流支持（多步骤查询）
+- LLM驱动的智能工作流规划（优先）
+- 基于规则的工作流模板（Fallback）
 """
 from typing import Dict, List, Optional
 from services.llm.unified_client import unified_llm_client
@@ -28,6 +30,17 @@ except ImportError:
     LangGraphWorkflowEngine = None
     get_langgraph_workflow_engine = None
 
+# 导入LLM驱动的工作流模块
+try:
+    from services.agent.workflow_llm_planner import get_llm_workflow_planner
+    from services.agent.workflow_dynamic import get_dynamic_workflow_engine
+    LLM_WORKFLOW_AVAILABLE = True
+except ImportError:
+    logger.warning("LLM工作流模块导入失败，将使用基于规则的工作流")
+    LLM_WORKFLOW_AVAILABLE = False
+    get_llm_workflow_planner = None
+    get_dynamic_workflow_engine = None
+
 
 class RAGAgent:
     """RAG Agent - 根据问题类型智能选择工具（支持多种工具）"""
@@ -40,17 +53,32 @@ class RAGAgent:
             "finance": get_finance_context,
             "transport": get_transport_context
         }
-        # 初始化工作流引擎（优先使用LangGraph，如果可用）
+        
+        # 初始化LLM驱动的工作流系统（优先）
+        self.llm_planner = None
+        self.dynamic_engine = None
+        if LLM_WORKFLOW_AVAILABLE:
+            try:
+                tool_names = list(self.tools.keys())
+                self.llm_planner = get_llm_workflow_planner(tool_names)
+                self.dynamic_engine = get_dynamic_workflow_engine(self.tools)
+                logger.info("✨ 使用LLM驱动的智能工作流系统")
+            except Exception as e:
+                logger.warning(f"LLM工作流系统初始化失败: {e}")
+                self.llm_planner = None
+                self.dynamic_engine = None
+        
+        # 初始化基于规则的工作流引擎（作为fallback）
         if LANGGRAPH_AVAILABLE:
             try:
                 self.workflow_engine = get_langgraph_workflow_engine(self.tools)
-                logger.info("使用LangGraph工作流引擎")
+                logger.info("📋 LangGraph工作流引擎已就绪（作为fallback）")
             except Exception as e:
                 logger.warning(f"LangGraph工作流引擎初始化失败，使用自定义引擎: {e}")
                 self.workflow_engine = get_workflow_engine(self.tools)
         else:
             self.workflow_engine = get_workflow_engine(self.tools)
-            logger.info("使用自定义工作流引擎（LangGraph未安装）")
+            logger.info("📋 自定义工作流引擎已就绪（作为fallback）")
     
     def detect_question_type(self, query: str) -> List[str]:
         """
@@ -135,6 +163,11 @@ class RAGAgent:
         执行Agent推理，选择合适的工具并获取答案
         支持动态工作流（多步骤查询）
         
+        工作流执行优先级：
+        1. LLM驱动的智能工作流（优先）
+        2. 基于规则的工作流模板（fallback）
+        3. 单工具直接调用（简单查询）
+        
         Args:
             query: 用户问题
             model: 可选的模型名称
@@ -142,11 +175,26 @@ class RAGAgent:
         Returns:
             包含答案、使用的工具和上下文的字典
         """
-        # 0. 检测是否需要工作流（多步骤查询）
+        # 0. 尝试LLM驱动的工作流规划（优先）
+        if self.llm_planner and self.dynamic_engine:
+            try:
+                logger.info("🧠 尝试LLM驱动的工作流规划...")
+                plan = self.llm_planner.analyze_query(query)
+                
+                # 检查是否需要工作流且置信度足够
+                if plan.requires_workflow and plan.confidence >= 0.4:
+                    logger.info(f"✅ LLM规划成功 (置信度: {plan.confidence:.2f}), 使用动态工作流")
+                    return self._execute_llm_workflow(query, model, plan)
+                else:
+                    logger.info(f"ℹ️  LLM认为不需要工作流 (置信度: {plan.confidence:.2f}), 尝试规则引擎")
+            except Exception as e:
+                logger.warning(f"⚠️  LLM工作流规划失败: {e}, 回退到规则引擎")
+        
+        # 1. 回退到基于规则的工作流检测
         workflow_type = self.workflow_engine.detect_workflow_type(query)
         if workflow_type:
-            logger.info(f"检测到需要工作流处理: {workflow_type}")
-            return self._execute_workflow(query, model, workflow_type)
+            logger.info(f"📋 规则引擎检测到工作流: {workflow_type}")
+            return self._execute_rule_based_workflow(query, model, workflow_type)
         
         # 1. 检测问题类型，决定使用哪些工具（原有逻辑）
         tools_to_use = self.detect_question_type(query)
@@ -317,9 +365,85 @@ class RAGAgent:
             "model": llm_result.get("model")
         }
     
-    def _execute_workflow(self, query: str, model: Optional[str], workflow_type: str) -> Dict:
+    def _execute_llm_workflow(self, query: str, model: Optional[str], plan) -> Dict:
         """
-        执行工作流（多步骤查询）
+        执行LLM驱动的动态工作流
+        
+        Args:
+            query: 用户问题
+            model: 可选的模型名称
+            plan: LLM生成的工作流计划
+            
+        Returns:
+            包含答案、使用的工具和上下文的字典
+        """
+        logger.info(f"🚀 开始执行LLM驱动的工作流: {plan.workflow_type}")
+        
+        # 1. 使用动态执行引擎执行计划
+        execution_context = self.dynamic_engine.execute(plan, query)
+        
+        # 2. 综合执行结果
+        workflow_context = self.dynamic_engine.synthesize_results(execution_context)
+        
+        # 3. 获取工具使用摘要
+        tools_used = self.dynamic_engine.get_tool_usage_summary(execution_context)
+        
+        # 4. 构建Prompt并调用LLM生成最终答案
+        if workflow_context:
+            system_prompt = (
+                "你是一个专业的AI助手。我已经通过智能工作流系统执行了多个步骤来收集信息。"
+                "请基于以下工作流执行结果，综合分析并回答用户的问题。"
+                "注意：结果可能来自不同的数据源（网页搜索、金融API、天气API等），请整合这些信息给出全面的答案。"
+            )
+            user_prompt = f"原始问题：{query}\n\n{workflow_context}\n\n请基于以上信息综合回答原始问题。"
+            logger.info("使用LLM工作流结果构建Prompt")
+        else:
+            # 工作流执行失败，回退到普通LLM回答
+            system_prompt = "你是一个专业的AI助手，请直接回答问题。"
+            user_prompt = query
+            tools_used = ["llm_workflow_failed"]
+            logger.warning("LLM工作流执行无结果，回退到直接回答")
+        
+        # 5. 调用LLM生成答案
+        llm_result = unified_llm_client.chat(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            max_tokens=2048,
+            temperature=0.7,
+            model=model,
+            provider="hkgai"
+        )
+        
+        answer = llm_result.get("content", "无法生成答案")
+        if "error" in llm_result:
+            logger.error(f"LLM工作流模式下LLM调用失败: {llm_result['error']}")
+            answer = f"工作流执行完成，但LLM生成答案失败: {llm_result['error']}"
+        
+        # 提取token使用信息
+        tokens_info = None
+        if "input_tokens" in llm_result:
+            tokens_info = {
+                "input": llm_result.get("input_tokens", 0),
+                "output": llm_result.get("output_tokens", 0),
+                "total": llm_result.get("total_tokens", 0)
+            }
+        
+        return {
+            "answer": answer,
+            "tools_used": tools_used,
+            "contexts_count": len(execution_context.completed_steps),
+            "has_context": len(workflow_context) > 0,
+            "tokens": tokens_info,
+            "model": llm_result.get("model"),
+            "workflow_type": plan.workflow_type,
+            "workflow_engine": "llm_driven",
+            "workflow_confidence": plan.confidence,
+            "workflow_steps_completed": len(execution_context.completed_steps)
+        }
+    
+    def _execute_rule_based_workflow(self, query: str, model: Optional[str], workflow_type: str) -> Dict:
+        """
+        执行基于规则的工作流（原有逻辑，作为fallback）
         
         Args:
             query: 用户问题
@@ -401,6 +525,7 @@ class RAGAgent:
             "tokens": tokens_info,
             "model": llm_result.get("model"),
             "workflow_type": workflow_type,
+            "workflow_engine": "rule_based",  # 标记为基于规则的工作流
             "workflow_steps_completed": steps_completed
         }
     

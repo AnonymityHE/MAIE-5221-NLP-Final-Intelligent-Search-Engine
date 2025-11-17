@@ -1,11 +1,13 @@
 """
 语音转文本模块 - 使用Whisper实现多语言语音识别
 支持粤语、普通话、英语
+集成粤语专用API以提供更好的粤语识别效果
 """
 import os
 import tempfile
 from typing import Optional, Dict
 from services.core.logger import logger
+from services.core.config import settings
 
 try:
     import whisper
@@ -194,11 +196,35 @@ class WhisperSTT:
             language: 指定语言（可选）
                 - "zh": 中文（推荐，提高中文识别准确度）
                 - "en": 英语
+                - "yue": 粤语（将使用粤语专用API）
                 - None: 自动检测（可能不准确）
             
         Returns:
             包含text、language等信息的字典
         """
+        # 如果指定了粤语，且粤语API可用，优先使用粤语专用API
+        if language in ["yue", "zh-HK"] and settings.USE_CANTONESE_API:
+            try:
+                from services.speech.cantonese_stt import get_cantonese_stt
+                cantonese_stt = get_cantonese_stt()
+                
+                if cantonese_stt and cantonese_stt.is_available():
+                    logger.info("🎤 使用粤语专用API进行识别")
+                    result = cantonese_stt.transcribe_bytes(
+                        audio_bytes, 
+                        audio_format=audio_format,
+                        language="yue"
+                    )
+                    
+                    # 如果粤语API成功，直接返回结果
+                    if result.get("text") and not result.get("error"):
+                        logger.info(f"✅ 粤语API识别成功: '{result['text'][:50]}...'")
+                        return result
+                    else:
+                        logger.warning(f"粤语API识别失败，降级到Whisper: {result.get('error', 'Unknown error')}")
+            except Exception as e:
+                logger.warning(f"粤语API调用失败，降级到Whisper: {e}")
+        
         if not self.model:
             return {
                 "error": "Whisper模型未加载",
@@ -311,6 +337,38 @@ class WhisperSTT:
                 logger.debug(f"使用指定语言: {language}")
             
             result = self.transcribe(tmp_path, language=language)
+            
+            # 如果Whisper检测到粤语，且粤语API可用，尝试使用粤语API重新识别
+            if (result.get("language") == "yue" or 
+                (result.get("language") == "zh" and language is None)) and \
+                settings.USE_CANTONESE_API:
+                try:
+                    # 检查是否可能是粤语
+                    text = result.get("text", "")
+                    if text:  # 有文本才尝试
+                        from services.core.language_detector import get_language_detector
+                        lang_detector = get_language_detector()
+                        lang_info = lang_detector.detect(text)
+                        
+                        # 如果检测到粤语特征，使用粤语API重新识别
+                        if lang_info.get("cantonese", 0) > 0.3:
+                            logger.info(f"🔍 检测到粤语特征({lang_info['cantonese']:.2f})，尝试使用粤语专用API重新识别")
+                            
+                            from services.speech.cantonese_stt import get_cantonese_stt
+                            cantonese_stt = get_cantonese_stt()
+                            
+                            if cantonese_stt and cantonese_stt.is_available():
+                                # 使用临时文件路径重新识别
+                                cantonese_result = cantonese_stt.transcribe(tmp_path, language="yue")
+                                
+                                # 如果粤语API成功且返回了文本，使用粤语API的结果
+                                if cantonese_result.get("text") and not cantonese_result.get("error"):
+                                    logger.info(f"✅ 粤语API重新识别成功: '{cantonese_result['text'][:50]}...'")
+                                    result = cantonese_result
+                                else:
+                                    logger.debug("粤语API未返回结果，保持Whisper结果")
+                except Exception as e:
+                    logger.debug(f"粤语API重新识别失败，保持Whisper结果: {e}")
             
             # 清理临时文件
             try:

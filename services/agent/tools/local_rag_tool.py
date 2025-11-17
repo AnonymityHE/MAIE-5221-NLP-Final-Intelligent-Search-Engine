@@ -38,25 +38,29 @@ def local_knowledge_base_search(query: str) -> Dict:
     }
 
 
-def get_local_knowledge_context(query: str) -> str:
+def get_local_knowledge_context(query: str, top_k: int = 8) -> str:
     """
     从本地知识库获取上下文
     
     Args:
         query: 查询文本
+        top_k: 检索数量（默认8，复杂查询可增加）
         
     Returns:
         上下文文本，如果没有相关结果返回空字符串
     """
-    search_result = local_knowledge_base_search(query)
+    # 使用动态top_k
+    search_results = retriever.search(query, top_k=top_k)
     
-    if not search_result["relevant"]:
+    if not search_results:
         return ""
     
-    # 构建上下文
+    # 构建上下文（移除调试信息，更简洁）
     context_parts = []
-    for result in search_result["results"]:
-        context_parts.append(result['text'])
+    for result in search_results:
+        text = result.get('text', '')
+        if text:
+            context_parts.append(text)
     
     return "\n\n".join(context_parts)
 
