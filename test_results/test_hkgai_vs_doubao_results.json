@@ -1,0 +1,182 @@
+[
+  {
+    "id": "CN-1",
+    "question": "香港科技大学在哪里？",
+    "language": "中文",
+    "category": "基础知识",
+    "hkgai": {
+      "success": true,
+      "answer": "香港科技大学位于香港新界西贡区清水湾。具体地址是：香港九龙清水湾香港科技大学。",
+      "response_time": 2.278599977493286,
+      "tokens": 31
+    },
+    "doubao": {
+      "success": true,
+      "answer": "香港科技大学（The Hong Kong University of Science and Technology, HKUST）位于中国香港特别行政区新界西贡区清水湾半岛。  \n\n其校园坐落在清水湾的临海山坡上，三面环山、一面朝海，拥有开阔的海景视野，是香港校园环境最为优美的高校之一。作为香港顶尖的研究型大学，港科大成立于1991年，以科技、工程、商科等学科见长，在国际学术界享有较高声誉。  \n\n若需前往，可通过港铁将军澳线至宝琳站或坑口站，再转乘巴士或出租车抵达校园。",
+      "response_time": 13.636713027954102,
+      "tokens": 452
+    }
+  },
+  {
+    "id": "CN-2",
+    "question": "RAG系统的核心组件有哪些？",
+    "language": "中文",
+    "category": "技术知识",
+    "hkgai": {
+      "success": true,
+      "answer": "RAG（Retrieval-Augmented Generation）系统的核心组件包括以下几个部分：\n\n1. 检索组件（Retriever）：负责从大规模的知识库或文档集合中检索与输入问题或上下文相关的文档或段落。常见的检索方法包括基于关键词的检索（如BM25）和基于向量的检索（如使用预训练的语言模型生成的嵌入向量进行相似度匹配）。\n\n2. 生成组件（Generator）：基于检索到的相关文档或段落，生成与输入问题或上下文相关的自然语言响应。生成组件通常使用预训练的语言模型（如GPT、BERT等）来实现。\n\n3. 知识库（Knowledge Base）：存储大量的结构化或非结构化知识，供检索组件从中检索相关信息。知识库可以是内部的数据库、文档集合，也可以是外部的知识图谱或维基百科等。\n\n4. 查询处理器（Query Processor）：负责对输入的问题或上下文进行预处理和表示，以便检索组件能够有效地进行检索。查询处理器可能包括分词、实体识别、查询扩展等技术。\n\n5. 排序和过滤组件（Ranking and Filtering）：对检索到的文档或段落进行排序和过滤，以选择最相关和最有用的信息供生成组件使用。排序和过滤可以基于相关性、可信度、时效性等指标进行。\n\n6. 上下文管理器（Context Manager）：负责管理对话或交互的上下文信息，以便系统能够理解当前对话的背景和历史，并生成连贯的响应。上下文管理器可以记录先前的对话历史、用户偏好等信息。\n\n这些组件共同协作，使得RAG系统能够从大规模的知识库中检索相关信息，并生成准确、有用的自然语言响应。",
+      "response_time": 11.799909114837646,
+      "tokens": 347
+    },
+    "doubao": {
+      "success": true,
+      "answer": "RAG（Retrieval-Augmented Generation，检索增强生成）系统的核心组件围绕**\"检索知识→增强生成\"**的核心逻辑展开，主要包括以下5个关键模块：\n\n\n### **1. 外部知识库**  \n**作用**：存储待检索的外部知识源，是RAG系统的\"信息仓库\"。  \n**形式**：可以是结构化数据（如数据库、表格）、非结构化数据（如文档、PDF、网页）、半结构化数据（如JSON、XML），甚至API接口返回的实时数据。  \n**要求**：知识源需具备准确性、时效性，且易于被后续模块处理。\n\n\n### **2. 数据处理与索引组件**  \n**作用**：将原始知识源转化为可高效检索的结构化索引，是RAG系统的\"数据预处理中心\"。  \n**核心步骤**：  \n- **文档分割**：将长文档拆分为合适大小的片段（Chunking），平衡上下文完整性与检索精度（如按",
+      "response_time": 28.2389919757843,
+      "tokens": 1042
+    }
+  },
+  {
+    "id": "CN-3",
+    "question": "现在香港的天气怎么样？",
+    "language": "中文",
+    "category": "实时信息",
+    "hkgai": {
+      "success": true,
+      "answer": "香港今天的天气晴朗，气温在26°C到31°C之间，相对湿度为70%到85%。风向为东南风，风速约为10公里/小时。建议穿着轻便透气的衣物，并随身携带雨具以应对可能的短暂阵雨。",
+      "response_time": 3.2700040340423584,
+      "tokens": 66
+    },
+    "doubao": {
+      "success": true,
+      "answer": "我无法提供实时天气信息，你可以通过以下方式查询香港当前的天气情况：  \n1. 访问香港天文台官方网站（https://www.hko.gov.hk）或使用其手机应用程序；  \n2. 使用主流天气类APP（如墨迹天气、AccuWeather等），搜索“香港”获取实时数据。  \n\n香港属于亚热带气候，四季分明：夏季（5-9月）炎热潮湿，偶有台风；冬季（12-2月）温和干燥，气温通常在15-20℃左右；春秋季气候宜人，是旅游的好时节。",
+      "response_time": 8.985769987106323,
+      "tokens": 284
+    }
+  },
+  {
+    "id": "CN-4",
+    "question": "苹果公司的股价是多少？",
+    "language": "中文",
+    "category": "实时信息",
+    "hkgai": {
+      "success": true,
+      "answer": "苹果公司的股价实时变动，建议您通过权威财经网站或者股票交易应用（如雅虎财经、谷歌财经或者苹果股票交易应用）查询最新股价。",
+      "response_time": 2.6168150901794434,
+      "tokens": 43
+    },
+    "doubao": {
+      "success": true,
+      "answer": "苹果公司的股价是实时变动的，受市场交易情况影响。你可以通过以下渠道查询其最新股价：  \n1. 财经类网站：如纳斯达克官网（苹果股票代码AAPL）、新浪财经、东方财富网等；  \n2. 股票交易/行情软件：如同花顺、雪球、老虎证券、富途牛牛等；  \n3. 苹果公司投资者关系页面（https://investor.apple.com/）。  \n\n建议你通过上述官方或权威平台获取实时数据，以确保信息的准确性。",
+      "response_time": 8.152755975723267,
+      "tokens": 280
+    }
+  },
+  {
+    "id": "CN-5",
+    "question": "比亚迪和特斯拉哪个股价更高？",
+    "language": "中文",
+    "category": "对比分析",
+    "hkgai": {
+      "success": true,
+      "answer": "比亚迪和特斯拉的股价会随着市场变动而变化，无法一概而论。建议通过股票交易平台或财经网站查询最新的股价信息。",
+      "response_time": 2.4739480018615723,
+      "tokens": 39
+    },
+    "doubao": {
+      "success": true,
+      "answer": "股价是实时动态变化的，需以最新交易数据为准。从历史和近期的普遍情况来看：  \n\n特斯拉（美股，股票代码TSLA，美元计价）的股价通常显著高于比亚迪（A股代码002594，人民币计价；港股代码01211，港币计价）。  \n\n以2024年10月的典型行情为例：  \n- 特斯拉美股股价约250-300美元/股（换算为人民币约1800-2100元/股，按1美元≈7人民币估算）；  \n- 比亚迪A股股价约200-250人民币/股，港股约200-230港币/股（换算为人民币约180-210元/股）。  \n\n即使换算为同一种货币，特斯拉的股价也远高于比亚迪。  \n\n建议通过证券APP（如东方财富、同花顺）或财经网站查看实时行情，获取最准确的当前股价。",
+      "response_time": 15.610144138336182,
+      "tokens": 630
+    }
+  },
+  {
+    "id": "EN-1",
+    "question": "Where is the Hong Kong University of Science and Technology located?",
+    "language": "英文",
+    "category": "基础知识",
+    "hkgai": {
+      "success": true,
+      "answer": "The Hong Kong University of Science and Technology is located in Clear Water Bay, Sai Kung District, Hong Kong.",
+      "response_time": 2.2413251399993896,
+      "tokens": 38
+    },
+    "doubao": {
+      "success": true,
+      "answer": "The Hong Kong University of Science and Technology (HKUST) is primarily located on the scenic Clear Water Bay Peninsula in the Sai Kung District of the New Territories, Hong Kong. Its campus boasts a picturesque coastal setting, with panoramic views of the sea and surrounding hills, blending natural beauty with modern academic facilities.\n\n\n**Answer:** The Hong Kong University of Science and Technology is located on the Clear Water Bay Peninsula in the Sai Kung District of the New Territories, Hong Kong.",
+      "response_time": 11.552643060684204,
+      "tokens": 388
+    }
+  },
+  {
+    "id": "EN-2",
+    "question": "What are the core components of a RAG system?",
+    "language": "英文",
+    "category": "技术知识",
+    "hkgai": {
+      "success": true,
+      "answer": "A RAG (Retrieval-Augmented Generation) system combines retrieval-based and generative approaches to improve the quality and relevance of generated text. The core components of a RAG system include:\n\n1. **Retriever**: The retriever is responsible for finding relevant documents or passages from a large corpus or knowledge base. It typically uses techniques like dense retrieval (e.g., DPR - Dense Passage Retrieval) or sparse retrieval (e.g., BM25) to identify the most relevant information based on the input query.\n\n2. **Generator**: The generator is a language model that produces the final output by conditioning on both the input query and the retrieved documents. It can be a sequence-to-sequence model like BART or T5, or an autoregressive model like GPT.\n\n3. **Knowledge Source**: This is the external corpus or database that the retriever searches over to find relevant information. It can be a collection of documents, Wikipedia, or any other structured or unstructured data source.\n\n4. **Query Encoder**: The query encoder transforms the input query into a vector representation that can be used by the retriever to search for relevant documents. This is typically a neural network that encodes the query into a dense vector.\n\n5. **Document Encoder**: The document encoder transforms the documents in the knowledge source into vector representations that can be compared with the query vector during retrieval. Like the query encoder, this is usually a neural network that produces dense vectors.\n\n6. **Fusion Mechanism**: This component combines the information from the retrieved documents and the input query to generate the final output. It can involve simple concatenation or more sophisticated attention mechanisms to weigh the importance of different parts of the retrieved documents.\n\nBy integrating these components, a RAG system can leverage external knowledge to generate more accurate, informative, and contextually relevant responses compared to standalone generative models.",
+      "response_time": 13.10465693473816,
+      "tokens": 392
+    },
+    "doubao": {
+      "success": true,
+      "answer": "A Retrieval-Augmented Generation (RAG) system combines external knowledge retrieval with generative AI to produce accurate, context-aware responses. Its core components are structured to enable end-to-end retrieval and generation workflows:\n\n\n### 1. **",
+      "response_time": 29.609984874725342,
+      "tokens": 1044
+    }
+  },
+  {
+    "id": "EN-3",
+    "question": "What's the weather like in Hong Kong now?",
+    "language": "英文",
+    "category": "实时信息",
+    "hkgai": {
+      "success": true,
+      "answer": "Hong Kong currently has a humid subtropical climate with hot, humid summers and mild winters. The temperature ranges from around 15°C in winter to 33°C in summer. Rainfall is common throughout the year, but the wettest months are usually from May to September. Typhoons are also possible between June and October.",
+      "response_time": 3.4513092041015625,
+      "tokens": 79
+    },
+    "doubao": {
+      "success": true,
+      "answer": "I don't have access to real-time weather data, so I can't provide the exact current weather in Hong Kong. For the most accurate and up-to-date information, I recommend checking the official website of the Hong Kong Observatory (https://www.hko.gov.hk) or using their mobile app.  \n\nTo give you a general idea based on typical seasonal patterns:  \n- **Spring (March–May):** Mild and humid, with occasional fog or light rain.  \n- **Summer (June–August):** Hot and humid, often with thunderstorms and potential typhoon activity.  \n- **Autumn (September–November):** Cooler, drier, and sunny—generally the most pleasant season.  \n- **Winter (December–February):** Cool and dry, with temperatures sometimes dropping to around 10°C (50°F) at night.  \n\nFor current conditions, please refer to a real-time weather service.",
+      "response_time": 15.602061033248901,
+      "tokens": 625
+    }
+  },
+  {
+    "id": "EN-4",
+    "question": "What is Apple's stock price?",
+    "language": "英文",
+    "category": "实时信息",
+    "hkgai": {
+      "success": true,
+      "answer": "As an AI model, I do not have access to real-time data, so I cannot provide you with Apple's current stock price. However, you can easily check the current stock price of Apple (AAPL) on financial websites such as Yahoo Finance, Google Finance, or Bloomberg.",
+      "response_time": 3.221181869506836,
+      "tokens": 68
+    },
+    "doubao": {
+      "success": true,
+      "answer": "Apple's stock price fluctuates continuously during market hours (9:30 AM–4:00 PM ET on weekdays for U.S. exchanges). To get the latest, real-time or delayed price, you can check financial platforms like:  \n- Yahoo Finance (ticker symbol: AAPL)  \n- Bloomberg  \n- Apple's official Investor Relations page  \n- Stock trading apps (e.g., Robinhood, Fidelity)  \n\nAs of my last knowledge update, I don’t have access to real-time data, so please refer to one of these sources for the current value. The price is typically quoted in U.S. dollars per share.\n\n\n**Note:** This response avoids providing static, outdated information and directs the user to reliable, up-to-date sources—consistent with the requirement to not include inaccurate details about time-sensitive data. The language is clear and helpful for the user's query.",
+      "response_time": 9.351103067398071,
+      "tokens": 340
+    }
+  },
+  {
+    "id": "EN-5",
+    "question": "Which has a higher stock price, BYD or Tesla?",
+    "language": "英文",
+    "category": "对比分析",
+    "hkgai": {
+      "success": true,
+      "answer": "As of my last knowledge update, Tesla had a higher stock price than BYD. However, stock prices fluctuate continuously, so I recommend checking a reliable financial news source or stock market website for the most current information.",
+      "response_time": 2.8830649852752686,
+      "tokens": 59
+    },
+    "doubao": {
+      "success": true,
+      "answer": "To answer which company has a higher stock price, it’s important to note that stock prices fluctuate daily and depend on the specific exchange listing (BYD trades on multiple markets).  \n\nAs of early 2024 (latest available data), Tesla’s per-share price is significantly higher than BYD’s:  \n- Tesla (NASDAQ: TSLA) trades around $170–$190 USD per share.  \n- BYD’s Hong Kong shares (HKEX: 1211) are ~HKD 300–320 (~$38–$41 USD) per share, and its Shenzhen shares (SZSE: 002594) are ~CNY 250–270 (~$34–$37 USD) per share.  \n\nHowever, this is not a fixed comparison—stock prices change with market conditions. For the most up-to-date figures, check reliable financial platforms like Yahoo Finance, Bloomberg, or the respective exchanges.  \n\n**Short answer:** As of early 2024, Tesla’s per-share stock price is higher than BYD’s. Always verify the latest quotes for real-time accuracy.",
+      "response_time": 17.159943103790283,
+      "tokens": 716
+    }
+  }
+]

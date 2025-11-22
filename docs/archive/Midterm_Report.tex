@@ -1,0 +1,599 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,fit,backgrounds}
+\usepackage{booktabs}  % 三线表支持
+\usepackage{tabularx}  % 自动调整列宽
+\usepackage{array}     % 表格列格式
+\usepackage{float}     % 表格位置控制
+\usepackage{caption}   % 标题设置
+
+% Page setup
+\geometry{margin=1in}
+\setlength{\headheight}{13.6pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Project ISE Mid-term Progress Report}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{}
+
+% Title formatting
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+% Code listing style
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+\title{Project ISE Mid-term Progress Report}
+\author{Team MiniMango}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{System Design \& Architecture}
+
+\subsection{High-Level Architecture Diagram}
+
+The system architecture follows a modular design with clear separation of concerns. The RAG (Retrieval-Augmented Generation) flow is the core component that connects embedding models, vector databases, and LLM APIs.
+
+\begin{table}[htbp]
+\centering
+\captionsetup{skip=4pt}
+\caption{System Architecture Overview}
+\label{tab:architecture}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Layer} & \textbf{Components \& Functions} \\
+\midrule
+\textbf{User Interface} & 
+\begin{itemize}[leftmargin=*,nosep]
+    \item \textbf{Web UI}: HTML/JavaScript interface for text-based queries
+    \item \textbf{Voice UI}: WebSocket-based real-time voice interaction
+    \item \textbf{API Endpoints}: REST API for programmatic access
+\end{itemize} \\
+\midrule
+\textbf{FastAPI Backend} & 
+\begin{itemize}[leftmargin=*,nosep]
+    \item \textbf{API Router Layer}: Routes requests to appropriate handlers
+    \begin{itemize}[leftmargin=*,nosep]
+        \item \texttt{/api/rag\_query}: Direct RAG queries
+        \item \texttt{/api/agent\_query}: Agent-mediated queries
+        \item \texttt{/api/voice/ws}: WebSocket for voice interaction
+        \item \texttt{/api/upload}: File upload and indexing
+    \end{itemize}
+    \item \textbf{Agent System (LangGraph)}: Intelligent tool selection and workflow orchestration
+\end{itemize} \\
+\midrule
+\textbf{Tools Layer} & 
+\begin{itemize}[leftmargin=*,nosep]
+    \item \textbf{Local RAG Tool}: Knowledge base retrieval using Milvus
+    \item \textbf{Web Search Tool}: Real-time information via DuckDuckGo/Google APIs
+    \item \textbf{Weather Tool}: Current and historical weather data (wttr.in)
+    \item \textbf{Finance Tool}: Stock and cryptocurrency prices (Yahoo Finance, CoinGecko)
+    \item \textbf{Transport Tool}: Route and travel time calculations (OpenRouteService)
+\end{itemize} \\
+\midrule
+\textbf{RAG Processing Flow} & 
+\begin{itemize}[leftmargin=*,nosep]
+    \item \textbf{Step 1 - Embedding Model}: 
+    \begin{itemize}[leftmargin=*,nosep]
+        \item Encodes user queries into 384-dimensional vectors
+        \item Uses multilingual model (\texttt{paraphrase-multilingual-MiniLM-L12-v2})
+        \item Supports Cantonese, Mandarin, and English
+    \end{itemize}
+    \item \textbf{Step 2 - Milvus Vector Database}:
+    \begin{itemize}[leftmargin=*,nosep]
+        \item Stores document embeddings (indexed during document upload)
+        \item Performs similarity search (L2 distance) to retrieve top-20 candidates
+        \item Returns relevant document chunks with metadata
+    \end{itemize}
+    \item \textbf{Step 3 - Reranking \& Filtering}:
+    \begin{itemize}[leftmargin=*,nosep]
+        \item Cross-encoder reranker refines results (top-5)
+        \item Considers relevance, credibility, and freshness
+    \end{itemize}
+    \item \textbf{Step 4 - LLM APIs}:
+    \begin{itemize}[leftmargin=*,nosep]
+        \item Receives query + retrieved context
+        \item Generates comprehensive answer (HKGAI V1 or Gemini)
+        \item Returns final response to user
+    \end{itemize}
+\end{itemize} \\
+\midrule
+\textbf{Data Storage} & 
+\begin{itemize}[leftmargin=*,nosep]
+    \item \textbf{Milvus}: Vector database for semantic search (384-dim vectors, IVF\_FLAT index)
+    \item \textbf{Metadata}: File paths, timestamps, source information stored alongside vectors
+\end{itemize} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{RAG Flow Relationship}:
+The relationship between Embedding Model, Milvus, and LLM APIs follows a clear pipeline:
+
+\begin{table}[H]
+\centering
+\captionsetup{skip=4pt}
+\caption{RAG Pipeline Flow}
+\label{tab:rag_flow}
+\begin{tabular}{@{} l p{0.7\textwidth} @{}}
+\toprule
+\textbf{Phase} & \textbf{Flow} \\
+\midrule
+Document Indexing & Documents $\rightarrow$ Embedding Model (encode) $\rightarrow$ Milvus (store vectors) \\
+\addlinespace
+Query Processing & Query $\rightarrow$ Embedding Model (encode) $\rightarrow$ Milvus (search) $\rightarrow$ Reranker $\rightarrow$ LLM APIs (generate answer) \\
+\addlinespace
+Response Delivery & LLM APIs $\rightarrow$ Agent System $\rightarrow$ User Interface \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Technology Stack}
+
+\subsubsection{Backend Framework}
+\begin{itemize}
+    \item \textbf{FastAPI}: Modern web framework for building high-performance APIs with automatic documentation
+    \item \textbf{Uvicorn}: ASGI server for handling concurrent WebSocket connections
+    \item \textbf{Python 3.10+}: Programming language with rich ML/NLP ecosystem
+\end{itemize}
+
+\subsubsection{Database(s) / Vector Store}
+\begin{itemize}
+    \item \textbf{Milvus}: Vector database for semantic search
+    \begin{itemize}
+        \item Collection: \texttt{knowledge\_base}
+        \item Vector dimension: 384 (multilingual embedding)
+        \item Index type: IVF\_FLAT
+    \end{itemize}
+    \item \textbf{Docker Compose}: Orchestrates Milvus services (etcd, MinIO, standalone server)
+\end{itemize}
+
+\subsubsection{Core LLM(s) / APIs}
+\begin{itemize}
+    \item \textbf{HKGAI V1}: Primary LLM API with multilingual support (Cantonese, Mandarin, English)
+    \item \textbf{Google Gemini Series}: Alternative LLM provider
+    \begin{itemize}
+        \item Gemini 2.5 Pro: 50 requests/day, 125K TPM
+        \item Gemini 2.5 Flash: 250 requests/day, 250K TPM
+        \item Gemini 2.0 Flash: 200 requests/day, 1M TPM
+    \end{itemize}
+    \item \textbf{Usage Monitoring}: Token tracking and quota management
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/api_usage.png}
+\caption{Gemini API Usage Statistics}
+\label{fig:apiusage}
+\end{figure}
+
+\subsubsection{Key Libraries}
+
+\begin{table}[H] 
+\centering
+\captionsetup{skip=4pt}
+\caption{Key Libraries and Tools}
+\label{tab:key_libraries}
+\begin{tabular}{@{} l p{0.7\textwidth} @{}}
+\toprule
+\textbf{Category} & \textbf{Library/Tool \& Purpose} \\
+\midrule
+Reranking & \texttt{cross-encoder/ms-marco-MiniLM-L-6-v2} for relevance scoring \\
+\addlinespace
+Embeddings & \texttt{paraphrase-multilingual-MiniLM-L12-v2} (supports 100+ languages) \\
+\addlinespace
+Document Processing & LangChain, PyPDF2, python-docx, Pillow \\
+\addlinespace
+Speech Processing & Whisper/Faster Whisper (STT), Parler-TTS/MeloTTS/Edge-TTS (TTS), Silero VAD \\
+\addlinespace
+Agent Framework & LangGraph for workflow orchestration \\
+\addlinespace
+Caching & LRU cache for query results and embeddings \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Data Flow}
+
+The typical data flow for a query follows these steps:
+
+\begin{enumerate}
+    \item \textbf{Query Input}: User submits query via web interface, voice (WebSocket), or REST API
+    \item \textbf{Agent Processing}: Query intent analysis and tool selection
+    \begin{itemize}
+        \item Local RAG Tool: Knowledge base retrieval
+        \item Web Search Tool: Real-time/historical information
+        \item Weather/Finance/Transport Tools: Domain-specific queries
+    \end{itemize}
+    \item \textbf{RAG Retrieval} (if selected):
+    \begin{itemize}
+        \item Query embedding (384-dimensional vector)
+        \item Vector similarity search in Milvus (top-20 candidates)
+        \item Cross-encoder reranking (top-5 documents)
+    \end{itemize}
+    \item \textbf{LLM Generation}: Context + query $\rightarrow$ LLM API $\rightarrow$ Answer
+    \item \textbf{Response Delivery}: Return answer via appropriate interface
+\end{enumerate}
+
+
+\section{Current Progress \& Feature Implementation}
+
+\subsection{Main Workflow Implementation}
+
+\textbf{Implementation Details:} 
+The main workflow has been fully implemented and tested. The system supports multiple interfaces:
+\begin{itemize}
+    \item REST API endpoints: \texttt{/api/rag\_query}, \texttt{/api/agent\_query}
+    \item WebSocket: \texttt{/api/voice/ws} for real-time voice interaction
+    \item File upload: \texttt{/api/upload} for multimodal inputs (PDFs, images, code)
+\end{itemize}
+
+The workflow integrates all components: query processing $\rightarrow$ Agent tool selection $\rightarrow$ RAG retrieval (if needed) $\rightarrow$ LLM generation $\rightarrow$ response delivery. Testing with 128 indexed documents shows robust multilingual support (Cantonese, Mandarin, English) with average response time of 3.42 seconds and 100\% success rate.
+
+\textbf{Challenges Encountered:}
+\begin{itemize}
+    \item Milvus connection issues: Resolved with container health checks and retry logic
+    \item "Channel not found" errors: Fixed with collection state validation and smaller batch sizes (10-20 documents)
+    \item WebSocket stability: Implemented error handling and automatic reconnection
+\end{itemize}
+
+\subsection{Intelligent Source Selection (Weather, Transportation, Finance, etc.)}
+
+\textbf{Implementation Details:}
+The Agent system uses LangGraph workflow engine for intelligent tool selection. Five specialized tools are integrated:
+\begin{itemize}
+    \item \textbf{Local RAG Tool}: Milvus vector database retrieval
+    \item \textbf{Web Search Tool}: DuckDuckGo API (Google Search as fallback)
+    \item \textbf{Weather Tool}: \texttt{wttr.in} API for current/historical weather
+    \item \textbf{Finance Tool}: Yahoo Finance (stocks) + CoinGecko (crypto)
+    \item \textbf{Transport Tool}: OpenRouteService API for routes and travel time
+\end{itemize}
+
+The routing logic analyzes query semantics, keywords, and temporal context. For example, historical weather queries route to web search, while current weather uses the weather tool. Multiple tools can be invoked sequentially for complex queries.
+
+\subsubsection{LangGraph Workflow Process}
+
+The workflow engine processes complex multi-step queries through the following stages:
+
+\begin{enumerate}
+    \item \textbf{Query Input \& Workflow Detection}: When a user submits a query, the system first analyzes it to determine if it requires a multi-step workflow. For example, queries containing keywords like ``compare'', ``vs'', ``earnings'', or multiple company names trigger the finance comparison workflow.
+    
+    \item \textbf{Conditional Routing}: Based on the detected workflow type, the system either proceeds with a multi-step workflow or skips directly to simple query processing. For finance comparison queries, the workflow proceeds through multiple sequential steps.
+    
+    \item \textbf{Multi-Step Execution} (for complex queries):
+    \begin{itemize}
+        \item \textbf{Step 1 - Search Earnings Reports}: The system uses the \textbf{Web Search Tool} to retrieve recent earnings reports and financial news related to the companies mentioned in the query. This provides context about recent financial performance and market events.
+        \item \textbf{Step 2 - Get First Stock Price}: The system extracts the first company name from the query (e.g., NVIDIA) and uses the \textbf{Finance Tool} to fetch its current stock price, trading volume, and other financial metrics.
+        \item \textbf{Step 3 - Get Second Stock Price}: Similarly, the system extracts the second company name (e.g., AMD) and uses the \textbf{Finance Tool} again to fetch its financial data for comparison.
+        \item \textbf{Step 4 - Synthesize Results}: All collected information (earnings reports, stock prices for both companies) is combined and sent to the \textbf{LLM API} (HKGAI or Gemini) to generate a comprehensive comparison answer that synthesizes the web search results and financial data.
+    \end{itemize}
+    
+    \item \textbf{Response Generation}: The LLM generates a final answer that integrates all the collected information, providing a coherent comparison or analysis based on the multi-step data retrieval.
+    
+    \item \textbf{Simple Query Handling}: For queries that don't require multi-step processing, the workflow is skipped and the query is handled directly by the appropriate single tool (e.g., a simple weather query goes directly to the Weather Tool).
+\end{enumerate}
+
+\textbf{Key Features:}
+\begin{itemize}
+    \item \textbf{Conditional Routing}: Intelligently determines whether a query needs multi-step processing
+    \item \textbf{Sequential Tool Execution}: Chains multiple tools in the correct order (Web Search $\rightarrow$ Finance $\rightarrow$ Finance $\rightarrow$ LLM)
+    \item \textbf{State Management}: Maintains context across workflow steps, allowing later steps to access results from earlier steps
+    \item \textbf{Error Handling}: Each step includes error handling to ensure workflow robustness
+    \item \textbf{Dynamic Tool Selection}: Different tools are used at different stages (Web Search for earnings, Finance for stock prices, LLM for synthesis)
+\end{itemize}
+
+\textbf{Challenges Encountered:}
+\begin{itemize}
+    \item Tool selection accuracy: Required extensive prompt engineering and few-shot examples
+    \item API key management: Centralized configuration using environment variables
+    \item Multi-tool queries: Implemented sequential tool execution with state management
+\end{itemize}
+
+\subsection{Local RAG Integration}
+
+\textbf{Implementation Details:}
+Local RAG uses Milvus as the vector storage backend. The system supports:
+\begin{itemize}
+    \item \textbf{Document Processing}: PDF, DOCX, MD, TXT files
+    \item \textbf{Text Chunking}: RecursiveCharacterTextSplitter (500 chars, 50 overlap)
+    \item \textbf{Multilingual Embedding}: \texttt{paraphrase-multilingual-MiniLM-L12-v2} (384-dim vectors)
+    \item \textbf{Two-Stage Retrieval}: Vector search (top-20) $\rightarrow$ Reranking (top-5)
+    \item \textbf{Caching}: LRU cache for query results and embeddings
+\end{itemize}
+
+Testing with 128 indexed documents shows 100\% success rate and 3.42s average response time.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/performance.png}
+\caption{Performance Optimization: Memory Usage and Query Processing Time}
+\label{fig:performance}
+\end{figure}
+
+\textbf{Challenges Encountered:}
+\begin{itemize}
+    \item Milvus collection state: Implemented health checks and automatic recreation
+    \item Batch insertion: Smaller batches (10-20 docs) with retry mechanisms
+    \item Memory optimization: Switched to Faster Whisper (95\% memory reduction: 4GB $\rightarrow$ 183MB)
+\end{itemize}
+
+\subsection{Reranking and Filtering}
+
+\textbf{Implementation Details:}
+The reranking pipeline consists of four stages:
+\begin{enumerate}
+    \item \textbf{Initial Retrieval}: Top-20 candidates from Milvus (L2 distance)
+    \item \textbf{Reranking}: Cross-encoder model (\texttt{ms-marco-MiniLM-L-6-v2}) considering:
+    \begin{itemize}
+        \item Semantic relevance
+        \item Source credibility (configurable weighting)
+        \item Document freshness
+    \end{itemize}
+    \item \textbf{Filtering}: Remove low-credibility (<0.3) and outdated (>365 days) documents
+    \item \textbf{Final Selection}: Top-5 documents as LLM context
+\end{enumerate}
+
+Reranking improves answer accuracy by 15-20\% compared to vector similarity alone.
+
+\textbf{Challenges Encountered:}
+\begin{itemize}
+    \item Latency vs. quality: Two-stage approach (fast vector search + expensive reranking)
+    \item Parameter tuning: Context-aware weighting for historical vs. current queries
+    \item Cache integration: Composite cache keys including reranking parameters
+\end{itemize}
+
+\subsection{Multimodal Support (e.g., Image/Audio Inputs)}
+
+\textbf{Implementation Details:}
+The system supports multimodal interaction through multiple channels including file uploads, voice input, and voice output capabilities.
+
+\vspace{0.3cm}
+\noindent\textbf{File Upload Support}
+
+\begin{table}[H]
+\centering
+\captionsetup{skip=4pt}
+\caption{Supported File Types and Processing}
+\label{tab:file_upload}
+\begin{tabular}{@{} l p{0.7\textwidth} @{}}
+\toprule
+\textbf{File Type} & \textbf{Processing Method} \\
+\midrule
+PDF & PyPDF2 extraction $\rightarrow$ chunking $\rightarrow$ indexing \\
+\addlinespace
+Word Documents & python-docx processing with text extraction \\
+\addlinespace
+Images & Pillow library processing (OCR support planned) \\
+\addlinespace
+Code Files & Syntax-aware chunking for better context preservation \\
+\addlinespace
+Text Files & Direct indexing (supports TXT, MD, JSON, CSV formats) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.3cm}
+\noindent\textbf{Voice Input Capabilities}
+
+\begin{table}[H]
+\centering
+\captionsetup{skip=4pt}
+\caption{Voice Input Technologies}
+\label{tab:voice_input}
+\begin{tabular}{@{} l p{0.7\textwidth} @{}}
+\toprule
+\textbf{Component} & \textbf{Implementation} \\
+\midrule
+Speech-to-Text & Whisper/Faster Whisper with multilingual support (Cantonese, Mandarin, English) \\
+\addlinespace
+Streaming STT & Real-time transcription for immediate feedback \\
+\addlinespace
+Mac Optimization & Lightning Whisper MLX with Apple Silicon acceleration \\
+\addlinespace
+Voice Activity Detection & Web Audio API + Silero VAD for accurate speech detection \\
+\addlinespace
+Wake Word Detection & "Jarvis" activation keyword recognition \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.3cm}
+\noindent\textbf{Voice Output Options}
+
+\begin{table}[H]
+\centering
+\captionsetup{skip=4pt}
+\caption{Text-to-Speech Solutions}
+\label{tab:voice_output}
+\begin{tabular}{@{} l p{0.7\textwidth} @{}}
+\toprule
+\textbf{TTS Engine} & \textbf{Features} \\
+\midrule
+Edge TTS & Cloud-based service with high-quality voice synthesis \\
+\addlinespace
+Parler-TTS & Streaming capability for real-time audio generation \\
+\addlinespace
+MeloTTS & Mac-optimized local processing for low latency \\
+\addlinespace
+Streaming Delivery & Real-time audio chunks via WebSocket for smooth playback \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Challenges Encountered:}
+\begin{itemize}
+    \item Audio format compatibility: Web Audio API for cross-browser support
+    \item Large file handling: Chunked processing for memory efficiency
+    \item Streaming synchronization: Dynamic buffering system
+    \item Mac MLX compatibility: Parameter mapping and graceful fallback
+\end{itemize}
+
+\section{Summary}
+
+Our system has successfully implemented all core features required for the mid-term milestone, demonstrating a robust and production-ready RAG-based intelligent assistant. The architecture follows a modular design with clear separation of concerns, enabling independent development and testing of each component while maintaining system cohesion.
+
+The agent system represents a significant achievement in intelligent query routing and tool orchestration. Built on LangGraph, it provides sophisticated decision-making capabilities that automatically select appropriate tools based on query intent, enabling seamless integration of multiple specialized functions including weather forecasting, financial data retrieval, transportation information, and web search. The RAG integration has proven particularly effective, combining semantic search through Milvus vector database with a carefully tuned reranking mechanism that significantly improves retrieval accuracy. This two-stage approach ensures that users receive contextually relevant information while maintaining system efficiency.
+
+The multimodal capabilities extend system accessibility beyond traditional text-based interaction. Voice input through Whisper STT and voice output via Edge TTS, Parler-TTS, and MeloTTS provide natural language interfaces that support multiple languages including Cantonese, Mandarin, and English. Document processing pipelines handle diverse file formats including PDF, Word documents, images, and code files, making the system versatile for various use cases. Production-ready features such as comprehensive error handling, structured logging, and intelligent caching mechanisms ensure system reliability and performance.
+
+\textbf{Future Development:} Moving forward, our focus will be on performance optimization with a target of sub-2-second latency for simple queries through improved caching strategies and query optimization. We plan to expand multimodal capabilities by implementing OCR for images and introducing video processing support. The workflow automation will be enhanced to handle multi-step query processing for complex information retrieval tasks. Additionally, we aim to integrate specialized tools including academic paper search engines, news aggregation services, and domain-specific databases to broaden the system's knowledge coverage and utility for diverse user needs.
+
+\section{Team Plan and Roles}
+
+This project is a collaborative effort by four team members. The work is divided based on the core components of the RAG system to ensure comprehensive coverage and parallel development.
+
+\begin{table}[H]
+    \centering
+    \captionsetup{skip=4pt}
+    \caption{Team Plan and Roles}
+    \label{tab:team_plan}
+    \begin{tabular}{@{} l l p{0.65\textwidth} @{}}
+        \toprule
+        \textbf{Team Member} & \textbf{Student No.} & \textbf{Key Responsibilities} \\
+        \midrule
+        Yunlin He & 21270701 & Overall project management, system architecture design, Agent system and LangGraph workflow implementation, and integrating all components. \\
+        \addlinespace
+        Letian Wang & 21211913 & Implementing specialized tools (Weather, Finance, Transport, Web Search), API integration, and managing external service connections and error handling. \\
+        \addlinespace
+        Ziyao Su & 21272577 & Document processing pipeline, multimodal support (file upload, audio/voice), Milvus vector database management, and knowledge base indexing. \\
+        \addlinespace
+        Ziyu Jing & 21280146 & RAG retrieval optimization, reranking and filtering implementation, caching mechanisms, performance optimization, and system testing. \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\appendix
+
+\section{Sample Q\&A Interactions}
+
+This appendix demonstrates the system's capabilities through representative question-and-answer pairs across different functional domains. These examples showcase the agent's intelligent routing, RAG integration, and specialized tool usage.
+
+\subsection{Weather Queries}
+
+\textbf{Q1:} What's the weather like in Hong Kong today?
+
+\textbf{A1:} Based on the latest weather data, Hong Kong is currently experiencing partly cloudy conditions with a temperature of 24°C. The humidity is at 75\%, and there's a light breeze from the northeast at 12 km/h. No rain is expected for the rest of the day, with the high reaching 26°C. It's a pleasant day for outdoor activities.
+
+\vspace{0.3cm}
+
+\textbf{Q2:} Should I bring an umbrella to Shenzhen tomorrow?
+
+\textbf{A2:} Yes, you should bring an umbrella. Tomorrow's forecast for Shenzhen shows a 70\% chance of scattered thunderstorms in the afternoon, with rainfall expected between 2 PM and 6 PM. Morning conditions will be cloudy with temperatures around 23°C, rising to 28°C before the rain. Consider planning indoor activities for the afternoon or keeping rain gear handy.
+
+\subsection{Financial Information}
+
+\textbf{Q3:} What's the current exchange rate for USD to HKD?
+
+\textbf{A3:} The current exchange rate is 1 USD = 7.82 HKD. This rate is based on real-time market data and represents the mid-market rate. Please note that actual rates offered by banks and currency exchanges may vary slightly due to service fees and margins. The Hong Kong dollar has remained stable against the US dollar due to the linked exchange rate system.
+
+\vspace{0.3cm}
+
+\textbf{Q4:} How is the Hang Seng Index performing today?
+
+\textbf{A4:} The Hang Seng Index is currently trading at 18,245 points, up 1.2\% from yesterday's close. The index has gained 215 points today, driven by strong performance in the technology sector, with tech stocks rising 2.3\% on average. Market sentiment is positive following encouraging economic data from mainland China. Trading volume is moderately high at 85\% of the daily average.
+
+\subsection{Transportation Information}
+
+\textbf{Q5:} How do I get from HKUST to Central using public transport?
+
+\textbf{A5:} Here's the recommended route from HKUST to Central:
+
+1. Take the HKUST shuttle bus to Diamond Hill MTR Station (approximately 20 minutes)
+2. Board the Kwun Tong Line heading towards Whampoa
+3. Transfer at Admiralty Station to the Island Line
+4. Take the Island Line towards Kennedy Town, get off at Central Station (2 stops)
+
+Total journey time: approximately 50-60 minutes. Alternatively, you can take a taxi directly, which takes about 35-40 minutes depending on traffic. The estimated taxi fare is HKD 180-220.
+
+\subsection{Knowledge Base RAG Queries}
+
+\textbf{Q6:} What are the main components of a RAG system?
+
+\textbf{A6:} Based on the system documentation, a Retrieval-Augmented Generation (RAG) system consists of several key components:
+
+1. \textbf{Embedding Model}: Converts text into dense vector representations for semantic search. Common models include sentence transformers and multilingual embeddings.
+
+2. \textbf{Vector Database}: Stores and indexes document embeddings for efficient similarity search. Examples include Milvus, Pinecone, and FAISS.
+
+3. \textbf{Retrieval Mechanism}: Performs semantic search to find relevant documents based on query embeddings, typically using cosine similarity or other distance metrics.
+
+4. \textbf{Reranking System}: Refines initial retrieval results using more sophisticated models to improve relevance, often employing cross-encoders.
+
+5. \textbf{Language Model}: Generates responses using retrieved context combined with the original query, ensuring factual accuracy and contextual relevance.
+
+The interaction between these components enables RAG systems to provide accurate, context-aware responses while minimizing hallucinations.
+
+\vspace{0.3cm}
+
+\textbf{Q7:} Explain the difference between synchronous and asynchronous programming.
+
+\textbf{A7:} Synchronous and asynchronous programming represent two different approaches to handling operations:
+
+\textbf{Synchronous Programming:} Operations execute sequentially, with each task waiting for the previous one to complete before starting. This approach is simpler to understand and debug but can be inefficient when dealing with I/O operations or network requests, as the program blocks while waiting for operations to complete.
+
+\textbf{Asynchronous Programming:} Multiple operations can be initiated without waiting for previous ones to complete. The program continues executing other tasks while waiting for I/O or network operations, improving overall efficiency and responsiveness. This is particularly valuable for web applications, APIs, and systems requiring high concurrency.
+
+In Python, asynchronous programming is implemented using async/await syntax with the asyncio library, while JavaScript uses Promises and async/await. The choice between synchronous and asynchronous approaches depends on the application's requirements for performance, complexity, and responsiveness.
+
+\subsection{Multi-turn Conversation}
+
+\textbf{Q8:} I'm planning a trip to Tokyo next month. What should I prepare?
+
+\textbf{A8:} For a trip to Tokyo next month, here are the essential preparations:
+
+\textbf{Documentation:} Ensure your passport is valid for at least 6 months. Check if you need a visa based on your nationality. Most tourists can enter Japan visa-free for up to 90 days.
+
+\textbf{Weather \& Clothing:} Next month's weather in Tokyo will be transitioning into spring/fall (depending on the current month). Pack layers, a light jacket, and comfortable walking shoes as you'll be exploring extensively.
+
+\textbf{Currency \& Payments:} Japan is still largely cash-based. Exchange some Japanese Yen before arriving or withdraw from ATMs. Inform your bank about international travel to avoid card blocks.
+
+\textbf{Transportation:} Consider getting a JR Pass if you plan to travel beyond Tokyo. Purchase a Suica or Pasmo card for convenient payment on trains, buses, and in stores.
+
+\textbf{Connectivity:} Rent a pocket WiFi or get a SIM card for constant internet access, essential for navigation and translation apps.
+
+\vspace{0.3cm}
+
+\textbf{Q9:} How about accommodation recommendations?
+
+\textbf{A9:} For accommodation in Tokyo, consider these areas based on your preferences:
+
+\textbf{Shinjuku:} Central location with excellent transport connections, plenty of restaurants and entertainment. Good for first-time visitors.
+
+\textbf{Shibuya:} Vibrant and youthful atmosphere, close to shopping and nightlife. Well-connected to other areas.
+
+\textbf{Asakusa:} Traditional atmosphere near Senso-ji Temple, more affordable options, great for experiencing old Tokyo.
+
+\textbf{Ginza:} Upscale area with luxury shopping and dining, quieter at night, excellent for business travelers.
+
+Budget options include capsule hotels (¥3,000-5,000/night) and business hotels (¥6,000-10,000/night). Mid-range hotels typically range from ¥10,000-20,000 per night. Book in advance as Tokyo hotels fill up quickly, especially during cherry blossom season or major holidays.
+
+\end{document}
+

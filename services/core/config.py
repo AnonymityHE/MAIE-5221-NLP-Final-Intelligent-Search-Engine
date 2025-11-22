@@ -79,6 +79,12 @@ class Settings(BaseModel):
     GEMINI_ENABLED: bool = get_env_bool("GEMINI_ENABLED", True)
     GEMINI_PROJECT_NUMBER: str = get_env("GEMINI_PROJECT_NUMBER", "your-project-number-here")
     
+    # 豆包API配置（字节跳动，支持多模态）
+    DOUBAO_API_KEY: str = get_env("DOUBAO_API_KEY", "")  # 请在.env文件中设置
+    DOUBAO_DEFAULT_MODEL: str = get_env("DOUBAO_DEFAULT_MODEL", "doubao-seed-1-6-251015")
+    DOUBAO_LITE_MODEL: str = get_env("DOUBAO_LITE_MODEL", "doubao-seed-1-6-lite-251015")
+    USE_DOUBAO: bool = get_env_bool("USE_DOUBAO", True)
+    
     # RAG 配置
     TOP_K: int = get_env_int("TOP_K", 5)
     CHUNK_SIZE: int = get_env_int("CHUNK_SIZE", 500)
@@ -105,6 +111,10 @@ class Settings(BaseModel):
     # 网页搜索API配置
     GOOGLE_SEARCH_API_KEY: Optional[str] = get_env("GOOGLE_SEARCH_API_KEY", None)  # 请在.env文件中设置
     GOOGLE_CSE_ID: Optional[str] = get_env("GOOGLE_CSE_ID", None)  # Custom Search Engine ID
+    
+    # Tavily AI Search配置（推荐，专为AI优化）
+    TAVILY_API_KEY: Optional[str] = get_env("TAVILY_API_KEY", None)  # 请在.env文件中设置
+    USE_TAVILY_SEARCH: bool = get_env_bool("USE_TAVILY_SEARCH", True)  # 优先使用Tavily（如果可用）
     
     # 性能优化配置
     USE_CACHE: bool = get_env("USE_CACHE", "true").lower() == "true"  # 是否启用查询缓存

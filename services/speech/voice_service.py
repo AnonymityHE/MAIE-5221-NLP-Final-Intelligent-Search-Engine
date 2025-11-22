@@ -1,5 +1,6 @@
 """
 语音服务整合模块 - 封装语音查询的完整流程
+支持双引擎STT：HKGAI（粤语优化） + Whisper（多语言）
 """
 from typing import Dict, Optional, Tuple
 from services.core.logger import logger
@@ -11,6 +12,8 @@ class VoiceService:
     
     def __init__(self):
         self._stt = None
+        self._hkgai_stt = None  # 新增：HKGAI STT客户端
+        self._hkgai_tts = None  # 新增：HKGAI TTS客户端（粤语优化）
         self._wake_word_detector = None
         self._tts = None
     
@@ -52,14 +55,45 @@ class VoiceService:
             self._tts = get_tts(use_edge_tts=settings.USE_EDGE_TTS)
         return self._tts
     
+    def _get_hkgai_stt(self):
+        """获取HKGAI STT实例（延迟加载）"""
+        if self._hkgai_stt is None:
+            try:
+                from services.speech.hkgai_stt import get_hkgai_client
+                self._hkgai_stt = get_hkgai_client()
+                if self._hkgai_stt.is_available():
+                    logger.info("✅ HKGAI语音识别已加载（粤语优化）")
+                else:
+                    logger.warning("⚠️  HKGAI语音识别未配置")
+            except Exception as e:
+                logger.warning(f"⚠️  HKGAI STT加载失败: {e}")
+                self._hkgai_stt = None
+        return self._hkgai_stt
+    
+    def _get_hkgai_tts(self):
+        """获取HKGAI TTS实例（延迟加载）"""
+        if self._hkgai_tts is None:
+            try:
+                from services.speech.hkgai_tts import get_hkgai_tts_client
+                self._hkgai_tts = get_hkgai_tts_client()
+                if self._hkgai_tts.is_available():
+                    logger.info("✅ HKGAI语音合成已加载（粤语/普通话）")
+                else:
+                    logger.warning("⚠️  HKGAI TTS未配置")
+            except Exception as e:
+                logger.warning(f"⚠️  HKGAI TTS加载失败: {e}")
+                self._hkgai_tts = None
+        return self._hkgai_tts
+    
     def transcribe_audio(
         self,
         audio_bytes: bytes,
         audio_format: str,
-        language: Optional[str] = None
+        language: Optional[str] = None,
+        prefer_hkgai: bool = True  # 新增：是否优先使用HKGAI（粤语场景）
     ) -> Dict:
         """
-        将音频转换为文本（支持中文、粤语、英语自动检测）
+        将音频转换为文本（支持双引擎STT：HKGAI + Whisper）
         
         Args:
             audio_bytes: 音频字节数据
@@ -67,13 +101,39 @@ class VoiceService:
             language: 指定语言（可选）
                 - None: 自动检测（推荐，支持中文、粤语、英语混合）
                 - "zh": 强制中文（普通话）
-                - "yue": 强制粤语
+                - "yue": 强制粤语（优先使用HKGAI）
                 - "en": 强制英语
                 - "auto": 自动检测
+            prefer_hkgai: 是否优先使用HKGAI（粤语优化）
             
         Returns:
             转录结果字典
         """
+        # 判断是否使用HKGAI（粤语场景）
+        use_hkgai_first = (
+            prefer_hkgai and 
+            settings.USE_CANTONESE_API and 
+            (language == "yue" or language == "zh" or language is None)
+        )
+        
+        # 尝试使用HKGAI（粤语优化）
+        if use_hkgai_first:
+            hkgai_stt = self._get_hkgai_stt()
+            if hkgai_stt and hkgai_stt.is_available():
+                logger.info("🎤 使用HKGAI进行语音识别（粤语优化）...")
+                
+                hkgai_result = hkgai_stt.recognize(audio_bytes)
+                
+                if hkgai_result.get("success"):
+                    logger.info(f"✅ HKGAI识别成功: '{hkgai_result['text'][:50]}...'")
+                    # 添加置信度信息
+                    hkgai_result['confidence'] = hkgai_result.get('confidence', 0.95)
+                    return hkgai_result
+                else:
+                    logger.warning(f"⚠️  HKGAI识别失败，fallback到Whisper: {hkgai_result.get('error')}")
+        
+        # 使用Whisper（作为主要引擎或fallback）
+        logger.info("🎤 使用Whisper进行语音识别...")
         stt = self._get_stt()
         if not stt or not stt.is_available():
             return {
@@ -109,7 +169,7 @@ class VoiceService:
                 lang_info = "（混合语言）"
             
             logger.info(
-                f"语音识别完成: '{transcribed_text[:50]}...' "
+                f"✅ Whisper识别完成: '{transcribed_text[:50]}...' "
                 f"(语言: {detected_language}{lang_info}, 置信度: {confidence:.2f})"
             )
         
@@ -147,14 +207,19 @@ class VoiceService:
     def generate_audio_response(
         self,
         text: str,
-        language: str = "zh"
+        language: str = "zh",
+        prefer_hkgai: bool = True  # 新增：是否优先使用HKGAI（粤语/普通话场景）
     ) -> Optional[str]:
         """
-        生成语音回复
+        生成语音回复（支持双引擎TTS：HKGAI + Edge TTS）
         
         Args:
             text: 要转换的文本
             language: 语言代码
+                - "zh": 普通话
+                - "yue": 粤语
+                - "en": 英语
+            prefer_hkgai: 是否优先使用HKGAI（粤语/普通话场景）
             
         Returns:
             音频文件路径（如果成功）或None
@@ -162,10 +227,39 @@ class VoiceService:
         if not settings.ENABLE_SPEECH:
             return None
         
+        # 判断是否使用HKGAI TTS（粤语或普通话场景）
+        use_hkgai_first = (
+            prefer_hkgai and 
+            (language in ["zh", "yue", "zh-CN", "zh-HK"])
+        )
+        
+        # 尝试使用HKGAI TTS（粤语/普通话优化）
+        if use_hkgai_first:
+            hkgai_tts = self._get_hkgai_tts()
+            if hkgai_tts and hkgai_tts.is_available():
+                logger.info("🎤 使用HKGAI TTS合成语音（粤语/普通话优化）...")
+                
+                # 确定HKGAI语言
+                hkgai_lang = "cantonese" if language in ["yue", "zh-HK"] else "mandarin"
+                
+                audio_file = hkgai_tts.synthesize(
+                    text=text,
+                    language=hkgai_lang,
+                    voice="female"  # 默认女声
+                )
+                
+                if audio_file:
+                    logger.info(f"✅ HKGAI TTS合成成功: {audio_file}")
+                    return audio_file
+                else:
+                    logger.warning("⚠️  HKGAI TTS合成失败，fallback到Edge TTS")
+        
+        # 使用Edge TTS（作为主要引擎或fallback）
         try:
+            logger.info("🎤 使用Edge TTS合成语音...")
             tts = self._get_tts()
             if not tts or not tts.is_available():
-                logger.warning("TTS服务不可用")
+                logger.warning("⚠️  Edge TTS服务不可用")
                 return None
             
             # 确定语言映射
@@ -191,13 +285,13 @@ class VoiceService:
             )
             
             if audio_file and os.path.exists(audio_file):
-                logger.info(f"生成语音回复: {audio_file} ({len(text)}字符)")
+                logger.info(f"✅ Edge TTS合成成功: {audio_file} ({len(text)}字符)")
                 return audio_file
             else:
                 return None
                 
         except Exception as e:
-            logger.warning(f"生成语音回复失败: {e}")
+            logger.warning(f"❌ 语音合成失败: {e}")
             return None
 
 

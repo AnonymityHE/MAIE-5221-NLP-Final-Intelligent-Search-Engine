@@ -1,0 +1,202 @@
+[
+  {
+    "id": "CN-1",
+    "question": "香港科技大学在哪里？",
+    "language": "中文",
+    "category": "基础知识",
+    "expected_tools": [
+      "local_rag"
+    ],
+    "result": {
+      "success": true,
+      "answer": "香港科技大学位于中国香港特别行政区。",
+      "response_time": 9.578967094421387,
+      "tools_used": [
+        "local_rag"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "CN-2",
+    "question": "RAG系统的核心组件有哪些？",
+    "language": "中文",
+    "category": "技术知识",
+    "expected_tools": [
+      "local_rag"
+    ],
+    "result": {
+      "success": true,
+      "answer": "RAG系统的核心组件包括：混合语言检测模块、粤语查询优化模块、Chunk大小优化模块、金融数据工具、交通查询工具、Jarvis语音助手、流式STT/TTS模块等。此外，还包括Services目录模块化重构、本地RAG、网页搜索、天气、金融、交通等工具。",
+      "response_time": 11.004240989685059,
+      "tools_used": [
+        "local_rag"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "CN-3",
+    "question": "现在香港的天气怎么样？",
+    "language": "中文",
+    "category": "实时信息",
+    "expected_tools": [
+      "weather"
+    ],
+    "result": {
+      "success": true,
+      "answer": "根据上下文信息，无法直接回答\"现在香港的天气怎么样？\"这个问题。建议您通过以下方式获取天气信息：\n1. 查看天气预报网站或应用\n2. 使用专门的天气查询API\n3. 使用上下文中的Gemini API进行查询（如示例中的Agent模式）",
+      "response_time": 13.41160273551941,
+      "tools_used": [
+        "local_rag"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "CN-4",
+    "question": "苹果公司的股价是多少？",
+    "language": "中文",
+    "category": "实时信息",
+    "expected_tools": [
+      "finance"
+    ],
+    "result": {
+      "success": true,
+      "answer": "苹果公司（股票代码：AAPL）的当前股价是$271.11。",
+      "response_time": 8.97917890548706,
+      "tools_used": [
+        "finance"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "CN-5",
+    "question": "比亚迪和特斯拉哪个股价更高？",
+    "language": "中文",
+    "category": "对比分析",
+    "expected_tools": [
+      "finance"
+    ],
+    "result": {
+      "success": true,
+      "answer": "根据获取到的股价数据，特斯拉的股价（$386.39）比比亚迪的股价（$92.70）更高。",
+      "response_time": 11.609555959701538,
+      "tools_used": [
+        "finance"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "CN-6",
+    "question": "比较香港和北京今天的天气",
+    "language": "中文",
+    "category": "对比分析",
+    "expected_tools": [
+      "weather"
+    ],
+    "result": {
+      "success": true,
+      "answer": "香港和北京今天的天气比较如下：\n\n- 温度：香港21°C，体感21°C；北京-1°C，体感-2°C。香港明显比北京暖和。\n- 天气状况：两地都是晴天（Clear）。\n- 湿度：香港35%，较为干燥；北京74%，较为湿润。\n- 风速和风向：香港风速14 km/h，风向NE（东北）；北京风速5 km/h，风向NW（西北）。\n\n总体来说，香港今天的天气比北京温暖干燥，风速也更大；而北京则较为寒冷湿润，风速较小。两地今天都是晴天。",
+      "response_time": 21.058734893798828,
+      "tools_used": [
+        "weather"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "EN-1",
+    "question": "Where is the Hong Kong University of Science and Technology located?",
+    "language": "英文",
+    "category": "基础知识",
+    "expected_tools": [
+      "local_rag"
+    ],
+    "result": {
+      "success": true,
+      "answer": "The Hong Kong University of Science and Technology is located in Clear Water Bay, Kowloon, Hong Kong.",
+      "response_time": 11.06160306930542,
+      "tools_used": [
+        "local_rag"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "EN-2",
+    "question": "What are the core components of a RAG system?",
+    "language": "英文",
+    "category": "技术知识",
+    "expected_tools": [
+      "local_rag"
+    ],
+    "result": {
+      "success": true,
+      "answer": "一个RAG系统的核心组件包括：\n\n1. **数据收集和预处理**：收集和预处理多样化和高质量的数据集。数据应代表RAG系统将执行的任务。\n\n2. **模型选择**：为检索器和生成器组件选择合适的预训练模型。检索器应能高效找到相关文档，生成器应能生成高质量的文本。\n\n3. **生成组件**：使用多语言语言模型（如mBART、mT5或多语言GPT）生成目标语言的响应。在数据集上微调生成模型以提高中文、粤语和英语的性能。\n\n4. **评估和微调**：在多语言基准和用户反馈上评估RAG系统。根据评估结果微调组件以提高性能。\n\n5. **重新排序（Reranking）**：在初始检索（例如向量相似性搜索）后，使用更复杂的模型重新排序结果以提高相关性。",
+      "response_time": 13.900535821914673,
+      "tools_used": [
+        "local_rag"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "EN-3",
+    "question": "What's the weather like in Hong Kong now?",
+    "language": "英文",
+    "category": "实时信息",
+    "expected_tools": [
+      "weather"
+    ],
+    "result": {
+      "success": true,
+      "answer": "It is currently Clear in Hong Kong with a temperature of 21°C (feels like 21°C). The humidity is at 35% and there's a NE wind blowing at 14 km/h.",
+      "response_time": 12.035944938659668,
+      "tools_used": [
+        "weather"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  },
+  {
+    "id": "EN-4",
+    "question": "What is Apple's stock price?",
+    "language": "英文",
+    "category": "实时信息",
+    "expected_tools": [
+      "finance"
+    ],
+    "result": {
+      "success": true,
+      "answer": "Apple's current stock price is $271.06.",
+      "response_time": 8.775776624679565,
+      "tools_used": [
+        "finance"
+      ],
+      "workflow_steps": [],
+      "provider": "",
+      "model": ""
+    }
+  }
+]

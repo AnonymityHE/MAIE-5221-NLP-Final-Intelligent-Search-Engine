@@ -268,13 +268,14 @@ class DynamicWorkflowEngine:
             context: 执行上下文
             
         Returns:
-            工具使用列表
+            工具使用列表（去重）
         """
-        tools_used = []
+        tools_used_set = set()
         for step in context.plan.steps:
             if step.step_id in context.completed_steps:
-                tools_used.append(f"workflow:{step.tool}:{step.action}")
-        return tools_used
+                # 只记录工具名，不包括具体action
+                tools_used_set.add(step.tool)
+        return list(tools_used_set)
 
 
 # 全局执行引擎实例

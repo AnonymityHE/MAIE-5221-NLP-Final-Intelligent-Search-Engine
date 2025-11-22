@@ -455,6 +455,78 @@ async def _process_voice_query_with_rag(query_text: str) -> Dict:
     }
 
 
+@router.post("/stt")
+async def speech_to_text(audio: UploadFile = FastAPIFile(...)):
+    """
+    🎤 语音转文本接口（STT）
+    
+    单纯的语音识别，不进行Agent处理
+    
+    Args:
+        audio: 音频文件（wav, mp3, m4a, flac等）
+    
+    Returns:
+        {
+            "text": "识别的文本",
+            "language": "检测到的语言",
+            "confidence": 置信度
+        }
+    """
+    if not settings.ENABLE_SPEECH:
+        raise HTTPException(status_code=503, detail="语音功能未启用")
+    
+    try:
+        # 导入语音服务
+        try:
+            from services.speech.voice_service import get_voice_service
+        except ImportError:
+            raise HTTPException(
+                status_code=503,
+                detail="语音模块未安装，请运行: pip install openai-whisper soundfile edge-tts"
+            )
+        
+        voice_service = get_voice_service()
+        
+        # 读取音频文件
+        audio_bytes = await audio.read()
+        audio_format = audio.filename.split('.')[-1] if '.' in audio.filename else "wav"
+        logger.info(f"收到STT请求: {audio.filename}, 格式: {audio_format}, 大小: {len(audio_bytes)} bytes")
+        
+        # 语音转文本
+        transcription_result = voice_service.transcribe_audio(
+            audio_bytes=audio_bytes,
+            audio_format=audio_format,
+            language=None  # 自动检测语言
+        )
+        
+        if "error" in transcription_result:
+            raise HTTPException(
+                status_code=500,
+                detail=f"语音识别失败: {transcription_result['error']}"
+            )
+        
+        transcribed_text = transcription_result.get("text", "").strip()
+        detected_language = transcription_result.get("language", "unknown")
+        confidence = transcription_result.get("confidence", 0.0)
+        
+        if not transcribed_text:
+            raise HTTPException(status_code=400, detail="未能识别语音内容，请检查音频质量")
+        
+        logger.info(f"STT识别成功: {transcribed_text} (语言: {detected_language}, 置信度: {confidence:.2%})")
+        
+        return {
+            "text": transcribed_text,
+            "language": detected_language,
+            "confidence": confidence
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"STT处理失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"STT处理失败: {str(e)}")
+
+
 @router.post("/voice/query", response_model=VoiceQueryResponse)
 async def voice_query(audio: UploadFile = FastAPIFile(...), request: Optional[str] = None):
     """
@@ -637,4 +709,277 @@ async def voice_websocket(websocket: WebSocket):
         logger.error(f"WebSocket连接错误: {e}")
     finally:
         handler.disconnect(client_id)
+
+
+# ========== 🖼️ 多模态查询接口 ==========
+
+@router.post("/multimodal/query")
+async def multimodal_query(request: dict):
+    """
+    🖼️ 多模态查询接口（图片+文本）
+    
+    支持：
+    - 单张或多张图片
+    - 自动OCR文字识别
+    - 会话历史管理
+    - 图片去重
+    - 多模型支持（豆包/Gemini）
+    
+    请求格式:
+    {
+        "query": "问题文本",
+        "images": ["base64_image1", "base64_image2", ...],
+        "session_id": "可选的会话ID",
+        "use_ocr": true,
+        "provider": "doubao",  # doubao 或 gemini
+        "model": "doubao-seed-1-6-251015"  # 可选
+    }
+    """
+    try:
+        from services.vision import get_image_processor, get_image_history
+        from backend.models import MultimodalQueryResponse, OCRResult
+        
+        # 解析请求
+        query_text = request.get("query", "")
+        images_base64 = request.get("images", [])
+        session_id = request.get("session_id")
+        use_ocr = request.get("use_ocr", True)
+        provider = request.get("provider", "doubao")  # 默认使用豆包
+        model_name = request.get("model")
+        
+        if not query_text:
+            raise HTTPException(status_code=400, detail="查询文本不能为空")
+        
+        if not images_base64:
+            raise HTTPException(status_code=400, detail="至少需要一张图片")
+        
+        # 选择多模态客户端
+        if provider == "doubao":
+            from services.llm.doubao_multimodal import get_doubao_client
+            if not model_name:
+                model_name = settings.DOUBAO_DEFAULT_MODEL
+            multimodal_client = get_doubao_client(model=model_name)  # 传递模型参数
+        elif provider == "gemini":
+            from services.llm.gemini_multimodal import get_multimodal_client
+            multimodal_client = get_multimodal_client()
+            if not model_name:
+                model_name = "gemini-2.0-flash-exp"
+        else:
+            raise HTTPException(status_code=400, detail=f"不支持的provider: {provider}")
+        
+        # 获取服务
+        image_processor = get_image_processor()
+        image_history = get_image_history()
+        
+        # 创建或获取会话
+        if not session_id:
+            session_id = image_history.create_session()
+        
+        # 处理图片
+        processed_images = []
+        ocr_results = []
+        
+        for i, img_base64 in enumerate(images_base64):
+            try:
+                # 预处理图片
+                processed = image_processor.process_image(
+                    img_base64,
+                    optimize_for_ocr=use_ocr
+                )
+                
+                processed_images.append(processed["base64"])
+                
+                # 添加到历史
+                image_history.add_image(
+                    session_id=session_id,
+                    image_data=processed["base64"],
+                    image_hash=processed["hash"],
+                    mime_type="image/jpeg"
+                )
+                
+                # OCR
+                if use_ocr:
+                    ocr_result = multimodal_client.extract_text_from_image(processed["base64"])
+                    if not ocr_result.get("error"):
+                        ocr_results.append({
+                            "text": ocr_result["text"],
+                            "confidence": ocr_result["confidence"],
+                            "language": ocr_result.get("language", "auto")
+                        })
+                
+                logger.info(f"✅ 图片 {i+1}/{len(images_base64)} 处理完成")
+                
+            except Exception as e:
+                logger.error(f"❌ 图片 {i+1} 处理失败: {e}")
+                raise HTTPException(status_code=400, detail=f"图片{i+1}处理失败: {e}")
+        
+        # 构建增强的查询（包含OCR文本）
+        enhanced_query = query_text
+        if ocr_results:
+            ocr_texts = "\n".join([f"图片{i+1}文字: {r['text']}" for i, r in enumerate(ocr_results)])
+            enhanced_query = f"{query_text}\n\n识别到的图片文字：\n{ocr_texts}"
+        
+        # 调用多模态LLM
+        llm_result = multimodal_client.query_with_images(
+            query=enhanced_query,
+            images=processed_images,
+            max_tokens=2048,
+            temperature=0.7
+        )
+        
+        if "error" in llm_result:
+            raise HTTPException(status_code=500, detail=llm_result["error"])
+        
+        # 构建响应
+        response = {
+            "answer": llm_result["content"],
+            "query": query_text,
+            "session_id": session_id,
+            "model_used": llm_result["model"],
+            "images_processed": len(processed_images),
+            "ocr_results": ocr_results if use_ocr else None,
+            "tokens_used": {
+                "input": llm_result.get("input_tokens", 0),
+                "output": llm_result.get("output_tokens", 0),
+                "total": llm_result.get("total_tokens", 0)
+            }
+        }
+        
+        logger.info(f"✅ 多模态查询成功：{len(processed_images)}张图片，{response['tokens_used']['total']} tokens")
+        
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ 多模态查询失败: {e}")
+        import traceback
+        logger.debug(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"多模态查询失败: {str(e)}")
+
+
+@router.post("/multimodal/ocr")
+async def ocr_image(request: dict):
+    """
+    🔍 图片OCR接口（仅文字识别）
+    
+    请求格式:
+    {
+        "image": "base64_image",
+        "enhance": true,  # 是否增强图片
+        "provider": "doubao"  # doubao 或 gemini
+    }
+    """
+    try:
+        from services.vision import get_image_processor
+        
+        image_base64 = request.get("image", "")
+        enhance = request.get("enhance", True)
+        provider = request.get("provider", "doubao")
+        model_name = request.get("model")
+        
+        if not image_base64:
+            raise HTTPException(status_code=400, detail="图片数据不能为空")
+        
+        # 预处理
+        image_processor = get_image_processor()
+        processed = image_processor.process_image(
+            image_base64,
+            optimize_for_ocr=enhance
+        )
+        
+        # 选择OCR客户端
+        if provider == "doubao":
+            from services.llm.doubao_multimodal import get_doubao_client
+            if not model_name:
+                model_name = settings.DOUBAO_DEFAULT_MODEL
+            multimodal_client = get_doubao_client(model=model_name)
+        elif provider == "gemini":
+            from services.llm.gemini_multimodal import get_multimodal_client
+            multimodal_client = get_multimodal_client()
+        else:
+            raise HTTPException(status_code=400, detail=f"不支持的provider: {provider}")
+        
+        # OCR
+        ocr_result = multimodal_client.extract_text_from_image(processed["base64"])
+        
+        if "error" in ocr_result:
+            raise HTTPException(status_code=500, detail=ocr_result["error"])
+        
+        return {
+            "text": ocr_result["text"],
+            "confidence": ocr_result["confidence"],
+            "language": ocr_result.get("language", "auto"),
+            "char_count": len(ocr_result["text"]),
+            "model": ocr_result["model"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ OCR失败: {e}")
+        raise HTTPException(status_code=500, detail=f"OCR失败: {str(e)}")
+
+
+@router.get("/multimodal/session/{session_id}/images")
+async def get_session_images(session_id: str, include_data: bool = False):
+    """
+    📋 获取会话的图片历史
+    
+    Args:
+        session_id: 会话ID
+        include_data: 是否包含图片数据（默认false）
+    """
+    try:
+        from services.vision import get_image_history
+        
+        image_history = get_image_history()
+        images = image_history.get_session_images(session_id, include_data)
+        
+        return {
+            "session_id": session_id,
+            "images": images,
+            "total": len(images)
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ 获取会话图片失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取会话图片失败: {str(e)}")
+
+
+@router.get("/multimodal/session/{session_id}/stats")
+async def get_session_stats(session_id: str):
+    """📊 获取会话统计信息"""
+    try:
+        from services.vision import get_image_history
+        
+        image_history = get_image_history()
+        stats = image_history.get_session_stats(session_id)
+        
+        return stats
+        
+    except Exception as e:
+        logger.error(f"❌ 获取会话统计失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取会话统计失败: {str(e)}")
+
+
+@router.delete("/multimodal/session/{session_id}")
+async def clear_session(session_id: str):
+    """🗑️ 清空会话历史"""
+    try:
+        from services.vision import get_image_history
+        
+        image_history = get_image_history()
+        success = image_history.clear_session(session_id)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail="会话不存在")
+        
+        return {"message": "会话已清空", "session_id": session_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ 清空会话失败: {e}")
+        raise HTTPException(status_code=500, detail=f"清空会话失败: {str(e)}")
 

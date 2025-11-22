@@ -1,5 +1,5 @@
 """
-网页搜索工具 - 使用Google Custom Search API或DuckDuckGo进行网页搜索
+网页搜索工具 - 使用Tavily AI / Google Custom Search / DuckDuckGo进行网页搜索
 """
 import requests
 from typing import Dict, List, Optional
@@ -10,7 +10,7 @@ from services.core.logger import logger
 
 def web_search(query: str, num_results: int = 5) -> Dict:
     """
-    网页搜索工具（优先使用Google Custom Search API，如果不可用则回退到DuckDuckGo）
+    网页搜索工具（优先级：Tavily > Google > DuckDuckGo）
     
     Args:
         query: 搜索查询
@@ -19,7 +19,46 @@ def web_search(query: str, num_results: int = 5) -> Dict:
     Returns:
         搜索结果字典
     """
-    # 优先使用Google Custom Search API
+    # 🌟 优先使用Tavily AI Search（专为AI优化）
+    tavily_api_key = getattr(settings, 'TAVILY_API_KEY', None)
+    use_tavily = getattr(settings, 'USE_TAVILY_SEARCH', True)
+    
+    if tavily_api_key and use_tavily:
+        try:
+            from services.tools.tavily_search import get_tavily_client
+            
+            tavily_client = get_tavily_client()
+            tavily_result = tavily_client.search(
+                query=query,
+                max_results=num_results,
+                search_depth="basic",
+                include_answer=True
+            )
+            
+            if "error" not in tavily_result and tavily_result.get("results"):
+                # 转换为统一格式
+                results = []
+                for item in tavily_result["results"]:
+                    results.append({
+                        "title": item.get("title", ""),
+                        "snippet": item.get("content", "")[:200],  # 限制长度
+                        "url": item.get("url", ""),
+                        "type": "tavily_search",
+                        "score": item.get("score", 0.0)
+                    })
+                
+                logger.info(f"✅ 使用Tavily AI搜索获取 {len(results)} 个结果")
+                
+                return {
+                    "success": True,
+                    "query": query,
+                    "results": results,
+                    "ai_answer": tavily_result.get("answer", "")  # Tavily的AI答案摘要
+                }
+        except Exception as e:
+            logger.warning(f"⚠️  Tavily搜索失败: {e}，回退到Google/DuckDuckGo")
+    
+    # 回退到Google Custom Search API
     google_api_key = getattr(settings, 'GOOGLE_SEARCH_API_KEY', None)
     google_cse_id = getattr(settings, 'GOOGLE_CSE_ID', None)
     
