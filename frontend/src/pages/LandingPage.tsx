@@ -22,9 +22,6 @@ const HeroSection = ({ onStart }: { onStart: () => void }) => {
   const titleScale = useTransform(scrollYProgress, [0, 1], [1, 1.5]);
   const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   
-  const subtitleY = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const subtitleOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  
   const descY = useTransform(scrollYProgress, [0, 1], [0, 150]);
   const descOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
   
@@ -47,7 +44,7 @@ const HeroSection = ({ onStart }: { onStart: () => void }) => {
         
         <motion.div
           style={{ y: titleY, scale: titleScale, opacity: titleOpacity }}
-          className="mb-6"
+          className="mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -61,13 +58,6 @@ const HeroSection = ({ onStart }: { onStart: () => void }) => {
             JUDE
           </GradientText>
         </motion.div>
-        
-        <motion.p
-          style={{ y: subtitleY, opacity: subtitleOpacity }}
-          className="text-3xl text-gray-200 font-light mb-4 tracking-wide"
-        >
-          Just Universal Digital Entity
-        </motion.p>
         
         <motion.p
           style={{ y: descY, opacity: descOpacity }}
@@ -202,9 +192,7 @@ const FeaturesSection = () => {
                 }`}>
                   {feature.title}
                 </h3>
-                <p className={`text-xs font-medium ${
-                  selectedFeature === index ? 'text-purple-300' : 'text-gray-200'
-                }`}>
+                <p className="text-xs font-medium text-purple-300">
                   {feature.subtitle}
                 </p>
               </motion.div>
@@ -283,7 +271,7 @@ const ProblemSolutionSection = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
         <div className="space-y-8">
-          <h3 className="text-3xl font-bold text-pink-400">Current Limitations</h3>
+          <h3 className="text-3xl font-bold text-cyan-400">Current Limitations</h3>
           <div className="space-y-6">
             <div>
               <h4 className="text-xl font-semibold mb-2">Single Model Limitation</h4>
@@ -367,12 +355,12 @@ const InnovationSection = ({ onShowDashboard }: { onShowDashboard: () => void })
               className="group"
             >
               <div className="flex items-start gap-6">
-                <div className="text-6xl font-bold text-purple-400/40 group-hover:text-purple-400/60 transition-colors">
+                <div className="text-6xl font-bold text-purple-500 group-hover:text-purple-400 transition-colors">
                   {item.number}
                 </div>
                 <div className="flex-1 pt-1">
                   <h3 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors">{item.title}</h3>
-                  <p className="text-purple-200 mb-2 text-base font-medium">{item.subtitle}</p>
+                  <p className="text-purple-300 mb-2 text-base font-medium">{item.subtitle}</p>
                   <p className="text-gray-200 leading-relaxed text-base">{item.description}</p>
                 </div>
               </div>
