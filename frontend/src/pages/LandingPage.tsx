@@ -1,10 +1,8 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Mic, Cpu, Network, Zap, Database, Activity, 
-  ArrowRight, Globe, Layers, MessageSquare, ChevronDown,
-  CheckCircle, Box, Workflow
+  Mic, Activity, ChevronDown
 } from 'lucide-react';
 import GradientText from '../components/GradientText';
 import Dashboard from '../components/presentation/Dashboard';

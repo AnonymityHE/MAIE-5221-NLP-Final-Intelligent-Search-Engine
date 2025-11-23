@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
 interface ScrollSectionProps {
@@ -25,7 +25,7 @@ const variants = {
     zIndex: 1,
     transition: {
       duration: 0.8,
-      type: "spring",
+      type: "spring" as const,
       stiffness: 50,
       damping: 20
     }
@@ -38,7 +38,7 @@ const variants = {
     zIndex: 0,
     transition: {
       duration: 0.8,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   })
 };
