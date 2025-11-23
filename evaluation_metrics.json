@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Test Set 1",
+    "latency": 0,
+    "accuracy": 0.0
+  },
+  {
+    "name": "Test Set 2",
+    "latency": 0,
+    "accuracy": 0.0
+  },
+  {
+    "name": "Test Set 3",
+    "latency": 0,
+    "accuracy": 0.0
+  }
+]

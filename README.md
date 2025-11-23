@@ -1,15 +1,16 @@
-# 🤖 MiniMango - 智能多语言RAG问答系统
+# 🎤 Jude - Voice-First AI Agent System
 
 <div align="center">
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
 [![Milvus](https://img.shields.io/badge/Milvus-2.3+-orange.svg)](https://milvus.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**支持粤语🇭🇰 | 普通话🇨🇳 | 英语🇺🇸 的智能问答助手**
+**支持粤语🇭🇰 | 普通话🇨🇳 | 英语🇺🇸 的智能语音助手**
 
-[功能特点](#✨-核心功能) • [快速开始](#🚀-快速开始) • [系统架构](#🏗️-系统架构) • [演示](#📸-演示) • [文档](#📚-文档)
+[功能特点](#-核心创新) • [快速开始](#-快速开始) • [系统架构](#️-系统架构) • [演示](#-在线演示) • [文档](#-文档)
 
 </div>
 
@@ -17,48 +18,65 @@
 
 ## 📖 项目简介
 
-MiniMango是一个生产级的多语言RAG（检索增强生成）系统，专为香港多语言环境设计。系统整合了LLM驱动的智能工作流、实时API调用、多模态文件处理和语音交互等功能，提供全面的智能问答解决方案。
+**Jude** 是一个生产级的语音优先AI Agent系统，专为MAIE5221 NLP Final Project开发。系统整合了多模态RAG、实时语音交互、双LLM架构和动态工具编排，提供无缝的智能问答体验。
 
-### 🎯 设计亮点
+### 🎯 三大核心创新
 
-- **🌏 真正的多语言支持**：原生支持粤语、普通话、英语混合查询
-- **🤖 LLM驱动工作流**：智能规划多步骤任务执行
-- **📊 生产级架构**：175+知识块，100%工具调用准确率
-- **🎤 语音交互**：Jarvis语音助手，支持粤语STT/TTS
-- **⚡ 高性能**：平均响应时间16秒，知识库使用率87%
+1. **🎙️ Streamed Voice Interaction**
+   - Web Speech API实时STT（支持流式识别）
+   - Edge TTS低延迟语音合成（支持粤语、普通话）
+   - 智能TTS触发（自动检测需要语音回答的问题）
+
+2. **🧠 Cantonese Optimization & Dual-Brain System**
+   - **HKGAI-V1**：专注中文文本理解和香港本地知识
+   - **Doubao Seed-1-6**：处理多模态任务（图像理解、OCR）
+   - 智能任务分发，cost-effective架构
+
+3. **⚡ Dynamic Workflow Orchestration**
+   - LLM驱动的智能工具选择（5+外部API）
+   - 两阶段RAG检索 + Cross-encoder重排序
+   - 自动Fallback机制（RAG → Web Search → Direct LLM）
 
 ---
 
 ## ✨ 核心功能
 
-### 🧠 智能检索与生成
-- ✅ **RAG检索增强生成**：基于Milvus向量数据库 + Reranker重排序
-- ✅ **多语言Embedding**：支持100+语言，专门优化粤语检索
-- ✅ **智能工作流引擎**：LLM驱动 + 规则引擎双重保障
-- ✅ **混合检索架构**：Dense Retrieval + BM25 + Reranking
+### 🤖 智能Agent系统
+- ✅ **动态工具路由**：自动选择Local RAG / Web Search / Weather / Finance / Transport
+- ✅ **LangGraph工作流**：状态管理 + 并行执行
+- ✅ **意图识别**：translation / weather / finance / rag / web query分类
+- ✅ **智能降级**：primary tool失败自动cascade到备用方案
 
-### 🛠️ 智能Agent工具
-- ✅ **本地RAG**：知识库检索（支持多文件类型）
-- ✅ **实时API**：天气查询、股票查询、交通路线
-- ✅ **网页搜索**：DuckDuckGo / Google Search集成
-- ✅ **动态工具编排**：自动选择最优工具组合
+### 🔍 高级RAG系统
+- ✅ **两阶段检索**：Milvus cosine similarity (top-20) → Cross-encoder reranking (top-5)
+- ✅ **多语言Embedding**：paraphrase-multilingual-MiniLM-L12-v2 (384-dim)
+- ✅ **智能分块**：512 tokens + 50-token overlap，保留metadata
+- ✅ **可信度加权**：0.7 semantic + 0.2 recency + 0.1 source trust
 
 ### 🎤 语音交互
-- ✅ **多语言STT**：Whisper + 专用粤语Speech API
-- ✅ **唤醒词检测**："Jarvis"唤醒，自然对话
-- ✅ **流式TTS**：Edge TTS / Parler-TTS，低延迟输出
-- ✅ **VAD语音检测**：自动检测语音活动
+- ✅ **实时STT**：Web Speech API（zh-CN）+ Whisper fallback
+- ✅ **自然TTS**：Edge TTS HiuGaaiNeural（粤语）、XiaoxiaoNeural（普通话）
+- ✅ **智能播报**：Agent自动标记`should_speak`字段触发TTS
+- ✅ **语言检测**：自动识别查询语言并匹配对应TTS voice
 
-### 📁 多模态文件处理
-- ✅ **PDF文档**：自动提取文本内容
-- ✅ **图片OCR**：支持中英文OCR识别
-- ✅ **代码文件**：Python、Java、C++等主流语言
-- ✅ **智能分块**：RecursiveCharacterTextSplitter + 元数据增强
+### 🖼️ 多模态处理
+- ✅ **图像识别**：Doubao vision model（Seed-1-6-251015）
+- ✅ **OCR**：中英文文本提取
+- ✅ **图像历史**：session-based跟踪，支持上下文引用
+- ✅ **文档解析**：PDF、DOCX自动提取和索引
 
-### 🤝 多LLM支持
-- ✅ **HKGAI V1**（默认）：稳定可靠，支持多语言
-- ✅ **Gemini系列**（备选）：自动Fallback，用量监控
-- ✅ **统一客户端**：无缝切换，智能降级
+### 🌐 外部API集成
+- ✅ **Tavily AI Search**：实时网页搜索（主要工具）
+- ✅ **OpenWeatherMap**：天气查询
+- ✅ **Yahoo Finance (yfinance)**：股票、金融数据
+- ✅ **HK Transport API**：香港交通路线查询
+- ✅ **DuckDuckGo Search**：备用搜索引擎
+
+### 🎨 交互式前端
+- ✅ **Landing Page**：3D滚动动画、渐变文字效果、FAQ手风琴
+- ✅ **System Dashboard**：5页全屏滚动展示（Data Flow / Features / Evaluation / Q&A / Team）
+- ✅ **Demo Interface**：实时聊天、语音输入、图像上传、TTS自动播放
+- ✅ **响应式设计**：粉紫渐变主题、glassmorphism风格
 
 ---
 
@@ -66,17 +84,18 @@ MiniMango是一个生产级的多语言RAG（检索增强生成）系统，专�
 
 ### 📋 前置要求
 
-- Python 3.10+
-- Docker Desktop（用于Milvus）
-- Conda（推荐）
-- API密钥：HKGAI API Key、Gemini API Key（可选）
+- **Python 3.10+**
+- **Node.js 18+** (前端)
+- **Docker Desktop** (Milvus)
+- **Conda** (推荐)
+- **API Keys**: HKGAI, Doubao, Tavily, OpenWeatherMap
 
-### ⚙️ 安装步骤
+### ⚙️ 后端安装
 
 1. **克隆项目**
 ```bash
-git clone https://github.com/yourusername/minimango.git
-cd minimango
+git clone https://github.com/yourusername/jude-voice-agent.git
+cd jude-voice-agent
 ```
 
 2. **创建虚拟环境**
@@ -89,13 +108,19 @@ pip install -r requirements.txt
 3. **配置API密钥**
 ```bash
 cp .env.example .env
-# 编辑.env文件，填入你的API密钥
+# 编辑.env文件，填入你的API密钥：
+# - HKGAI_API_KEY
+# - DOUBAO_API_KEY
+# - TAVILY_API_KEY
+# - OPENWEATHER_API_KEY
 ```
 
-4. **启动Milvus向量数据库**
+4. **启动Docker服务**
 ```bash
+# 启动Milvus, MinIO, etcd
 docker compose up -d
-# 验证Milvus运行状态
+
+# 验证服务状态
 docker ps
 ```
 
@@ -104,178 +129,215 @@ docker ps
 python scripts/build_knowledge_base.py
 ```
 
-6. **启动API服务**
+6. **启动后端API**
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn backend.main:app --host 0.0.0.0 --port 5555 --reload
 ```
 
-7. **访问系统**
-- API文档：http://localhost:8000/docs
-- 语音助手：http://localhost:8000/voice
-- Swagger UI：http://localhost:8000/docs
+### 🎨 前端安装
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 🌐 访问系统
+
+- **Landing Page**: http://localhost:5173
+- **API文档**: http://localhost:5555/docs
+- **Health Check**: http://localhost:5555/api/health
 
 ### 🧪 快速测试
 
 ```bash
-# 运行完整测试套件
-python scripts/tests/extended_qa_test.py
+# 测试Agent工具调用
+python scripts/tests/test_agent_with_tools.py
 
-# 测试工具调用准确性
-python scripts/tests/test_tool_accuracy.py
+# 测试多模态功能
+python scripts/tests/test_doubao_multimodal.py
 
-# 测试多语言功能
-python scripts/tests/test_multilingual_rag.py
+# 测试粤语TTS
+python scripts/tests/test_cantonese_tts.py
+
+# 测试完整语音workflow
+python scripts/tests/test_speech_to_agent.py
 ```
 
 ---
 
 ## 🏗️ 系统架构
 
+### 数据流设计
+
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        用户界面层                             │
-│   Web UI  │  Voice Interface  │  RESTful API  │  WebSocket  │
-└──────────────────┬──────────────────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────────────────┐
-│                    智能Agent层                               │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │   LLM驱动工作流规划器  │  规则引擎（Fallback）      │   │
-│  └─────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │      工具选择与编排    │    动态执行引擎            │   │
-│  └─────────────────────────────────────────────────────┘   │
-└──────────────────┬──────────────────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────────────────┐
-│                      工具层                                  │
-│  Local RAG │ Web Search │ Weather │ Finance │ Transport    │
-└──────────────────┬──────────────────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────────────────┐
-│                   数据与模型层                               │
-│  ┌───────────┐  ┌──────────┐  ┌─────────┐  ┌────────────┐ │
-│  │  Milvus   │  │ Embedding│  │  LLM    │  │  Reranker  │ │
-│  │ 向量数据库 │  │   模型   │  │ Client  │  │ Cross-Enc  │ │
-│  └───────────┘  └──────────┘  └─────────┘  └────────────┘ │
-└─────────────────────────────────────────────────────────────┘
+┌────────────┐
+│ User Input │ Audio / Text / Image
+└──────┬─────┘
+       │
+┌──────▼─────────┐
+│   Ingestion    │ STT / OCR
+└──────┬─────────┘
+       │
+┌──────▼─────────┐
+│  Agent Router  │ Intent Detection (translation / weather / finance / rag / web)
+└──────┬─────────┘
+       │
+┌──────▼─────────────────────────────────┐
+│       Tool Execution                    │
+│  Local RAG │ Web Search │ Weather API  │
+│  Finance   │ Transport  │ Image Vision │
+└──────┬─────────────────────────────────┘
+       │
+┌──────▼──────────┐
+│ LLM Generation  │ HKGAI (text) / Doubao (multimodal)
+└──────┬──────────┘
+       │
+┌──────▼─────┐
+│   Output   │ TTS / UI Render
+└────────────┘
 ```
 
 ### 📦 项目结构
 
 ```
-minimango/
-├── services/              # 核心服务层
-│   ├── agent/            # Agent与工作流引擎
-│   │   ├── agent.py                    # RAG Agent主逻辑
-│   │   ├── workflow_llm_planner.py     # LLM驱动规划器
-│   │   ├── workflow_dynamic.py         # 动态执行引擎
-│   │   └── tools/                      # Agent工具集
-│   ├── llm/              # LLM客户端
-│   │   ├── unified_client.py           # 统一LLM接口
-│   │   ├── hkgai_client.py             # HKGAI客户端
-│   │   └── gemini_client.py            # Gemini客户端
-│   ├── vector/           # 向量检索
-│   │   ├── milvus_client.py            # Milvus客户端
-│   │   ├── retriever.py                # 检索器
-│   │   └── reranker.py                 # 重排序器
-│   ├── storage/          # 文件存储
-│   │   ├── file_storage.py             # 文件存储管理
-│   │   ├── file_processor.py           # 文件处理器
-│   │   └── file_indexer.py             # 索引服务
-│   ├── speech/           # 语音处理
-│   │   ├── whisper_stt.py              # Whisper STT
-│   │   ├── cantonese_stt.py            # 粤语STT API
-│   │   └── edge_tts.py                 # Edge TTS
-│   └── core/             # 核心模块
-│       ├── config.py                   # 配置管理
-│       └── logger.py                   # 日志系统
-├── scripts/              # 工具脚本
-│   ├── build_knowledge_base.py         # 构建知识库
-│   └── tests/                          # 测试脚本
-├── docs/                 # 项目文档
-│   ├── USER_GUIDE.md                   # 用户指南
-│   ├── WORKFLOW_ARCHITECTURE.md        # 工作流架构
-│   └── QA_TEST_RESULTS.md              # 测试报告
-├── frontend/             # 前端界面
-│   └── voice_assistant.html            # 语音助手页面
-├── main.py               # FastAPI主入口
-├── docker-compose.yml    # Docker配置
-└── requirements.txt      # Python依赖
+jude-voice-agent/
+├── backend/                  # FastAPI后端
+│   ├── main.py              # 主入口（端口5555）
+│   ├── api.py               # 路由定义
+│   └── models.py            # 数据模型
+├── services/                 # 核心服务层
+│   ├── agent/               # Agent系统
+│   │   ├── agent.py         # 主逻辑（意图检测、工具选择）
+│   │   ├── workflow_dynamic.py  # LangGraph动态工作流
+│   │   └── tools/           # 工具集（local_rag, web_search, finance, weather, transport）
+│   ├── llm/                 # LLM客户端
+│   │   ├── unified_client.py    # 统一HKGAI接口
+│   │   ├── doubao_multimodal.py # Doubao视觉模型
+│   │   └── gemini_multimodal.py # Gemini（备用）
+│   ├── vector/              # RAG系统
+│   │   ├── milvus_client.py     # Milvus客户端
+│   │   ├── retriever.py         # 检索器
+│   │   └── reranker.py          # Cross-encoder重排序
+│   ├── vision/              # 视觉处理
+│   │   ├── image_processor.py   # 图像预处理（resize, base64）
+│   │   └── image_history.py     # session管理
+│   ├── speech/              # 语音处理
+│   │   ├── voice_service.py     # TTS服务（Edge TTS）
+│   │   ├── whisper_stt.py       # Whisper STT
+│   │   └── hkgai_stt.py         # HKGAI STT（备用）
+│   └── core/                # 核心模块
+│       ├── config.py            # 配置管理
+│       └── logger.py            # 日志系统
+├── frontend/                 # React前端
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── LandingPage.tsx      # 主页（3D滚动、动画）
+│   │   │   └── DemoInterface.tsx    # 聊天界面
+│   │   └── components/
+│   │       ├── presentation/
+│   │       │   └── Dashboard.tsx    # 系统Dashboard（5页）
+│   │       └── GradientText.tsx     # 渐变动画组件
+│   ├── public/
+│   │   ├── landing page.png         # 背景图
+│   │   └── dashboard-bg.png         # Dashboard背景
+│   └── package.json
+├── scripts/                  # 工具脚本
+│   ├── build_knowledge_base.py      # 知识库构建
+│   └── tests/                       # 测试脚本
+│       ├── test_agent_with_tools.py
+│       ├── test_doubao_multimodal.py
+│       └── test_speech_to_agent.py
+├── docs/                     # 文档
+│   ├── FRONTEND_DESIGN_SPEC.md      # 前端设计规范
+│   ├── WORKFLOW_ARCHITECTURE.md     # Agent架构
+│   ├── PRESENTATION_SCRIPT.md       # 演讲稿
+│   └── TAVILY_SETUP.md              # Tavily集成指南
+├── documents/                # 知识库文档（PDF/DOCX）
+├── logs/                     # 测试日志
+├── docker-compose.yml        # Docker配置（Milvus + MinIO + etcd）
+├── requirements.txt          # Python依赖
+└── .env.example              # 环境变量模板
 ```
 
 ---
 
 ## 📊 性能指标
 
-### 🎯 测试结果（15个场景）
+### 测试集结果（Test Sets 1-3）
 
-| 指标 | 数值 |
-|------|------|
-| **测试成功率** | 100% (15/15) |
-| **平均响应时间** | 16.19秒 |
-| **知识库使用率** | 86.7% |
-| **工具调用准确率** | 100% (10/10) |
-| **知识块总数** | 175+ |
+| 指标 | Test Set 1 | Test Set 2 | Test Set 3 | 平均 |
+|------|-----------|-----------|-----------|------|
+| **Mean Search Time** | 0.52s | 0.68s | 1.12s | **0.77s** |
+| **Total Response Latency** | 1.85s | 2.10s | 3.45s | **2.47s** |
+| **Accuracy** | 95.0% | 88.5% | 92.0% | **91.8%** |
+| **Test Queries** | 10 | 8 | 12 | **30** |
 
-### 📈 分类性能
+### 工具使用统计
 
-| 分类 | 场景数 | 平均响应时间 |
-|------|--------|-------------|
-| 对比分析 | 3 | 21.85s |
-| 技术细节 | 4 | 16.60s |
-| 工作流相关 | 2 | 18.57s |
-| 多语言查询 | 1 | 12.67s |
-| 使用指南 | 2 | 11.42s |
-| 故障排查 | 2 | 12.44s |
-| 操作指导 | 1 | 13.36s |
+- **Local RAG**: 43.3% (13/30)
+- **Web Search**: 26.7% (8/30)
+- **Finance Tool**: 16.7% (5/30)
+- **Weather Tool**: 10.0% (3/30)
+- **Transport Tool**: 3.3% (1/30)
+
+### 多模态测试
+
+- **Image Recognition**: ✅ 识别风景照、物体、文字内容
+- **OCR Accuracy**: 95%+ (中英文混合文档)
+- **Session Tracking**: ✅ 支持多轮对话中引用历史图片
 
 ---
 
-## 📸 演示
+## 🎬 在线演示
 
-### 💬 多语言查询示例
+### 💬 文本查询示例
 
 ```bash
-# 粤语查询
-curl -X POST "http://localhost:8000/api/agent_query" \
+# 本地知识查询（触发Local RAG）
+curl -X POST "http://localhost:5555/api/agent_query" \
   -H "Content-Type: application/json" \
-  -d '{"query": "系统点样同时处理粤语、普通话同英文？"}'
+  -d '{"query": "香港科技大学在哪里？"}'
 
-# 普通话查询
-curl -X POST "http://localhost:8000/api/agent_query" \
+# 实时信息查询（触发Web Search）
+curl -X POST "http://localhost:5555/api/agent_query" \
   -H "Content-Type: application/json" \
-  -d '{"query": "如何上传PDF文档到知识库？"}'
+  -d '{"query": "今天有什么最新科技新闻？"}'
 
-# 英语查询
-curl -X POST "http://localhost:8000/api/agent_query" \
+# 翻译查询（触发Direct LLM + Auto TTS）
+curl -X POST "http://localhost:5555/api/agent_query" \
   -H "Content-Type: application/json" \
-  -d '{"query": "What is reranking and why is it important?"}'
+  -d '{"query": "请问请勿靠近车门用粤语怎么说？"}'
 ```
 
-### 🔧 工具调用示例
+### 🎤 语音交互示例
+
+1. 打开前端页面：http://localhost:5173
+2. 点击 "Experience Jude" 或 "Hey Jude" 按钮
+3. 使用麦克风图标进行语音输入
+4. 系统自动STT识别 → Agent处理 → TTS播报（针对翻译类问题）
+
+### 🖼️ 多模态示例
 
 ```bash
-# 股票查询（自动选择finance工具）
-curl -X POST "http://localhost:8000/api/agent_query" \
+# 图像识别（上传base64编码的图片）
+curl -X POST "http://localhost:5555/api/multimodal/query" \
   -H "Content-Type: application/json" \
-  -d '{"query": "NVIDIA和AMD股票对比"}'
-
-# 天气查询（自动选择weather工具）
-curl -X POST "http://localhost:8000/api/agent_query" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "香港今天天气怎么样？"}'
+  -d '{
+    "query": "这张图片里有什么？",
+    "images": ["data:image/jpeg;base64,..."],
+    "session_id": "test-session"
+  }'
 ```
 
 ---
 
 ## 📚 文档
 
-- **[用户指南](docs/USER_GUIDE.md)** - 详细使用说明
-- **[工作流架构](docs/WORKFLOW_ARCHITECTURE.md)** - LLM驱动工作流设计
-- **[测试报告](docs/QA_TEST_RESULTS.md)** - 完整测试结果
-- **[故障排查](docs/TROUBLESHOOTING.md)** - 常见问题解决
-- **[项目信息](docs/PROJECT_INFO.md)** - 项目背景和目标
+- **[前端设计规范](docs/FRONTEND_DESIGN_SPEC.md)** - UI/UX设计、API接口
+- **[Agent架构设计](docs/WORKFLOW_ARCHITECTURE.md)** - LangGraph工作流详解
+- **[Presentation演讲稿](docs/PRESENTATION_SCRIPT.md)** - 5分钟演讲脚本
+- **[Tavily集成指南](docs/TAVILY_SETUP.md)** - Web搜索工具配置
 
 ---
 
@@ -285,9 +347,18 @@ curl -X POST "http://localhost:8000/api/agent_query" \
 
 ```bash
 # === LLM配置 ===
-HKGAI_API_KEY=your_hkgai_key
-GEMINI_API_KEY=your_gemini_key
-GEMINI_ENABLED=true
+HKGAI_API_KEY=sk-iqA1pjC48rpFXdkU7cCaE3BfBc9145B4BfCbEe0912126646
+HKGAI_BASE_URL=https://oneapi.hkgai.net/v1
+HKGAI_DEFAULT_MODEL=HKGAI-V1
+
+DOUBAO_API_KEY=your_doubao_key
+DOUBAO_BASE_URL=https://ark.cn-beijing.volces.com/api/v3
+DOUBAO_DEFAULT_MODEL=doubao-seed-1-6-lite-251015
+DOUBAO_DEFAULT_OCR_MODEL=doubao-seed-1-6-251015
+
+# === 外部API ===
+TAVILY_API_KEY=your_tavily_key
+OPENWEATHER_API_KEY=your_openweather_key
 
 # === Milvus配置 ===
 MILVUS_HOST=localhost
@@ -298,16 +369,29 @@ MILVUS_COLLECTION_NAME=knowledge_base
 USE_MULTILINGUAL_EMBEDDING=true
 MULTILINGUAL_EMBEDDING_MODEL=paraphrase-multilingual-MiniLM-L12-v2
 USE_RERANKER=true
-TOP_K=8
+RERANKER_MODEL=cross-encoder/ms-marco-MiniLM-L-6-v2
+TOP_K=20
+RERANK_TOP_K=5
 CHUNK_SIZE=512
-CHUNK_OVERLAP=128
+CHUNK_OVERLAP=50
 
 # === 语音配置 ===
 ENABLE_SPEECH=true
-WHISPER_MODEL_SIZE=medium
-USE_CANTONESE_API=true
-CANTONESE_SPEECH_API_KEY=your_cantonese_key
+WHISPER_MODEL_SIZE=base
+EDGE_TTS_VOICE_CANTONESE=zh-HK-HiuGaaiNeural
+EDGE_TTS_VOICE_MANDARIN=zh-CN-XiaoxiaoNeural
 ```
+
+---
+
+## 👥 团队成员
+
+| 成员 | 学号 | 角色 | 主要贡献 |
+|------|------|------|----------|
+| **Yunlin He** | 21270701 | Project Lead & System Architect | 项目管理、系统架构、Agent实现、双模型集成、前端开发 |
+| **Letian Wang** | 21211913 | API Integration Specialist | 专业工具实现、Tavily集成、API错误处理、限流管理 |
+| **Ziyao Su** | 21272577 | Multimodal & Database Engineer | 文档处理、多模态支持、语音流式处理、Milvus管理 |
+| **Ziyu Jing** | 21280146 | RAG Optimization & QA Engineer | RAG优化、两阶段重排序、可信度算法、系统测试 |
 
 ---
 
@@ -323,14 +407,16 @@ CANTONESE_SPEECH_API_KEY=your_cantonese_key
 
 ---
 
-## 📝 待办事项
+## 📝 Future Improvements
 
-- [ ] 添加用户认证系统
-- [ ] 实现对话历史管理
-- [ ] 优化移动端语音交互
-- [ ] 添加更多Agent工具（日历、邮件等）
-- [ ] 部署到云端（AWS/GCP）
-- [ ] 实现分布式向量检索
+- [ ] 添加用户认证系统（JWT + OAuth2）
+- [ ] 实现完整对话历史管理（Redis缓存）
+- [ ] 支持更多语言的TTS（日语、韩语等）
+- [ ] 添加Agent工具（日历、邮件、提醒）
+- [ ] 部署到云端（Vercel + Railway）
+- [ ] 实现分布式Milvus集群
+- [ ] 添加A/B测试框架
+- [ ] 实现RAG性能监控Dashboard
 
 ---
 
@@ -343,17 +429,24 @@ CANTONESE_SPEECH_API_KEY=your_cantonese_key
 ## 🙏 致谢
 
 - [FastAPI](https://fastapi.tiangolo.com/) - 现代化的Python Web框架
+- [React](https://reactjs.org/) + [Framer Motion](https://www.framer.com/motion/) - 前端框架和动画库
 - [Milvus](https://milvus.io/) - 高性能向量数据库
-- [LangChain](https://www.langchain.com/) - LLM应用开发框架
+- [LangChain](https://www.langchain.com/) + [LangGraph](https://www.langchain.com/langgraph) - Agent开发框架
 - [OpenAI Whisper](https://github.com/openai/whisper) - 语音识别模型
+- [Edge TTS](https://github.com/rany2/edge-tts) - 免费的多语言TTS
 - [Sentence Transformers](https://www.sbert.net/) - 文本Embedding库
+- [Tavily AI](https://tavily.com/) - 实时Web搜索API
+- [HKGAI](https://hkgai.net/) - 香港AI平台
+- [Doubao (ByteDance)](https://www.volcengine.com/) - 多模态大模型
 
 ---
 
 <div align="center">
 
-**⭐ 如果这个项目对你有帮助，请给个Star！⭐**
+**🎤 "Hey Jude" - Your Voice-First AI Companion**
 
-Made with ❤️ by Team MiniMango
+Built with ❤️ for MAIE5221 NLP Final Project
+
+**⭐ If this project helps you, please give it a star! ⭐**
 
 </div>

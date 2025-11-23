@@ -38,6 +38,8 @@ class QueryResponse(BaseModel):
     model_used: Optional[str] = None
     tokens_used: Optional[Dict[str, Any]] = None
     quota_remaining: Optional[int] = None
+    should_speak: bool = False  # 是否需要语音播报
+    audio_url: Optional[str] = None  # TTS音频URL（如果生成了）
 
 
 class FileUploadResponse(BaseModel):

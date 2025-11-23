@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 import os
 from backend.api import router
 from services.vector import milvus_client
@@ -36,6 +37,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# CORS Configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # 注册路由
 app.include_router(router, prefix="/api", tags=["RAG"])
 
@@ -63,4 +73,3 @@ async def root():
         "health": "/api/health",
         "voice_assistant": "/voice"
     }
-

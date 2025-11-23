@@ -21,7 +21,7 @@ class UnifiedLLMClient:
             logger.info("✅ Gemini客户端已初始化，可作为fallback")
         else:
             self.gemini_client = None
-            logger.warning("⚠️  Gemini客户端未配置，无fallback选项")
+            logger.info("ℹ️  使用 HKGAI + Doubao 混合模式（文本/多模态分离）")
         
         # 记录HKGAI失败次数（用于智能fallback）
         self.hkgai_failure_count = 0

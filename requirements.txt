@@ -8,6 +8,7 @@ fastapi==0.104.1
 uvicorn[standard]==0.24.0  # ASGI服务器，包含WebSocket支持
 pydantic==2.5.0  # 数据验证
 python-multipart==0.0.6  # 文件上传支持
+python-jose[cryptography]>=3.3.0  # JWT token处理
 
 # === 向量数据库 ===
 # Milvus向量数据库客户端
@@ -19,6 +20,7 @@ sentence-transformers>=2.2.2
 # LangChain用于文本处理和RAG工作流
 langchain>=0.1.0
 langchain-community>=0.0.10
+langchain-openai>=0.0.5  # OpenAI兼容接口（HKGAI、Doubao）
 # LangGraph用于工作流和状态管理
 langgraph>=0.0.20
 # Token计数
@@ -27,6 +29,12 @@ tiktoken>=0.5.2
 huggingface-hub>=0.20.0
 # PyTorch（通过sentence-transformers自动安装，但明确列出）
 torch>=2.0.0
+
+# === LLM API客户端 ===
+# OpenAI SDK（用于HKGAI、Doubao等兼容OpenAI接口的API）
+openai>=1.10.0
+# Google Generative AI（Gemini，可选）
+google-generativeai>=0.3.0
 
 # === 文档处理 ===
 # PDF处理
@@ -55,47 +63,51 @@ sqlalchemy==2.0.23
 requests==2.31.0  # 同步HTTP请求（用于LLM API调用）
 httpx==0.25.2  # 异步HTTP客户端（用于Agent工具）
 
+# === 外部API和工具 ===
+# Web搜索
+tavily-python>=0.3.0  # Tavily AI Search
+duckduckgo-search>=4.0.0  # DuckDuckGo搜索（备用）
+# 金融数据
+yfinance>=0.2.35  # Yahoo Finance API（股票、金融数据）
+# 天气数据（通过requests调用OpenWeatherMap API）
+# 交通数据（通过requests调用HK Transport API）
+
 # === 工具库 ===
 # 环境变量管理
 python-dotenv==1.0.0
+# 日期时间处理
+python-dateutil>=2.8.2
+# JSON处理增强
+orjson>=3.9.0  # 更快的JSON解析（可选）
+# 数据处理
+pandas>=2.0.0  # 数据分析（yfinance依赖）
 
-# === 语音识别和合成（Jarvis语音助手，可选）===
+# === 语音识别和合成 ===
 # OpenAI Whisper - 高质量语音识别（支持多语言：粤语、普通话、英语）
 openai-whisper>=20231117
 # Faster Whisper - 更快的Whisper实现（支持流式）
 faster-whisper>=0.10.0  # 可选，用于流式STT
-# Lightning Whisper MLX - Mac优化的Whisper（MLX）
-# lightning-whisper-mlx>=0.1.0  # 可选，Mac MLX优化，需要手动安装
 # 音频文件处理
 soundfile>=0.12.1  # 处理音频文件格式转换
-# pydub - 音频格式转换（WebM转WAV，提高识别准确度）
-pydub>=0.25.1  # 需要ffmpeg（macOS: brew install ffmpeg）
-# PyAudio - 音频录制和播放（可选，用于实时录音）
-# pyaudio>=0.2.14  # 注意：需要系统安装PortAudio（macOS: brew install portaudio）
+pydub>=0.25.1  # 音频格式转换（WebM转WAV）需要ffmpeg（macOS: brew install ffmpeg）
 # 文本转语音
 edge-tts>=6.1.0  # Edge TTS（免费，支持多语言，包括粤语、普通话、英语）
-# Parler-TTS - 流式TTS（支持实时输出）
-# parler-tts>=0.1.0  # 可选，用于流式TTS，需要手动安装
-# MeloTTS - 多语言TTS（支持Mac优化）
-# 注意：MeloTTS需要从GitHub安装，不是标准pip包
-# 安装命令: pip install git+https://github.com/myshell-ai/MeloTTS.git
-# 还需要安装unidic: python -m unidic download
-# pyttsx3>=2.90  # 离线TTS（可选备用方案）
-# Silero VAD - 语音活动检测（可选，用于后端VAD）
-# silero-vad>=4.0.0  # 需要torch，可以通过pip install silero-vad安装
+# PyAudio - 音频录制和播放（可选，用于实时录音）
+# pyaudio>=0.2.14  # 需要系统安装PortAudio（macOS: brew install portaudio）
+# Silero VAD - 语音活动检测（可选）
+# silero-vad>=4.0.0  # 需要torch
 # onnxruntime>=1.16.0  # Silero VAD依赖（可选）
 
-# === Mac MLX优化（可选）===
-# MLX - Apple机器学习框架（Mac优化）
-# mlx>=0.14.0  # Mac MLX框架
-# mlx-lm>=0.1.0  # MLX语言模型（Mac优化）
-# 注意：MLX需要Mac系统，其他平台不可用
+# === 开发和测试工具（可选）===
+# pytest>=7.4.0  # 单元测试
+# pytest-asyncio>=0.21.0  # 异步测试
+# black>=23.0.0  # 代码格式化
+# flake8>=6.0.0  # 代码检查
 
 # === 其他依赖 ===
 # 以下依赖会自动通过上述包安装，无需手动指定：
 # - numpy, scipy, scikit-learn (sentence-transformers依赖)
 # - transformers (sentence-transformers依赖)
-# - pandas (pymilvus依赖)
 # - pyarrow (pymilvus依赖)
 # - grpcio, protobuf (pymilvus依赖)
 

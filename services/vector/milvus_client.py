@@ -25,12 +25,14 @@ class MilvusClient:
             connections.connect(
                 alias="default",
                 host=self.host,
-                port=self.port
+                port=self.port,
+                timeout=5  # 添加5秒超时
             )
             self.connected = True
+            logger.info(f"✅ 成功连接到 Milvus {self.host}:{self.port}")
             return True
         except Exception as e:
-            logger.error(f"连接Milvus失败: {e}")
+            logger.error(f"❌ 连接Milvus失败: {e}")
             return False
     
     def disconnect(self):

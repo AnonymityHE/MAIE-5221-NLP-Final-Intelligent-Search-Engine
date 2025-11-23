@@ -3,7 +3,7 @@ FastAPI路由定义
 """
 from typing import Optional, List, Dict
 from fastapi import APIRouter, HTTPException, UploadFile, File as FastAPIFile, WebSocket, WebSocketDisconnect
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from backend.models import (
     QueryRequest, QueryResponse, DocumentResult, FileUploadResponse,
     SpeechRequest, SpeechResponse, VoiceQueryRequest, VoiceQueryResponse
@@ -14,11 +14,56 @@ from services.agent import agent
 from services.storage import file_storage, file_processor, file_indexer
 from services.core import settings, logger
 from services.core.cache import get_cache_stats, clear_cache
+from services.speech import TextToSpeech
+from pydantic import BaseModel
 import asyncio
 import os
 import tempfile
 
 router = APIRouter()
+
+
+# ===== 辅助函数 =====
+
+def _should_speak(query: str, answer: str) -> bool:
+    """
+    智能判断是否需要语音播报
+    
+    Args:
+        query: 用户问题
+        answer: Agent回答
+        
+    Returns:
+        是否需要语音播报
+    """
+    # 关键词列表（触发语音播报）
+    voice_keywords = [
+        "怎么说", "怎麼說", "how to say",
+        "怎么读", "怎麼讀", "how to pronounce",  
+        "发音", "發音", "pronunciation",
+        "粤语", "粵語", "cantonese",
+        "普通话", "國語", "mandarin",
+        "用...说", "用...讲"
+    ]
+    
+    # 检查问题中是否包含语音相关关键词
+    query_lower = query.lower()
+    for keyword in voice_keywords:
+        if keyword in query_lower:
+            return True
+    
+    # 检查回答中是否包含拼音、语音标记等
+    if any(marker in answer for marker in ["【粤语】", "【普通话】", "拼音：", "Pinyin:"]):
+        return True
+    
+    return False
+
+
+# TTS 请求模型
+class TTSRequest(BaseModel):
+    text: str
+    language: str = "zh-CN"  # zh-CN(普通话), yue-HK(粤语), en-US(英语)
+    voice: Optional[str] = None
 
 
 @router.post("/rag_query", response_model=QueryResponse)
@@ -183,6 +228,49 @@ async def agent_query(request: QueryRequest):
                 quota_info = usage_monitor.check_quota(model_used)
                 quota_remaining = quota_info.get("remaining_requests", 0)
         
+        # 智能判断是否需要语音播报
+        should_speak = _should_speak(request.query, agent_result["answer"])
+        audio_url = None
+        
+        # 如果需要语音播报，立即生成TTS音频
+        if should_speak:
+            try:
+                import edge_tts
+                import uuid
+                import base64
+                
+                # 检测语言
+                language = "yue-HK" if any(kw in request.query for kw in ["粤语", "粵語", "cantonese"]) else "zh-CN"
+                voice_map = {
+                    "zh-CN": "zh-CN-XiaoxiaoNeural",
+                    "yue-HK": "zh-HK-HiuGaaiNeural",
+                }
+                voice = voice_map.get(language, "zh-CN-XiaoxiaoNeural")
+                
+                # 生成临时音频文件
+                audio_filename = f"tts_{uuid.uuid4()}.mp3"
+                audio_path = os.path.join(tempfile.gettempdir(), audio_filename)
+                
+                logger.info(f"🎤 预生成TTS: lang={language}, voice={voice}")
+                
+                # 使用 edge_tts 生成
+                communicate = edge_tts.Communicate(agent_result["answer"], voice)
+                await communicate.save(audio_path)
+                
+                # 读取并转换为base64
+                if os.path.exists(audio_path) and os.path.getsize(audio_path) > 0:
+                    with open(audio_path, "rb") as f:
+                        audio_data = f.read()
+                        audio_url = f"data:audio/mpeg;base64,{base64.b64encode(audio_data).decode()}"
+                    os.remove(audio_path)  # 清理临时文件
+                    logger.info(f"✅ TTS预生成成功: {len(audio_data)} bytes")
+                else:
+                    logger.warning("❌ TTS文件生成失败")
+                    should_speak = False
+            except Exception as e:
+                logger.error(f"❌ TTS预生成失败: {e}")
+                should_speak = False
+        
         # 格式化响应
         return QueryResponse(
             answer=agent_result["answer"],
@@ -192,7 +280,9 @@ async def agent_query(request: QueryRequest):
             answer_source="agent",
             model_used=model_used,
             tokens_used=tokens_info,
-            quota_remaining=quota_remaining
+            quota_remaining=quota_remaining,
+            should_speak=should_speak,
+            audio_url=audio_url
         )
     
     except HTTPException:
@@ -204,6 +294,58 @@ async def agent_query(request: QueryRequest):
         error_trace = traceback.format_exc()
         logger.error(f"Agent查询错误详情:\n{error_trace}")
         raise HTTPException(status_code=500, detail=f"处理请求时出错: {str(e)}")
+
+
+@router.post("/tts")
+async def text_to_speech(request: TTSRequest):
+    """
+    文本转语音接口 - 使用 Edge TTS
+    
+    Args:
+        request: TTS请求（text, language, voice）
+        
+    Returns:
+        音频文件
+    """
+    try:
+        import edge_tts
+        import uuid
+        
+        # 语言和语音映射
+        voice_map = {
+            "zh-CN": "zh-CN-XiaoxiaoNeural",  # 普通话女声
+            "yue-HK": "zh-HK-HiuGaaiNeural",   # 粤语女声
+            "zh-HK": "zh-HK-HiuGaaiNeural",
+            "en-US": "en-US-AriaNeural",       # 英语女声
+        }
+        
+        voice = request.voice or voice_map.get(request.language, "zh-CN-XiaoxiaoNeural")
+        
+        # 生成音频文件
+        audio_filename = f"tts_{uuid.uuid4()}.mp3"
+        audio_path = os.path.join(tempfile.gettempdir(), audio_filename)
+        
+        logger.info(f"🎤 TTS: text='{request.text[:30]}...' lang={request.language} voice={voice}")
+        
+        # 使用 edge_tts 生成语音
+        communicate = edge_tts.Communicate(request.text, voice)
+        await communicate.save(audio_path)
+        
+        if os.path.exists(audio_path) and os.path.getsize(audio_path) > 0:
+            logger.info(f"✅ TTS Success: {os.path.getsize(audio_path)} bytes")
+            return FileResponse(
+                audio_path,
+                media_type="audio/mpeg",
+                filename=audio_filename
+            )
+        else:
+            raise HTTPException(status_code=500, detail="TTS file generation failed")
+            
+    except Exception as e:
+        logger.error(f"❌ TTS Error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"TTS Error: {str(e)}")
 
 
 @router.get("/usage/stats")
