@@ -103,7 +103,9 @@ const DemoInterface = () => {
     }
   };
 
-  const API_BASE_URL = "http://localhost:5555";
+  // 开发环境：使用Vite proxy（相对路径 /api 会自动转发到 localhost:5555）
+  // 生产环境：使用环境变量或回退到相对路径
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const USE_SIMULATION_MODE = false;
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -38,9 +38,15 @@ app = FastAPI(
 )
 
 # CORS Configuration
+# 允许本地开发和生产环境访问
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",  # 本地开发
+        "http://localhost:5174",  # 本地开发备用端口
+        "https://jude.darkdark.me",  # 生产环境
+        "https://jude.anonymity0he.workers.dev",  # Cloudflare Workers默认域名
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
