@@ -112,9 +112,11 @@ class RAGAgent:
         if any(kw in query_lower for kw in ["stock", "股票", "price", "股价", "crypto", "加密货币", "bitcoin", "btc", "ethereum", "eth"]):
             tools.append("finance")
         
-        # 检测交通查询
-        if any(kw in query_lower for kw in ["travel", "旅行", "route", "路线", "time", "时间", "how long", "多久", "distance", "距离"]):
-            tools.append("transport")
+        # 检测交通查询 → 使用web_search获取实时路线信息
+        if any(kw in query_lower for kw in ["怎么去", "怎么到", "如何去", "如何到", "从", "到", "travel", "route", "路线", "how to get", "how long"]):
+            if "web_search" not in tools:
+                tools.append("web_search")
+                logger.info("检测到交通查询，使用web_search获取路线信息")
         
         # 检测天气查询
         # 注意：如果是历史天气查询，应该使用web_search而不是weather工具
