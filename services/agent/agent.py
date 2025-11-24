@@ -146,10 +146,27 @@ class RAGAgent:
                 tools.insert(0, "web_search")  # 优先使用web_search
                 logger.info("检测到实体排名/比较查询，优先使用web_search")
         
-        # 默认使用本地RAG（仅当没有其他更合适的工具时）
-        if not tools:
+        # 检测是否需要本地RAG（只针对知识库相关的问题）
+        local_kb_indicators = [
+            "project", "项目", "system", "系统", "architecture", "架构",
+            "sereleia", "aetherian", "xylos", "elara",  # 虚构知识库内容
+            "workflow", "工作流", "rag", "agent",
+            "这个系统", "本项目", "我们的"
+        ]
+        if not tools and any(indicator in query_lower for indicator in local_kb_indicators):
             tools.append("local_rag")
-            logger.info("未检测到特定工具需求，使用local_rag")
+            logger.info("检测到本地知识库相关查询，使用local_rag")
+        
+        # 检测一般疑问（优先web_search获取准确答案）
+        question_indicators = ["什么是", "谁是", "哪里", "为什么", "怎样", "如何",
+                              "what", "who", "where", "why", "how", "when"]
+        if not tools and any(indicator in query_lower for indicator in question_indicators):
+            tools.append("web_search")
+            logger.info("检测到一般疑问，使用web_search获取答案")
+        
+        # 如果还是没有工具，直接用LLM（不使用任何工具）
+        if not tools:
+            logger.info("未检测到特定工具需求，直接使用LLM回答")
         
         return tools
     
