@@ -1,5 +1,9 @@
-\documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
+\documentclass[12pt]{article}
+
+% Page setup
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
 
 % Packages
 \usepackage{cite}
@@ -11,22 +15,29 @@
 \usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage{multirow}
+\usepackage{titlesec}
+
+% Section formatting
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 \begin{document}
 
-\title{Jude: A Voice-First AI Agent System with Dynamic Workflow Orchestration and Multimodal RAG\\
-}
+\title{\textbf{Jude: A Voice-First AI Agent System with Dynamic Workflow Orchestration and Multimodal RAG}}
 
 \author{
-\IEEEauthorblockN{Yunlin He, Letian Wang, Ziyao Su, Ziyu Jing}
-\IEEEauthorblockA{\textit{Master of Artificial Intelligence in Engineering} \\
-\textit{The Hong Kong University of Science and Technology}\\
+Yunlin He, Letian Wang, Ziyao Su, Ziyu Jing \\[0.5em]
+\textit{Master of Artificial Intelligence in Engineering} \\
+\textit{The Hong Kong University of Science and Technology} \\
 Hong Kong SAR, China \\
-\{yhedr, lwangej, zsuaj, zjingan\}@connect.ust.hk}
+\texttt{\{yhedr, lwangej, zsuaj, zjingan\}@connect.ust.hk}
 }
+
+\date{\today}
 
 \maketitle
 
@@ -34,9 +45,7 @@ Hong Kong SAR, China \\
 We present \textbf{Jude}, a production-grade voice-first AI agent system that integrates multimodal Retrieval-Augmented Generation (RAG), real-time speech interaction, and dynamic workflow orchestration. The system addresses three critical challenges in current conversational AI: fragmented user interactions, limited contextual understanding, and single-model limitations. Jude employs a dual-brain architecture leveraging HKGAI-V1 for Chinese text comprehension and Doubao Seed-1-6 for multimodal processing, achieving cost-effective task distribution. Our two-stage RAG pipeline combines Milvus vector search with cross-encoder reranking, weighted by credibility and freshness metrics. The LLM-driven agent dynamically routes queries to specialized tools (local RAG, web search, weather, finance APIs) with automatic fallback mechanisms. Evaluation across 30 test queries demonstrates 91.8\% accuracy with an average search latency of 0.77 seconds. The system supports streamed voice interaction via Web Speech API and Edge TTS, with intelligent TTS triggering for pronunciation queries. Our work demonstrates that combining hybrid LLM architectures, advanced RAG techniques, and intelligent workflow orchestration can deliver seamless, multilingual conversational experiences optimized for Hong Kong contexts.
 \end{abstract}
 
-\begin{IEEEkeywords}
-Conversational AI, Retrieval-Augmented Generation, Multimodal Learning, Voice Interaction, Agent Systems, Dynamic Workflow, LangGraph
-\end{IEEEkeywords}
+\noindent\textbf{Keywords:} Conversational AI, Retrieval-Augmented Generation, Multimodal Learning, Voice Interaction, Agent Systems, Dynamic Workflow, LangGraph
 
 \section{Introduction}
 
