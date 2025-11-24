@@ -50,7 +50,7 @@ const featuresList = [
   {
     title: 'Filtering & Ranking',
     description: 'Two-stage retrieval with reranking',
-    implementation: 'Stage 1: Milvus cosine similarity (top-k=20). Stage 2: Cross-encoder reranking (ms-marco-MiniLM) to top-5. Credibility weighting (0.7 semantic + 0.2 recency + 0.1 source trust)',
+    implementation: 'Stage 1: Milvus cosine similarity (top-k=20). Stage 2: Cross-encoder reranking (ms-marco-MiniLM) with integrated scoring: final_score = rerank_score × credibility_weight × freshness_weight × language_weight. Top-5 by final score.',
     status: 'Active',
     latency: '~200ms',
     icon: BarChart2
