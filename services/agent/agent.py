@@ -128,16 +128,26 @@ class RAGAgent:
                 tools.append("weather")
         
         # 检测实时/新闻查询（需要网页搜索）
-        # 注意：如果已经有weather/finance/transport工具且不是历史查询，不要添加web_search
-        if not tools and any(kw in query_lower for kw in ["latest", "最新", "news", "新闻", "current", "现在", "today", "今天", "recent", "最近", "recently"]):
-            tools.append("web_search")
+        if any(kw in query_lower for kw in ["latest", "最新", "news", "新闻", "current", "现在", "recently", "最近"]):
+            if "web_search" not in tools:  # 避免重复添加
+                tools.append("web_search")
         
-        # 默认使用本地RAG（如果还没有工具）
+        # 检测需要网页搜索的实体查询（如"香港第二大学校"）
+        # 这类查询通常包含地名 + 实体描述 + 排名/比较词
+        web_search_indicators = [
+            "largest", "最大", "biggest", "second", "第二", "third", "第三",
+            "best", "最好", "worst", "最差", "top", "排名", "排行",
+            "famous", "著名", "popular", "流行", "well-known", "知名"
+        ]
+        if any(indicator in query_lower for indicator in web_search_indicators):
+            if "web_search" not in tools:
+                tools.insert(0, "web_search")  # 优先使用web_search
+                logger.info("检测到实体排名/比较查询，优先使用web_search")
+        
+        # 默认使用本地RAG（仅当没有其他更合适的工具时）
         if not tools:
             tools.append("local_rag")
-        else:
-            # 如果已经有其他工具，将local_rag作为备选
-            tools.append("local_rag")
+            logger.info("未检测到特定工具需求，使用local_rag")
         
         return tools
     
