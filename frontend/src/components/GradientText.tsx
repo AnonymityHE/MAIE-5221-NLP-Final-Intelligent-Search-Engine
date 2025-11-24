@@ -1,3 +1,4 @@
+import React from 'react';
 import './GradientText.css';
 
 interface GradientTextProps {
@@ -8,17 +9,18 @@ interface GradientTextProps {
   showBorder?: boolean;
 }
 
-export default function GradientText({
+const GradientText = React.memo(function GradientText({
   children,
   className = '',
   colors = ['#40ffaa', '#4079ff', '#40ffaa', '#4079ff', '#40ffaa'],
   animationSpeed = 8,
   showBorder = false
 }: GradientTextProps) {
-  const gradientStyle = {
+  const gradientStyle = React.useMemo(() => ({
     backgroundImage: `linear-gradient(to right, ${colors.join(', ')})`,
     animationDuration: `${animationSpeed}s`
-  };
+  }), [colors, animationSpeed]);
+  
   return (
     <div className={`animated-gradient-text ${className}`}>
       {showBorder && <div className="gradient-overlay" style={gradientStyle}></div>}
@@ -27,5 +29,7 @@ export default function GradientText({
       </div>
     </div>
   );
-}
+});
+
+export default GradientText;
 

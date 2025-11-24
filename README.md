@@ -67,7 +67,7 @@
 
 ### 🌐 外部API集成
 - ✅ **Tavily AI Search**：实时网页搜索（主要工具）
-- ✅ **OpenWeatherMap**：天气查询
+- ✅ **wttr.in**：免费天气查询（无需API key）
 - ✅ **Yahoo Finance (yfinance)**：股票、金融数据
 - ✅ **HK Transport API**：香港交通路线查询
 - ✅ **DuckDuckGo Search**：备用搜索引擎
@@ -138,7 +138,7 @@ npm run dev
 - **Node.js 18+** (前端)
 - **Docker Desktop** (Milvus)
 - **Conda** (推荐)
-- **API Keys**: HKGAI, Doubao, Tavily, OpenWeatherMap
+- **API Keys**: HKGAI, Doubao, Tavily（天气API使用免费的wttr.in，无需密钥）
 
 ### ⚙️ 后端安装
 

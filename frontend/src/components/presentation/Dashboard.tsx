@@ -700,7 +700,10 @@ export default function Dashboard({ onClose }: DashboardProps) {
         backgroundImage: 'url("/dashboard-bg.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        willChange: 'transform',
+        backfaceVisibility: 'hidden',
+        transform: 'translateZ(0)'
       }}
       onWheel={handleWheel}
     >

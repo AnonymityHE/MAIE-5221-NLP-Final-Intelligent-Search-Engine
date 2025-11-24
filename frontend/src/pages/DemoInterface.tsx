@@ -258,7 +258,10 @@ const DemoInterface = () => {
         backgroundImage: 'url("/demo-bg.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        willChange: 'transform',
+        backfaceVisibility: 'hidden',
+        transform: 'translateZ(0)'
       }}
     >
       

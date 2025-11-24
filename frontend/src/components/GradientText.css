@@ -10,6 +10,10 @@
   font-weight: 500;
   transition: box-shadow 0.5s ease-out;
   overflow: hidden;
+  /* 性能优化 */
+  will-change: contents;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .gradient-overlay {
@@ -63,5 +67,9 @@
   -webkit-background-clip: text;
   color: transparent;
   animation: gradient linear infinite;
+  /* 性能优化 */
+  will-change: background-position;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 

@@ -28,9 +28,18 @@ const HeroSection = ({ onStart }: { onStart: () => void }) => {
 
   return (
     <div ref={ref} className="min-h-screen flex flex-col items-center justify-center relative px-8">
-      {/* Animated background blobs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      {/* Animated background blobs - 使用 transform 优化性能 */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" style={{ 
+        animation: 'float 8s ease-in-out infinite',
+        willChange: 'transform',
+        transform: 'translateZ(0)' // 强制GPU加速
+      }}></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" style={{ 
+        animation: 'float 8s ease-in-out infinite',
+        animationDelay: '4s',
+        willChange: 'transform',
+        transform: 'translateZ(0)' // 强制GPU加速
+      }}></div>
       
       <div className="text-center z-10">
         <motion.div
@@ -537,6 +546,9 @@ export default function LandingPage() {
           backgroundImage: 'url("/landing%20page.png")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          willChange: 'transform',
+          backfaceVisibility: 'hidden',
+          transform: 'translateZ(0)'
         }}
       />
       <div className="fixed inset-0 z-0 bg-black/10" />
