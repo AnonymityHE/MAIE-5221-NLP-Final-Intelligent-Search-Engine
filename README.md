@@ -82,6 +82,56 @@
 
 ## 🚀 快速开始
 
+### ⚡ 演示启动（4步启动）
+
+如果你已经配置好所有依赖和API密钥，按以下顺序启动：
+
+#### 1️⃣ 打开 Docker Desktop
+```bash
+# 确保Docker Desktop应用已启动并运行
+```
+
+#### 2️⃣ 启动 Docker 服务
+```bash
+cd "/Users/anonymity/Desktop/MAIE/MAIE5221 NLP/Final"
+docker compose up -d
+
+# 验证服务（应看到 milvus-standalone, minio, etcd 3个容器）
+docker ps
+```
+
+#### 3️⃣ 启动后端 API
+```bash
+# 在项目根目录下
+conda activate ise
+uvicorn backend.main:app --host 0.0.0.0 --port 5555 --reload
+# 看到 "Application startup complete" 表示成功
+# 后端运行在 http://localhost:5555
+```
+
+#### 4️⃣ 启动前端
+```bash
+# 新开一个终端
+cd frontend
+npm run dev
+# 前端运行在 http://localhost:5173
+```
+
+#### ✅ 验证启动成功
+- 访问 `http://localhost:5173` 看到Landing Page
+- 点击 "Experience Jude" 进入Demo界面
+- 测试文本输入、语音输入、图像上传功能
+
+#### 💡 演示技巧
+- **保持电脑唤醒**：`caffeinate -d` 防止合盖休眠
+- **测试问题**：
+  - "香港明天天气怎么样？"（天气API + 粤语TTS）
+  - "TSLA最新股价是多少？"（金融API）
+  - "请勿靠近车门用粤语怎么说？"（翻译 + 自动TTS播报）
+  - 上传图片："图片里有什么？"（多模态）
+
+---
+
 ### 📋 前置要求
 
 - **Python 3.10+**
