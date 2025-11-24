@@ -2,7 +2,7 @@
 
 ## Opening (30 seconds)
 
-Good afternoon, everyone. Today we're presenting **Jude** - a voice-first AI agent that brings together multiple cutting-edge NLP technologies. Instead of walking you through slides, we've built an interactive web application that demonstrates everything in real-time. Let me show you.
+Hi, everyone. Today we're presenting **Jude** - a voice-first AI agent that brings together multiple cutting-edge NLP technologies. Instead of walking you through slides, we've built an interactive web application that demonstrates everything in real-time. Let me show you.
 
 ---
 
@@ -12,21 +12,23 @@ Good afternoon, everyone. Today we're presenting **Jude** - a voice-first AI age
 
 So here's our landing page. As you can see, Jude is designed to solve three major pain points in current voice AI systems:
 
-First, **fragmented interactions** - users constantly switching between typing, speaking, and uploading files. Second, **limited context understanding** - most systems can't handle images or remember conversation history. And third, **single model limitations** - relying on just one LLM often fails at specific tasks.
+First, **fragmented interactions**. Second, **limited context understanding**. And third, single model limitations.
+
+**[Scroll to features section]**
+
+You can see we have six key features here, and each one is clickable if you want to dive into implementation details. 
 
 **[Scroll down slightly]**
 
 Our solution is built on three core innovations:
 
 1. **Streamed Voice Interaction** - We use Web Speech API for real-time STT and Edge TTS for natural-sounding responses. No waiting, just seamless conversation.
-
 2. **Cantonese Optimization** - This is actually quite special. We've integrated HKGAI for Chinese text understanding and Doubao for multimodal tasks. This dual-brain system lets us handle both local Hong Kong queries and complex vision tasks efficiently.
-
 3. **Dynamic Workflow Orchestration** - Our agent intelligently routes queries to the right tools - whether it's RAG for knowledge base, web search for real-time info, or external APIs for weather and finance.
 
-**[Scroll to features section]**
+**[Scroll down slightly]**
 
-You can see we have six key features here, and each one is clickable if you want to dive into implementation details. But let me take you to our system dashboard to show you the technical depth.
+NOW, let me take you to our system dashboard to show you the technical depth.
 
 ---
 
@@ -100,7 +102,7 @@ This is our chat interface. Let me demonstrate a few things:
 
 **[Type a text query or use voice]**
 
-1. First, I'll ask a simple question - maybe about Hong Kong transportation. *[Wait for response]* See how it routes to the right tool and responds quickly.
+1. First, I'll ask a simple question  to test its tool use
 
 2. Now let me try a translation query - something like "how do you say 'please stand back from the door' in Cantonese?" *[Wait for response]* Notice how it automatically triggers TTS playback because it detected this is a pronunciation question.
 

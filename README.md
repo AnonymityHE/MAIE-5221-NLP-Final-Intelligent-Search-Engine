@@ -1,4 +1,4 @@
-# 🎤 Jude - Voice-First AI Agent System
+# Jude - Voice-First AI Agent System
 
 <div align="center">
 
