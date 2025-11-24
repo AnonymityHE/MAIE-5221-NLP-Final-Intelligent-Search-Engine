@@ -312,6 +312,527 @@ jude-voice-agent/
 
 ---
 
+## 💻 技术实现细节
+
+### 🏗️ 整体技术架构
+
+```
+┌─────────────────────────────────────────────┐
+│          Frontend (React + Vite)            │
+│  - Landing Page (Framer Motion动画)         │
+│  - Dashboard (Recharts可视化)               │
+│  - Demo Interface (实时交互)                │
+└──────────────────┬──────────────────────────┘
+                   │ HTTP/WebSocket
+┌──────────────────▼──────────────────────────┐
+│        Backend API (FastAPI + Uvicorn)      │
+│  - RESTful API                              │
+│  - CORS中间件                               │
+│  - 异步请求处理                              │
+└──────────────────┬──────────────────────────┘
+                   │
+        ┌──────────┴──────────┐
+        │                     │
+┌───────▼────────┐   ┌───────▼────────┐
+│  Agent System  │   │   RAG System   │
+│ (工具编排)     │   │ (知识检索)      │
+└───────┬────────┘   └───────┬────────┘
+        │                     │
+        └──────────┬──────────┘
+                   │
+        ┌──────────┴──────────┐
+        │                     │
+┌───────▼────────┐   ┌───────▼────────┐
+│  LLM Services  │   │ Vector Store   │
+│ HKGAI+Doubao   │   │    Milvus      │
+└────────────────┘   └────────────────┘
+```
+
+### 🎨 前端技术实现
+
+#### 核心技术栈
+- **React 18.3** + **TypeScript** + **Vite 6**
+- **Tailwind CSS** - 原子化CSS
+- **Framer Motion** - 3D滚动动画
+- **Recharts** - 数据可视化
+- **Lucide React** - 图标库
+
+#### 关键实现
+
+**1. Landing Page 视差滚动**
+```typescript
+const { scrollYProgress } = useScroll({
+  target: ref,
+  offset: ["start start", "end start"]
+});
+
+const titleY = useTransform(scrollYProgress, [0, 1], [0, -200]);
+const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+```
+- 使用 `useScroll` 监听滚动进度
+- `useTransform` 将滚动映射到动画属性
+- GPU加速（`transform: translateZ(0)`）
+
+**2. Dashboard 全屏滚动**
+```typescript
+const handleWheel = (e: WheelEvent) => {
+  if (isScrolling || !canScroll) return;
+  
+  if (Math.abs(e.deltaY) > SCROLL_THRESHOLD) {
+    if (e.deltaY > 0 && currentPage < pages.length - 1) {
+      setCurrentPage(prev => prev + 1);
+    }
+    // 防抖处理：800ms cooldown
+    setIsScrolling(true);
+    setTimeout(() => setIsScrolling(false), 800);
+  }
+};
+```
+
+**3. 实时语音识别（Web Speech API）**
+```typescript
+const SpeechRecognition = window.webkitSpeechRecognition;
+recognitionRef.current = new SpeechRecognition();
+recognitionRef.current.continuous = false; // 自动停止
+recognitionRef.current.interimResults = true;
+recognitionRef.current.lang = 'zh-CN';
+
+recognitionRef.current.onresult = (event) => {
+  let finalTranscript = '';
+  for (let i = event.resultIndex; i < event.results.length; ++i) {
+    if (event.results[i].isFinal) {
+      finalTranscript += event.results[i][0].transcript;
+    }
+  }
+  setInput(prev => prev + finalTranscript);
+};
+```
+
+**4. 性能优化**
+```typescript
+// 图片预加载
+<link rel="preload" href="/landing%20page.png" as="image" />
+
+// GPU加速
+style={{
+  willChange: 'transform',
+  backfaceVisibility: 'hidden',
+  transform: 'translateZ(0)'
+}}
+
+// React.memo防止重渲染
+const GradientText = React.memo(function GradientText({...}) {
+  const gradientStyle = React.useMemo(() => ({
+    backgroundImage: `linear-gradient(...)`,
+  }), [colors]);
+  return <div style={gradientStyle}>{children}</div>;
+});
+```
+
+### ⚙️ 后端技术实现
+
+#### 核心技术栈
+- **FastAPI 0.104+** - 异步Web框架
+- **Uvicorn** - ASGI服务器
+- **Pydantic 2.5** - 数据验证
+
+#### API设计
+
+**RESTful端点**
+```python
+# 健康检查
+GET /api/health
+
+# Agent查询（核心）
+POST /api/agent_query
+{
+  "query": "用户问题",
+  "use_rag": true,
+  "use_search": true
+}
+
+# 多模态查询
+POST /api/multimodal/query
+{
+  "query": "问题",
+  "images": ["base64..."],
+  "use_ocr": true
+}
+
+# TTS语音合成
+POST /api/tts
+{
+  "text": "文本",
+  "language": "zh-CN"
+}
+```
+
+**CORS配置**
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",      # 本地开发
+        "https://jude.darkdark.me",   # 生产环境
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+### 🤖 Agent系统实现
+
+#### 1. 智能工具选择
+```python
+def detect_question_type(self, query: str) -> List[str]:
+    """根据问题特征选择工具"""
+    tools = []
+    
+    # 翻译问题 → 直接LLM
+    if "怎么说" in query or "how to say" in query:
+        return []  # 不使用任何工具
+    
+    # 天气查询 → weather API
+    if "天气" in query or "weather" in query:
+        tools.append("weather")
+    
+    # 排名/比较 → web_search
+    if "第二大" in query or "second largest" in query:
+        tools.insert(0, "web_search")
+    
+    # 金融查询 → finance API
+    if "股票" in query or "stock" in query:
+        tools.append("finance")
+    
+    # 默认 → local_rag
+    if not tools:
+        tools.append("local_rag")
+    
+    return tools
+```
+
+#### 2. 动态工作流执行
+```python
+class DynamicWorkflowEngine:
+    def execute(self, query: str, plan: Dict) -> Dict:
+        """执行多步骤工作流"""
+        steps = plan.get("steps", [])
+        context_accumulator = []
+        
+        for step in steps:
+            tool_name = step["tool"]
+            tool_func = self.tools[tool_name]
+            
+            # 执行工具
+            result = tool_func(query)
+            context_accumulator.append(result)
+            
+            # 中间决策
+            if should_stop(result):
+                break
+        
+        # 汇总上下文
+        final_context = "\n\n".join(context_accumulator)
+        answer = self._generate_final_answer(query, final_context)
+        
+        return {
+            "answer": answer,
+            "tools_used": [s["tool"] for s in steps]
+        }
+```
+
+#### 3. 外部工具集成
+```python
+# 天气工具 - wttr.in（免费API）
+def get_weather(location: str) -> Dict:
+    url = f"http://wttr.in/{location}?format=j1"
+    response = requests.get(url, timeout=10)
+    data = response.json()
+    return extract_weather_info(data)
+
+# 金融工具 - Yahoo Finance
+def get_stock_price(symbol: str) -> str:
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+    response = requests.get(url, headers=headers)
+    return parse_stock_data(response.json())
+
+# 网页搜索 - Tavily AI
+def get_web_search(query: str) -> str:
+    from tavily import TavilyClient
+    client = TavilyClient(api_key=settings.TAVILY_API_KEY)
+    results = client.search(query, max_results=5)
+    return format_search_results(results)
+```
+
+### 🔍 RAG系统实现
+
+#### 1. 向量存储 - Milvus
+```python
+# Collection Schema
+{
+    "id": INT64 (auto_id),
+    "text": VARCHAR(5000),
+    "vector": FLOAT_VECTOR(384),  # 384维向量
+    "source_file": VARCHAR(500)
+}
+
+# 索引配置
+index_params = {
+    "metric_type": "COSINE",  # 余弦相似度
+    "index_type": "IVF_FLAT",
+    "params": {"nlist": 128}
+}
+```
+
+#### 2. 两阶段检索
+```python
+def search(self, query: str, top_k: int = 5) -> List[Dict]:
+    # Stage 1: 向量相似度检索 (top-20)
+    query_vector = embedder.encode(query)
+    initial_results = milvus.search(
+        query_vector, 
+        top_k=20,  # 召回20个候选
+        metric_type="COSINE"
+    )
+    
+    # Stage 2: Cross-encoder重排序 (top-5)
+    if use_reranker:
+        rerank_scores = cross_encoder.predict([
+            [query, doc["text"]] 
+            for doc in initial_results
+        ])
+        
+        # 综合评分
+        for i, doc in enumerate(initial_results):
+            semantic_score = sigmoid(rerank_scores[i])
+            credibility = get_credibility(doc)
+            freshness = get_freshness(doc)
+            
+            # 最终分数 = 语义相关性 × 可信度 × 新鲜度
+            doc["final_score"] = (
+                semantic_score * 
+                credibility * 
+                freshness
+            )
+        
+        # 按最终分数排序
+        results = sorted(
+            initial_results, 
+            key=lambda x: x["final_score"], 
+            reverse=True
+        )[:top_k]
+    
+    return results
+```
+
+#### 3. Embedding模型
+```python
+# Sentence Transformers
+model = SentenceTransformer(
+    'paraphrase-multilingual-MiniLM-L12-v2'
+)
+# 特点：
+# - 384维向量
+# - 支持中文/粤语/英语
+# - 轻量级（约120MB）
+```
+
+### 🎙️ 语音服务实现
+
+#### STT - Web Speech API
+```javascript
+// 前端实现（浏览器端）
+const recognition = new webkitSpeechRecognition();
+recognition.lang = 'zh-CN';
+recognition.continuous = false;  // 自动停止
+recognition.interimResults = true;  // 实时结果
+
+// 优点：
+// - 免费无限制
+// - 实时流式识别
+// - 无需后端处理
+```
+
+#### TTS - Edge TTS
+```python
+# 后端实现
+import edge_tts
+
+async def generate_audio(text: str, language: str):
+    voice = {
+        'zh-CN': 'zh-CN-XiaoxiaoNeural',    # 普通话
+        'zh-HK': 'zh-HK-HiuGaaiNeural',     # 粤语
+        'en-US': 'en-US-AriaNeural'          # 英语
+    }[language]
+    
+    communicate = edge_tts.Communicate(text, voice)
+    await communicate.save("output.mp3")
+    
+    # 转换为base64返回前端
+    with open("output.mp3", "rb") as f:
+        audio_bytes = f.read()
+        return base64.b64encode(audio_bytes).decode()
+```
+
+#### 智能TTS触发
+```python
+def _should_speak(query: str, answer: str) -> bool:
+    """判断是否需要TTS播报"""
+    # 检测翻译问题
+    keywords = ["怎么说", "怎么读", "发音", "粤语"]
+    if any(kw in query for kw in keywords):
+        return True
+    
+    # 检测答案中的语言提示
+    if "【粤语】" in answer or "发音是" in answer:
+        return True
+    
+    return False
+
+# 在Agent响应中
+if _should_speak(query, answer):
+    audio_url = await generate_tts(
+        answer, 
+        language="zh-HK" if "粤语" in query else "zh-CN"
+    )
+    return {
+        "answer": answer,
+        "should_speak": True,
+        "audio_url": audio_url  # 前端自动播放
+    }
+```
+
+### 🖼️ 多模态处理实现
+
+#### 图片处理流程
+```python
+class ImageProcessor:
+    def process_image(self, base64_img: str, optimize_for_ocr: bool):
+        # 1. 解码base64
+        img_data = base64.b64decode(base64_img)
+        image = Image.open(BytesIO(img_data))
+        
+        # 2. OCR优化
+        if optimize_for_ocr:
+            image = image.convert('L')  # 转灰度
+            enhancer = ImageEnhance.Contrast(image)
+            image = enhancer.enhance(2.0)  # 增强对比度
+            image = image.filter(ImageFilter.SHARPEN)  # 锐化
+        
+        # 3. 压缩（限制大小）
+        if max(image.size) > 1920:
+            image.thumbnail((1920, 1920), Image.LANCZOS)
+        
+        # 4. 计算哈希（去重）
+        img_hash = hashlib.md5(image.tobytes()).hexdigest()
+        
+        # 5. 重新编码
+        buffer = BytesIO()
+        image.save(buffer, format='JPEG', quality=85)
+        new_base64 = base64.b64encode(buffer.getvalue()).decode()
+        
+        return {
+            "base64": new_base64,
+            "hash": img_hash,
+            "size": image.size
+        }
+```
+
+#### Doubao视觉模型调用
+```python
+from openai import OpenAI
+
+class DoubaoMultimodalClient:
+    def __init__(self, model: str):
+        self.client = OpenAI(
+            api_key=settings.DOUBAO_API_KEY,
+            base_url=settings.DOUBAO_BASE_URL
+        )
+        self.model = model
+    
+    def query_with_images(self, query: str, images: List[str]):
+        # 构建消息
+        content = [{"type": "text", "text": query}]
+        
+        for img_base64 in images:
+            content.append({
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:image/jpeg;base64,{img_base64}"
+                }
+            })
+        
+        # 调用API
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": content}],
+            max_tokens=2048
+        )
+        
+        return {
+            "content": response.choices[0].message.content,
+            "model": response.model,
+            "tokens": response.usage.total_tokens
+        }
+```
+
+### 🚀 性能优化策略
+
+#### 前端优化
+```typescript
+// 1. 图片预加载
+<link rel="preload" href="/landing%20page.png" as="image" />
+
+// 2. GPU加速
+style={{
+  willChange: 'transform',
+  backfaceVisibility: 'hidden',
+  transform: 'translateZ(0)'
+}}
+
+// 3. React.memo防止重渲染
+const GradientText = React.memo(function GradientText({...}) {
+  const gradientStyle = React.useMemo(() => ({
+    backgroundImage: `linear-gradient(...)`,
+  }), [colors]);
+  return <div style={gradientStyle}>{children}</div>;
+});
+```
+
+#### 后端优化
+```python
+# 1. 异步请求处理
+@router.post("/api/agent_query")
+async def agent_query(request: QueryRequest):
+    # 并发调用多个工具
+    results = await asyncio.gather(
+        call_tool_async("web_search", query),
+        call_tool_async("local_rag", query),
+        return_exceptions=True
+    )
+    return process_results(results)
+
+# 2. Milvus连接池复用
+milvus_client = MilvusClient()
+milvus_client.connect()  # 启动时连接，复用连接
+
+# 3. 查询缓存
+from cachetools import TTLCache
+query_cache = TTLCache(maxsize=200, ttl=3600)
+
+def search_with_cache(query: str):
+    cache_key = hashlib.md5(query.encode()).hexdigest()
+    if cache_key in query_cache:
+        return query_cache[cache_key]
+    
+    results = milvus.search(query)
+    query_cache[cache_key] = results
+    return results
+```
+
+---
+
 ## 📊 性能指标
 
 ### 测试集结果（Test Sets 1-3）

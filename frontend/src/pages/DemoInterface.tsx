@@ -38,7 +38,7 @@ const DemoInterface = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
         recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = true;
+        recognitionRef.current.continuous = false; // 说完一句话自动停止
         recognitionRef.current.interimResults = true;
         recognitionRef.current.lang = 'zh-CN'; // 中文普通话（如需粤语改为 'yue-Hant-HK'）
 
