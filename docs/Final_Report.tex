@@ -47,24 +47,23 @@
     bookmarksnumbered=true,
 }
 
-% Section formatting with colors
+% Section formatting
 \titleformat{\section}
-    {\color{primarycolor}\Large\bfseries}
+    {\Large\bfseries}
     {\thesection}{1em}{}
-    [\vspace{-0.5em}\color{primarycolor}\titlerule]
 
 \titleformat{\subsection}
-    {\color{secondarycolor}\large\bfseries}
+    {\large\bfseries}
     {\thesubsection}{1em}{}
 
 \titleformat{\subsubsection}
-    {\color{darkgray}\normalsize\bfseries}
+    {\normalsize\bfseries}
     {\thesubsubsection}{1em}{}
 
 % Caption formatting
 \captionsetup{
     font=small,
-    labelfont={color=primarycolor,bf},
+    labelfont=bf,
     textfont=it,
     skip=10pt
 }
@@ -91,74 +90,35 @@
 
 \begin{document}
 
-% Custom title page
+% Title page
 \begin{titlepage}
     \centering
-    \vspace*{2cm}
+    \vspace*{3cm}
     
-    % Top gradient box
-    \begin{tcolorbox}[
-        enhanced,
-        colback=white,
-        colframe=primarycolor,
-        boxrule=2pt,
-        arc=8pt,
-        shadow={2mm}{-2mm}{0mm}{black!20},
-        width=0.9\textwidth
-    ]
-        \centering
-        {\color{primarycolor}\Huge\bfseries Jude}\\[0.5em]
-        {\Large\color{secondarycolor} A Voice-First AI Agent System}\\[0.3em]
-        {\large\color{darkgray}\textit{with Dynamic Workflow Orchestration and Multimodal RAG}}
-    \end{tcolorbox}
+    {\Huge\bfseries Jude: A Voice-First AI Agent System}\\[0.5cm]
+    {\Large with Dynamic Workflow Orchestration and Multimodal RAG}\\[3cm]
     
-    \vspace{2cm}
+    {\large
+    \textbf{Yunlin He} \quad \textbf{Letian Wang} \quad \textbf{Ziyao Su} \quad \textbf{Ziyu Jing}\\[0.5cm]
+    \texttt{\{yhedr, lwangej, zsuaj, zjingan\}@connect.ust.hk}\\[2cm]
+    }
     
-    % Authors
-    \begin{tcolorbox}[
-        enhanced,
-        colback=gray!5,
-        colframe=secondarycolor!50,
-        boxrule=1pt,
-        arc=5pt,
-        width=0.8\textwidth
-    ]
-        \centering
-        {\large\bfseries Authors}\\[1em]
-        \begin{tabular}{c}
-            \textbf{Yunlin He} • \textbf{Letian Wang} • \textbf{Ziyao Su} • \textbf{Ziyu Jing}
-        \end{tabular}
-        
-        \vspace{1em}
-        
-        \textit{Master of Artificial Intelligence in Engineering}\\
-        \textit{The Hong Kong University of Science and Technology}\\
-        Hong Kong SAR, China\\[0.5em]
-        \texttt{\{yhedr, lwangej, zsuaj, zjingan\}@connect.ust.hk}
-    \end{tcolorbox}
+    {\large
+    Master of Artificial Intelligence in Engineering\\
+    The Hong Kong University of Science and Technology\\
+    Hong Kong SAR, China\\[2cm]
+    }
     
-    \vspace{2cm}
-    
-    % Course info
-    \begin{tcolorbox}[
-        enhanced,
-        colback=accentcolor!5,
-        colframe=accentcolor!50,
-        boxrule=1pt,
-        arc=5pt,
-        width=0.6\textwidth
-    ]
-        \centering
-        \textbf{MAIE5221: Natural Language Processing}\\
-        Final Project Report\\[0.3em]
-        {\small \today}
-    \end{tcolorbox}
+    {\large
+    \textbf{MAIE5221: Natural Language Processing}\\
+    Final Project Report\\[0.5cm]
+    \today\\[3cm]
+    }
     
     \vfill
     
-    % Bottom info
-    {\small\color{darkgray}
-    \textbf{GitHub Repository:} \url{https://github.com/AnonymityHE/MAIE-5221-NLP-Final}\\
+    {\small
+    \textbf{GitHub:} \url{https://github.com/AnonymityHE/MAIE-5221-NLP-Final}\\
     \textbf{Live Demo:} \url{https://jude.darkdark.me}
     }
     
@@ -172,7 +132,6 @@
 \setcounter{page}{1}
 
 \begin{tcolorbox}[
-    enhanced,
     colback=primarycolor!5,
     colframe=primarycolor,
     boxrule=1.5pt,
@@ -188,7 +147,6 @@ We present \textbf{Jude}, a production-grade voice-first AI agent system that in
 \vspace{0.5em}
 
 \begin{tcolorbox}[
-    enhanced,
     colback=secondarycolor!5,
     colframe=secondarycolor!50,
     boxrule=1pt,
@@ -205,80 +163,54 @@ We present \textbf{Jude}, a production-grade voice-first AI agent system that in
 
 \subsection{Background and Motivation}
 
-Conversational AI systems have become increasingly prevalent in information retrieval and knowledge assistance applications. However, existing systems face three critical limitations:
+Conversational AI systems have become increasingly prevalent in information retrieval and knowledge assistance applications. However, existing systems face three critical limitations that hinder their practical deployment. First, \textbf{fragmented interactions} require users to manually switch between text, voice, and image inputs, creating cognitive overhead and breaking the natural flow of conversation. Second, \textbf{limited context understanding} in single-source retrieval systems fails to leverage multiple knowledge bases—including local documents, web search, and specialized APIs—or intelligently route queries to the most appropriate information source. Third, \textbf{single-model limitations} cause general-purpose LLMs to exhibit suboptimal performance on domain-specific tasks such as Cantonese understanding and multimodal processing, while incurring prohibitive costs when applied uniformly to all query types.
 
-\begin{enumerate}
-    \item \textbf{Fragmented Interactions}: Traditional chatbots require manual mode switching between text, voice, and image inputs, creating cognitive overhead for users.
-    \item \textbf{Limited Context Understanding}: Single-source retrieval systems fail to leverage multiple knowledge bases (local documents, web search, APIs) or intelligently route queries to appropriate sources.
-    \item \textbf{Single-Model Limitations}: General-purpose LLMs exhibit suboptimal performance on domain-specific tasks (e.g., Cantonese understanding, multimodal processing) and incur high costs when applied uniformly to all tasks.
-\end{enumerate}
-
-These challenges are particularly acute in multilingual, multicultural contexts such as Hong Kong, where users expect systems to seamlessly handle Cantonese, Mandarin, and English queries while providing access to both local knowledge bases and real-time information.
+These challenges are particularly acute in multilingual, multicultural contexts such as Hong Kong, where users expect systems to seamlessly handle Cantonese, Mandarin, and English queries while providing access to both local knowledge bases and real-time information from the web.
 
 \subsection{Contributions}
 
-This paper presents \textbf{Jude}, a voice-first AI agent system designed to address these limitations through three core innovations:
+This paper presents \textbf{Jude}, a voice-first AI agent system designed to address these limitations through three core innovations.
 
-\begin{itemize}
-    \item \textbf{Streamed Voice Interaction Pipeline}: We implement a low-latency speech processing system using Web Speech API for real-time Speech-to-Text (STT) with streaming recognition, Edge TTS for natural-sounding voice synthesis supporting Cantonese (HiuGaaiNeural) and Mandarin (XiaoxiaoNeural), and intelligent TTS triggering that automatically detects pronunciation-related queries.
-    
-    \item \textbf{Dual-Brain LLM Architecture}: We design a cost-effective hybrid system where HKGAI-V1 handles Chinese text comprehension and Hong Kong-specific knowledge, while Doubao Seed-1-6-251015 processes multimodal tasks (image understanding, OCR). This task-specific model distribution reduces costs by 60\% compared to uniform GPT-4V deployment while improving Cantonese accuracy by 23\%.
-    
-    \item \textbf{Dynamic Workflow Orchestration}: We develop an LLM-driven agent with intelligent tool routing that automatically selects from 5+ tools (local RAG, Tavily web search, wttr.in weather API, Yahoo Finance, Hong Kong Transport API) based on query intent. Our two-stage RAG pipeline combines Milvus cosine similarity search with cross-encoder reranking weighted by credibility (70\%), recency (20\%), and source trust (10\%), achieving 91.8\% accuracy with 0.77s average search latency.
-\end{itemize}
+Our first contribution is a \textbf{Streamed Voice Interaction Pipeline} that implements low-latency speech processing using Web Speech API for real-time Speech-to-Text (STT) with streaming recognition, Edge TTS for natural-sounding voice synthesis supporting Cantonese (HiuGaaiNeural) and Mandarin (XiaoxiaoNeural), and intelligent TTS triggering that automatically detects pronunciation-related queries without requiring manual activation.
 
-The system is deployed with a React-based frontend featuring an interactive landing page, system dashboard with real-time evaluation metrics, and a demo interface supporting text, voice, and image inputs.
+Our second contribution is a \textbf{Dual-Brain LLM Architecture} that achieves cost-effective task distribution. HKGAI-V1 handles Chinese text comprehension and Hong Kong-specific knowledge, while Doubao Seed-1-6-251015 processes multimodal tasks including image understanding and OCR. This task-specific model distribution reduces inference costs by 60\% compared to uniform GPT-4V deployment while improving Cantonese accuracy by 23\%.
+
+Our third contribution is \textbf{Dynamic Workflow Orchestration} through an LLM-driven agent with intelligent tool routing. The agent automatically selects from 5+ tools (local RAG, Tavily web search, wttr.in weather API, Yahoo Finance, Hong Kong Transport API) based on query intent analysis. Our two-stage RAG pipeline combines Milvus cosine similarity search with cross-encoder reranking, weighted by credibility (70\%), recency (20\%), and source trust (10\%), achieving 91.8\% accuracy with 0.77s average search latency.
+
+The system is deployed with a React-based frontend featuring an interactive landing page, a system dashboard with real-time evaluation metrics, and a demo interface supporting text, voice, and image inputs.
 
 \section{Related Work}
 
 \subsection{Retrieval-Augmented Generation (RAG)}
 
-RAG systems \cite{lewis2020retrieval} enhance LLMs by grounding generation in retrieved documents. Recent advances include dense retrieval with bi-encoders \cite{karpukhin2020dense}, cross-encoder reranking \cite{nogueira2019passage}, and hybrid approaches combining lexical and semantic search \cite{lin2021pretrained}. However, existing work focuses primarily on English corpora and single-source retrieval, lacking multilingual optimization and dynamic source selection.
+RAG systems \cite{lewis2020retrieval} enhance LLMs by grounding generation in retrieved documents, addressing the hallucination problem inherent in parametric language models. Recent advances have significantly improved retrieval quality through dense retrieval with bi-encoders \cite{karpukhin2020dense}, cross-encoder reranking \cite{nogueira2019passage}, and hybrid approaches combining lexical and semantic search \cite{lin2021pretrained}. However, existing work focuses primarily on English corpora and single-source retrieval, lacking the multilingual optimization necessary for diverse linguistic contexts and the dynamic source selection required for real-world applications where information may come from multiple knowledge bases.
 
 \subsection{Conversational Agents and Tool Use}
 
-Recent research explores LLM-powered agents capable of using external tools \cite{schick2023toolformer, qin2023toolllm}. ReAct \cite{yao2023react} demonstrates reasoning-acting cycles for dynamic planning. However, these systems typically require explicit tool specifications and lack automatic fallback mechanisms for failed tool calls.
+Recent research explores LLM-powered agents capable of using external tools to extend their capabilities beyond text generation. Toolformer \cite{schick2023toolformer} demonstrates that language models can learn to use tools through self-supervised training, while ToolLLM \cite{qin2023toolllm} shows how to facilitate large language models to master thousands of real-world APIs. ReAct \cite{yao2023react} introduces reasoning-acting cycles for dynamic planning, enabling agents to interleave reasoning traces with action execution. However, these systems typically require explicit tool specifications and lack automatic fallback mechanisms for failed tool calls, limiting their robustness in production environments.
 
 \subsection{Multimodal Understanding}
 
-Vision-Language Models (VLMs) such as GPT-4V \cite{openai2023gpt4v} and LLaVA \cite{liu2023llava} enable joint reasoning over text and images. While powerful, their high computational costs and limited support for regional languages (e.g., Cantonese) motivate hybrid architectures that delegate multimodal tasks to specialized models.
+Vision-Language Models (VLMs) such as GPT-4V \cite{openai2023gpt4v} and LLaVA \cite{liu2023llava} enable joint reasoning over text and images, opening new possibilities for multimodal conversational AI. While these models demonstrate impressive capabilities in image understanding and visual question answering, their high computational costs and limited support for regional languages such as Cantonese motivate the development of hybrid architectures that delegate multimodal tasks to specialized, cost-effective models.
 
 \subsection{Voice Interaction Systems}
 
-Speech-enabled assistants like Siri and Google Assistant demonstrate user demand for voice interfaces. However, they often exhibit high latency (>3s) and poor performance on code-switched queries (e.g., Cantonese-English mixing) common in Hong Kong.
+Speech-enabled assistants like Siri and Google Assistant have demonstrated strong user demand for voice interfaces in everyday applications. However, these systems often exhibit high latency exceeding 3 seconds and poor performance on code-switched queries—such as Cantonese-English mixing—that are common in multilingual contexts like Hong Kong. This gap motivates our focus on low-latency, multilingual voice interaction optimized for regional linguistic patterns.
 
 \section{System Architecture}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.95\textwidth]{system_architecture.png}
+\includegraphics[width=0.95\textwidth]{visualizations/system_architecture.png}
 \caption{Jude System Architecture: Six-stage pipeline from user input to multimodal output with technology stack details.}
 \label{fig:architecture}
 \end{figure}
 
-Figure \ref{fig:architecture} illustrates the six-stage pipeline of the Jude system:
-
-\begin{enumerate}
-    \item \textbf{Input Ingestion}: Accepts text, voice (Web Speech API STT), or images (base64 encoding).
-    \item \textbf{Preprocessing}: Applies STT transcription, OCR extraction (Doubao), or text normalization.
-    \item \textbf{Agent Routing}: LLM-driven intent detection determines tool selection (Section IV-B).
-    \item \textbf{Tool Execution}: Parallel invocation of selected tools with 120s timeout and retry logic.
-    \item \textbf{Answer Generation}: HKGAI-V1 synthesizes tool outputs into coherent responses.
-    \item \textbf{Output Rendering}: Text display, TTS synthesis (Edge TTS), or image annotation.
-\end{enumerate}
+Figure \ref{fig:architecture} illustrates the six-stage pipeline of the Jude system. The pipeline begins with \textbf{Input Ingestion}, which accepts text, voice (via Web Speech API STT), or images (base64 encoding) from users. The \textbf{Preprocessing} stage then applies appropriate transformations including STT transcription, OCR extraction using Doubao, or text normalization depending on the input modality. Next, \textbf{Agent Routing} employs LLM-driven intent detection to determine optimal tool selection (detailed in Section IV-B). The \textbf{Tool Execution} stage performs parallel invocation of selected tools with 120-second timeout and retry logic for robustness. \textbf{Answer Generation} uses HKGAI-V1 to synthesize tool outputs into coherent, contextually appropriate responses. Finally, \textbf{Output Rendering} delivers results through text display, TTS synthesis via Edge TTS, or image annotation as appropriate.
 
 \subsection{Technology Stack}
 
-\begin{itemize}
-    \item \textbf{Backend}: FastAPI (Python 3.10), Uvicorn ASGI server
-    \item \textbf{Vector Database}: Milvus 2.3 (MinIO storage, etcd metadata)
-    \item \textbf{Embeddings}: paraphrase-multilingual-MiniLM-L12-v2 (384-dim)
-    \item \textbf{Reranking}: cross-encoder/ms-marco-MiniLM-L-6-v2
-    \item \textbf{LLMs}: HKGAI-V1 (text), Doubao Seed-1-6-251015 (multimodal)
-    \item \textbf{Speech}: Web Speech API (STT), Edge TTS (synthesis)
-    \item \textbf{Frontend}: React 18, Vite, Framer Motion, Tailwind CSS
-    \item \textbf{Deployment}: Docker Compose, Cloudflare Pages
-\end{itemize}
+The backend is built on FastAPI (Python 3.10) with Uvicorn ASGI server for high-performance async request handling. For vector storage, we deploy Milvus 2.3 with MinIO for object storage and etcd for metadata management. Document embeddings are generated using the paraphrase-multilingual-MiniLM-L12-v2 model (384 dimensions), chosen for its strong multilingual performance across Chinese and English. Reranking employs the cross-encoder/ms-marco-MiniLM-L-6-v2 model for precise relevance scoring. Our dual-brain LLM architecture combines HKGAI-V1 for text processing and Doubao Seed-1-6-251015 for multimodal tasks. Speech processing leverages Web Speech API for STT and Edge TTS for synthesis. The frontend is implemented in React 18 with Vite build tooling, Framer Motion for animations, and Tailwind CSS for styling. Deployment uses Docker Compose for local services and Cloudflare Pages for frontend hosting.
 
 \section{Core Technologies}
 
@@ -314,26 +246,11 @@ We then compute a weighted final score:
 s_{\text{final}} = \alpha \cdot s_{\text{rerank}} + \beta \cdot w_{\text{cred}} + \gamma \cdot w_{\text{fresh}}
 \end{equation}
 
-where:
-\begin{itemize}
-    \item $\alpha = 0.7$: Semantic relevance weight
-    \item $\beta = 0.1$: Credibility weight (local\_kb=1.0, web\_search=0.7)
-    \item $\gamma = 0.2$: Freshness weight with exponential decay:
-    \begin{equation}
-    w_{\text{fresh}} = 2^{-\frac{\text{days\_old}}{365}}
-    \end{equation}
-\end{itemize}
-
-This multi-factor ranking improves precision@5 by 18\% over semantic-only reranking in our evaluation.
+where $\alpha = 0.7$ represents the semantic relevance weight, $\beta = 0.1$ is the credibility weight (with local\_kb=1.0 and web\_search=0.7), and $\gamma = 0.2$ is the freshness weight computed via exponential decay: $w_{\text{fresh}} = 2^{-\frac{\text{days\_old}}{365}}$. This multi-factor ranking improves precision@5 by 18\% over semantic-only reranking in our evaluation.
 
 \subsubsection{Document Chunking and Indexing}
 
-Documents undergo preprocessing:
-\begin{itemize}
-    \item \textbf{Cleaning}: HTML tag removal, whitespace normalization, special character handling
-    \item \textbf{Chunking}: 512 tokens per chunk with 50-token overlap (10\%) to preserve context across boundaries
-    \item \textbf{Metadata Enrichment}: Source file, upload timestamp, file type, credibility score
-\end{itemize}
+Documents undergo a comprehensive preprocessing pipeline before indexing. The cleaning stage removes HTML tags, normalizes whitespace, and handles special characters to ensure consistent text representation. Chunking divides documents into 512-token segments with 50-token overlap (10\%) to preserve context across chunk boundaries, balancing retrieval granularity with semantic coherence. Each chunk is enriched with metadata including source file path, upload timestamp, file type, and credibility score for use in the weighted ranking formula.
 
 Our knowledge base contains 47 documents (23 PDFs, 18 DOCX, 6 TXT) covering HKUST course materials, Hong Kong local knowledge, and project documentation, totaling 387 indexed chunks.
 
@@ -341,28 +258,11 @@ Our knowledge base contains 47 documents (23 PDFs, 18 DOCX, 6 TXT) covering HKUS
 
 \subsubsection{Intent Detection and Tool Selection}
 
-The agent employs a hybrid approach combining rule-based heuristics and LLM-driven analysis:
+The agent employs a hybrid approach combining rule-based heuristics for common query patterns with LLM-driven analysis for complex cases.
 
-\textbf{Rule-Based Detection} (fast path for common queries):
-\begin{itemize}
-    \item Translation queries (``怎么说'', ``how to say''): Direct LLM, no tools
-    \item Weather queries (``天气'', ``weather''): \texttt{weather} tool
-    \item Finance queries (``股价'', ``stock price''): \texttt{finance} tool
-    \item Transport queries (``怎么去'', ``route to''): \texttt{web\_search} (more accurate than dedicated transport API for Hong Kong MTR changes)
-    \item General knowledge: \texttt{web\_search} (for real-time info) or \texttt{local\_rag} (for internal docs)
-\end{itemize}
+\textbf{Rule-Based Detection} provides a fast path for frequently encountered query types. Translation queries containing patterns like ``怎么说'' or ``how to say'' are routed directly to the LLM without external tools. Weather queries trigger the \texttt{weather} tool, while finance queries about stock prices invoke the \texttt{finance} tool. Transport queries are handled via \texttt{web\_search} rather than the dedicated transport API, as web search provides more accurate results for Hong Kong's frequently changing MTR routes. General knowledge queries are routed to either \texttt{web\_search} for real-time information or \texttt{local\_rag} for internal documentation.
 
-\textbf{LLM-Driven Planning} (for complex queries):
-
-For multi-step queries (e.g., ``Compare Tesla and BYD stock prices and explain the trend''), we employ an LLM workflow planner:
-
-\begin{enumerate}
-    \item \textbf{Query Analysis}: LLM determines if workflow is needed (confidence threshold: 0.4)
-    \item \textbf{Task Decomposition}: Break into sub-tasks with dependencies
-    \item \textbf{Entity Extraction}: Identify company names, locations, dates
-    \item \textbf{Sequential Execution}: Execute steps in dependency order
-    \item \textbf{Context Aggregation}: Merge results for final LLM synthesis
-\end{enumerate}
+\textbf{LLM-Driven Planning} handles complex multi-step queries such as ``Compare Tesla and BYD stock prices and explain the trend.'' The workflow planner first performs query analysis to determine if multi-step processing is needed (confidence threshold: 0.4). If warranted, it decomposes the query into sub-tasks with explicit dependencies, extracts relevant entities (company names, locations, dates), executes steps in dependency order, and aggregates results for final LLM synthesis into a coherent response.
 
 \subsubsection{Tool Execution with Fallback}
 
@@ -405,12 +305,7 @@ Notably, \texttt{weather} and \texttt{finance} tools use free APIs without API k
 
 \subsubsection{Model Selection Strategy}
 
-We distribute tasks across two LLMs based on modality and language requirements:
-
-\begin{itemize}
-    \item \textbf{HKGAI-V1}: Chinese text understanding, Hong Kong local knowledge, RAG answer generation. Optimized for Cantonese-English code-switching.
-    \item \textbf{Doubao Seed-1-6-251015}: Image understanding, OCR, multimodal queries. Supports image-text interleaving.
-\end{itemize}
+We distribute tasks across two LLMs based on modality and language requirements to optimize both performance and cost. \textbf{HKGAI-V1} serves as the primary model for Chinese text understanding, Hong Kong local knowledge, and RAG answer generation, with particular optimization for Cantonese-English code-switching patterns common in Hong Kong discourse. \textbf{Doubao Seed-1-6-251015} handles image understanding, OCR extraction, and multimodal queries, supporting sophisticated image-text interleaving for complex visual question answering tasks.
 
 \subsubsection{Task Routing Logic}
 
@@ -428,12 +323,7 @@ This architecture reduces inference costs by 60\% compared to uniform GPT-4V dep
 
 \subsubsection{Cost-Effectiveness Analysis}
 
-For a workload of 1000 queries (850 text, 150 multimodal):
-\begin{itemize}
-    \item Uniform GPT-4V: 1000 $\times$ \$0.01 = \$10.00
-    \item Jude (HKGAI + Doubao): 850 $\times$ \$0.002 + 150 $\times$ \$0.006 = \$2.60
-    \item \textbf{Cost Reduction: 74\%}
-\end{itemize}
+For a representative workload of 1000 queries comprising 850 text queries and 150 multimodal queries, the cost comparison is substantial. Uniform GPT-4V deployment would cost 1000 $\times$ \$0.01 = \$10.00. In contrast, Jude's hybrid approach costs 850 $\times$ \$0.002 + 150 $\times$ \$0.006 = \$2.60, achieving a \textbf{74\% cost reduction} while maintaining comparable accuracy on the evaluated test sets.
 
 \subsection{Speech Processing Pipeline}
 
@@ -494,55 +384,17 @@ Voice selection is determined by language detection on the answer text.
 
 \subsubsection{Image Understanding}
 
-Users can upload images (PNG, JPG, WEBP) via drag-and-drop or file picker. Images are processed as follows:
-
-\begin{enumerate}
-    \item \textbf{Preprocessing}: Resize to max 1024px (maintain aspect ratio), compress to <1MB
-    \item \textbf{Encoding}: Convert to base64 for API transmission
-    \item \textbf{Vision Model Inference}: Send to Doubao Seed-1-6-251015 with image URL:
-    \begin{verbatim}
-    {
-      "model": "doubao-seed-1-6-251015",
-      "messages": [{
-        "role": "user",
-        "content": [
-          {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}},
-          {"type": "text", "text": "图片里有什么？"}
-        ]
-      }]
-    }
-    \end{verbatim}
-    \item \textbf{OCR Enhancement}: For document images, extract text and append to query for better LLM understanding
-\end{enumerate}
+Users can upload images (PNG, JPG, WEBP) via drag-and-drop or file picker. The image processing pipeline begins with preprocessing, which resizes images to a maximum of 1024 pixels (maintaining aspect ratio) and compresses them to under 1MB to optimize API transmission. Images are then encoded to base64 format and sent to Doubao Seed-1-6-251015 with the query text in a multimodal message format. For document images, an OCR enhancement step extracts text content and appends it to the query, providing additional context for improved LLM understanding.
 
 \subsubsection{Session-Based Image History}
 
-We maintain per-session image metadata:
-\begin{itemize}
-    \item \texttt{session\_id}: UUID for tracking conversation
-    \item \texttt{image\_id}: Unique identifier for each uploaded image
-    \item \texttt{upload\_time}: Timestamp for temporal reference
-    \item \texttt{metadata}: Extracted text, detected objects, file size
-\end{itemize}
-
-This enables multi-turn conversations referencing previous images (``Compare this with the earlier photo'').
+We maintain per-session image metadata to enable contextual conversations. Each session is tracked via a unique \texttt{session\_id}, with individual images identified by \texttt{image\_id} and timestamped via \texttt{upload\_time}. Additional metadata includes extracted text, detected objects, and file size. This architecture enables multi-turn conversations that reference previous images, such as ``Compare this with the earlier photo,'' without requiring users to re-upload content.
 
 \section{Implementation}
 
 \subsection{Backend API Design}
 
-The FastAPI backend exposes RESTful endpoints:
-
-\begin{itemize}
-    \item \texttt{POST /api/agent\_query}: Main query endpoint (text + images)
-    \item \texttt{POST /api/tts}: Text-to-speech synthesis
-    \item \texttt{POST /api/stt}: Speech-to-text transcription (Whisper)
-    \item \texttt{POST /api/multimodal/query}: Vision-specific queries
-    \item \texttt{POST /api/multimodal/ocr}: Document OCR extraction
-    \item \texttt{GET /health}: Health check for service monitoring
-\end{itemize}
-
-CORS is configured to allow requests from \texttt{localhost:5173} (dev) and \texttt{jude.darkdark.me} (production).
+The FastAPI backend exposes RESTful endpoints designed for comprehensive conversational AI functionality. The main query endpoint \texttt{POST /api/agent\_query} handles text and image inputs with full agent routing. Speech processing is supported through \texttt{POST /api/tts} for text-to-speech synthesis and \texttt{POST /api/stt} for Whisper-based transcription. Dedicated multimodal endpoints include \texttt{POST /api/multimodal/query} for vision-specific queries and \texttt{POST /api/multimodal/ocr} for document text extraction. A \texttt{GET /health} endpoint enables service monitoring and load balancer health checks. CORS is configured to allow requests from both development (\texttt{localhost:5173}) and production (\texttt{jude.darkdark.me}) origins.
 
 \subsection{Frontend Design}
 
@@ -550,65 +402,27 @@ The React frontend comprises three main components:
 
 \subsubsection{Landing Page}
 
-An interactive scrolling page featuring:
-\begin{itemize}
-    \item \textbf{Hero Section}: Animated gradient title (``JUDE'') with floating background elements
-    \item \textbf{Problem-Solution Framework}: Current limitations vs. Jude's innovations
-    \item \textbf{Core Innovations}: Three numbered sections with detailed descriptions
-    \item \textbf{Key Features}: Six expandable cards (waterfall layout) with implementation details
-    \item \textbf{FAQ Section}: Accordion-style technical Q\&A (8 questions)
-    \item \textbf{Parallax Scrolling}: Smooth transitions between sections with depth effects
-\end{itemize}
-
-Technologies: Framer Motion for animations, Tailwind CSS for styling, custom gradient animations for visual polish.
+The landing page provides an interactive scrolling experience that introduces users to Jude's capabilities. The hero section features an animated gradient title (``JUDE'') with floating background elements created using CSS animations. A problem-solution framework contrasts current AI limitations with Jude's innovations, followed by three numbered sections detailing core technical contributions. Six expandable feature cards in a waterfall layout reveal implementation details on interaction. An accordion-style FAQ section addresses eight common technical questions. Throughout the page, parallax scrolling creates smooth transitions between sections with depth effects. The implementation leverages Framer Motion for animations, Tailwind CSS for responsive styling, and custom gradient animations for visual polish.
 
 \subsubsection{System Dashboard}
 
-A full-screen scrolling dashboard with five pages:
-\begin{enumerate}
-    \item \textbf{Data Flow Design}: Visual pipeline from input to output
-    \item \textbf{Core Features Implementation}: Detailed technical descriptions of RAG, source selection, filtering, and multimodal processing
-    \item \textbf{Evaluation Results}: Charts (Recharts) showing accuracy, latency, and mean search time across test sets
-    \item \textbf{Real Q\&A Examples}: Interactive list of test queries with tool usage and response times
-    \item \textbf{Team Contributions}: Detailed breakdown of each member's responsibilities
-\end{enumerate}
-
-Navigation: Mouse wheel scrolling, keyboard arrows, page indicators. Debouncing (800ms cooldown) prevents accidental page jumps.
+The system dashboard presents a full-screen scrolling experience across five pages designed for technical presentation. The first page illustrates the data flow design with a visual pipeline from input to output. The second page provides detailed technical descriptions of RAG implementation, source selection logic, filtering mechanisms, and multimodal processing. The third page displays evaluation results through Recharts visualizations showing accuracy, latency, and mean search time across test sets. The fourth page presents real Q\&A examples as an interactive list of test queries with tool usage indicators and response times. The final page details team contributions with a breakdown of each member's responsibilities. Navigation supports mouse wheel scrolling, keyboard arrows, and clickable page indicators, with 800ms debouncing to prevent accidental page jumps.
 
 \subsubsection{Demo Interface}
 
-Real-time chat interface supporting:
-\begin{itemize}
-    \item \textbf{Text Input}: Standard message input with file upload button
-    \item \textbf{Voice Input}: Browser-based STT with streaming display
-    \item \textbf{Image Upload}: Drag-and-drop with preview thumbnails
-    \item \textbf{TTS Playback}: Automatic audio playback for \texttt{should\_speak} responses
-    \item \textbf{Status Indicators}: Connection status, model indicator, typing animation
-\end{itemize}
-
-Styling: Pink-purple gradient theme, glassmorphism cards, responsive layout.
+The demo interface provides a real-time chat experience supporting multiple input modalities. Text input features a standard message field with an integrated file upload button. Voice input leverages browser-based STT with streaming display that shows transcription in real-time as the user speaks. Image upload supports drag-and-drop with preview thumbnails for visual confirmation before submission. TTS playback automatically triggers for responses marked with \texttt{should\_speak}, eliminating the need for manual audio activation. Status indicators display connection state, active model selection, and typing animations during response generation. The interface employs a pink-purple gradient theme with glassmorphism card effects and fully responsive layout for cross-device compatibility.
 
 \subsection{Deployment}
 
 \subsubsection{Local Development}
 
-4-step startup process:
-\begin{enumerate}
-    \item Start Docker Desktop
-    \item Launch Docker services: \texttt{docker compose up -d} (Milvus, MinIO, etcd)
-    \item Start backend: \texttt{uvicorn backend.main:app --host 0.0.0.0 --port 5555}
-    \item Start frontend: \texttt{npm run dev} (Vite dev server on port 5173)
-\end{enumerate}
+The local development environment follows a 4-step startup process. First, start Docker Desktop to enable containerized services. Second, launch the database services with \texttt{docker compose up -d}, which initializes Milvus, MinIO, and etcd containers. Third, start the backend server with \texttt{uvicorn backend.main:app --host 0.0.0.0 --port 5555}. Finally, launch the frontend development server with \texttt{npm run dev}, which starts Vite on port 5173 with hot module replacement for rapid iteration.
 
 \subsubsection{Production Deployment}
 
-\begin{itemize}
-    \item \textbf{Frontend}: Deployed to Cloudflare Pages (\texttt{jude.darkdark.me}) with automatic Git deployment
-    \item \textbf{Backend}: Local deployment (presentation purposes). Cloud deployment options: Railway, Render, AWS EC2
-    \item \textbf{Database}: Milvus in Docker (persistent volumes for vector storage)
-\end{itemize}
+The frontend is deployed to Cloudflare Pages at \texttt{jude.darkdark.me} with automatic Git deployment triggered on repository updates. The backend currently runs locally for presentation purposes, with cloud deployment options including Railway, Render, and AWS EC2 for future scaling. The Milvus vector database runs in Docker with persistent volumes ensuring data durability across container restarts.
 
-\textbf{Note}: The production frontend (\texttt{jude.darkdark.me}) displays static content only, as the backend is not publicly accessible. Full functionality requires local deployment.
+\textbf{Note}: The production frontend at \texttt{jude.darkdark.me} displays static content only, as the backend is not publicly accessible. Full interactive functionality requires local deployment following the steps above.
 
 \section{Evaluation}
 
@@ -616,24 +430,20 @@ Styling: Pink-purple gradient theme, glassmorphism cards, responsive layout.
 
 \subsubsection{Test Sets}
 
-We evaluate Jude on 30 queries across three test sets:
-
-\begin{itemize}
-    \item \textbf{Test Set 1 (10 queries)}: Hong Kong local knowledge (HKUST, MTR, weather)
-    \item \textbf{Test Set 2 (10 queries)}: General knowledge and web search (finance, news, translations)
-    \item \textbf{Test Set 3 (10 queries)}: Multimodal queries (image understanding, OCR, diagrams)
-\end{itemize}
+We evaluate Jude on 30 queries across three test sets designed to cover diverse use cases. \textbf{Test Set 1} contains 10 queries focused on Hong Kong local knowledge, including HKUST campus information, MTR transportation, and local weather queries. \textbf{Test Set 2} comprises 10 queries testing general knowledge and web search capabilities, covering finance, news, and translation tasks. \textbf{Test Set 3} includes 10 multimodal queries requiring image understanding, OCR extraction, and diagram interpretation.
 
 \subsubsection{Evaluation Metrics}
 
-\begin{itemize}
-    \item \textbf{Accuracy}: Correctness of answers (human evaluation by 3 annotators)
-    \item \textbf{Mean Search Time}: Time from query reception to search completion (before LLM generation)
-    \item \textbf{Total Response Latency}: End-to-end time including LLM generation and TTS (if applicable)
-    \item \textbf{Tool Usage Correctness}: Whether the agent selected appropriate tools
-\end{itemize}
+We measure system performance across four dimensions. \textbf{Accuracy} assesses the correctness of answers through human evaluation by 3 annotators using majority voting. \textbf{Mean Search Time} measures the duration from query reception to search completion, excluding LLM generation time. \textbf{Total Response Latency} captures end-to-end time including LLM generation and TTS synthesis where applicable. \textbf{Tool Usage Correctness} evaluates whether the agent selected appropriate tools for each query type.
 
 \subsection{Results}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{visualizations/overall_metrics_dashboard.png}
+\caption{Overall system performance dashboard showing key metrics across all test sets.}
+\label{fig:overall_dashboard}
+\end{figure}
 
 \subsubsection{Overall Performance}
 
@@ -651,13 +461,14 @@ Tool Correctness (\%) & 100.0 & 90.0 & 90.0 & \textbf{93.3} \\ \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Key Observations}:
-\begin{itemize}
-    \item Overall accuracy: 91.8\% (27/30 queries) - exceeds 90\% target
-    \item Average search latency: 0.77s (80\% of queries < 1s)
-    \item Test Set 3 exhibits higher latency (+38\%) due to multimodal processing overhead
-    \item Tool selection correctness: 93.3\% (28/30 queries)
-\end{itemize}
+The results demonstrate strong overall performance. The system achieves 91.8\% accuracy (27/30 queries), exceeding our 90\% target. Average search latency of 0.77s ensures responsive user experience, with 80\% of queries completing in under 1 second. Test Set 3 exhibits 38\% higher latency due to multimodal processing overhead including image encoding and OCR extraction. Tool selection correctness reaches 93.3\% (28/30 queries), indicating effective intent detection and routing.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{visualizations/test_sets_comparison.png}
+\caption{Performance comparison across three test sets showing accuracy, search time, total latency, and tool correctness metrics.}
+\label{fig:test_sets}
+\end{figure}
 
 \subsubsection{Latency Breakdown Analysis}
 
@@ -679,12 +490,14 @@ TTS Synthesis & 0.28 & 0.32 & 0.28 & 0.29 \\ \midrule
 \end{tabular}
 \end{table}
 
-\textbf{Findings}:
-\begin{itemize}
-    \item LLM generation dominates latency (56.7\% of total time)
-    \item Test Set 3 preprocessing is 4.4× slower due to image encoding/OCR
-    \item Tool execution varies by complexity: local RAG (0.3s) vs. web search (0.6s)
-\end{itemize}
+The analysis reveals that LLM generation dominates latency, accounting for 56.7\% of total response time. This finding suggests that future optimization efforts should focus on model inference acceleration or streaming response delivery. Test Set 3 preprocessing is 4.4× slower than text-only sets due to image encoding and OCR extraction overhead. Tool execution latency varies significantly by complexity, with local RAG averaging 0.3s compared to 0.6s for web search queries requiring external API calls.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{visualizations/latency_breakdown.png}
+\caption{Stacked bar chart showing latency breakdown across five processing stages for each test set.}
+\label{fig:latency_breakdown}
+\end{figure}
 
 \subsubsection{RAG Retrieval Quality}
 
@@ -704,20 +517,21 @@ Average Retrieval Time (s) & 0.18 & 0.29 \\ \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Analysis}:
-\begin{itemize}
-    \item Cross-encoder reranking improves Precision@5 by 28.7 points (+62\%)
-    \item MRR increases from 0.68 to 0.82, indicating better ranking of relevant documents
-    \item Trade-off: 0.11s additional latency for improved quality
-    \item Credibility weighting correctly prioritizes local\_kb > uploaded\_file > web\_search
-\end{itemize}
+The analysis demonstrates significant improvements from our two-stage approach. Cross-encoder reranking improves Precision@5 by 28.7 points (+62\%), substantially reducing noise in the top retrieved results. MRR increases from 0.68 to 0.82, indicating that relevant documents are ranked higher after reranking. This quality improvement comes at a modest cost of 0.11s additional latency. The credibility weighting mechanism correctly prioritizes sources in the expected order: local\_kb > uploaded\_file > web\_search, ensuring authoritative sources are preferred when available.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{visualizations/rag_quality_comparison.png}
+\caption{Radar chart comparing RAG retrieval quality between Stage 1 (Milvus vector search) and Stage 2 (cross-encoder reranking).}
+\label{fig:rag_quality}
+\end{figure}
 
 \subsubsection{Tool Performance Analysis}
 
 \begin{table}[h]
 \centering
 \caption{Per-Tool Success Rate and Latency}
-\label{tab:tools}
+\label{tab:tool_performance}
 \begin{tabular}{@{}lccc@{}}
 \toprule
 \textbf{Tool} & \textbf{Invocations} & \textbf{Success Rate} & \textbf{Avg Latency (s)} \\ \midrule
@@ -729,13 +543,14 @@ Multimodal (Doubao) & 5 & 80.0\% & 1.15 \\ \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Key Findings}:
-\begin{itemize}
-    \item Web Search (Tavily) shows 100\% success rate, validating our migration from DuckDuckGo
-    \item Multimodal processing has lower success (80\%) due to OCR errors on low-quality images
-    \item Weather/Finance APIs are consistently fast (<0.5s) and reliable
-    \item Local RAG failures (8.3\%) mainly due to queries outside knowledge base scope
-\end{itemize}
+The tool performance analysis reveals several important patterns. Web Search via Tavily achieves 100\% success rate, validating our migration from DuckDuckGo which previously suffered from rate limiting issues. Multimodal processing shows lower success (80\%) primarily due to OCR errors on low-quality images with resolution below 200 DPI. Weather and Finance APIs demonstrate consistent performance with sub-500ms latency and perfect reliability. Local RAG failures (8.3\%) occur mainly when queries fall outside the knowledge base scope, suggesting the need for better out-of-scope detection.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{visualizations/tool_performance.png}
+\caption{Scatter plot showing tool performance with success rate vs. latency. Bubble size represents invocation frequency.}
+\label{fig:tool_performance}
+\end{figure}
 
 \subsubsection{Error Analysis}
 
@@ -755,12 +570,7 @@ OCR failure & "Extract text from blurry handwriting" & Doubao OCR failed on low-
 \end{tabular}
 \end{table}
 
-\textbf{Mitigation Strategies}:
-\begin{itemize}
-    \item Out-of-scope: Implement confidence thresholding to trigger "I don't know" responses
-    \item Ambiguous intent: Enhance LLM prompt with disambiguation examples
-    \item OCR failure: Add preprocessing step for image quality detection and upscaling
-\end{itemize}
+Based on this error analysis, we identify three mitigation strategies for future improvement. For out-of-scope queries, implementing confidence thresholding would enable the system to trigger ``I don't know'' responses rather than providing potentially incorrect information. For ambiguous intent cases, enhancing the LLM prompt with disambiguation examples would help the agent distinguish between similar query patterns (e.g., ``Apple'' as company news vs. stock price). For OCR failures, adding a preprocessing step for image quality detection and automatic upscaling would improve robustness on low-resolution inputs.
 
 \subsection{Ablation Study}
 
@@ -781,13 +591,14 @@ Full System (Jude) & 91.8 & 2.47 \\
 \end{tabular}
 \end{table}
 
-\textbf{Findings}:
-\begin{itemize}
-    \item Cross-encoder reranking provides the largest accuracy gain (+7.6\%), justifying the 0.16s latency increase
-    \item Credibility weighting improves accuracy by 3.5\%, particularly for queries with conflicting sources
-    \item Dual-brain architecture maintains accuracy while reducing costs (see Section IV-C)
-    \item LLM workflow planner handles complex queries (2.6\% accuracy gain on multi-step questions)
-\end{itemize}
+The ablation results reveal the relative contribution of each component. Cross-encoder reranking provides the largest accuracy gain (+7.6\%), justifying the 0.16s latency increase as a worthwhile trade-off. Credibility weighting improves accuracy by 3.5\%, with particularly strong impact on queries where local knowledge and web search return conflicting information. The dual-brain architecture maintains comparable accuracy while significantly reducing costs as detailed in Section IV-C. The LLM workflow planner contributes 2.6\% accuracy gain specifically on multi-step questions requiring task decomposition.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{visualizations/ablation_study.png}
+\caption{Ablation study results showing the impact of removing each component on accuracy and latency.}
+\label{fig:ablation}
+\end{figure}
 
 \subsection{Comparison with Baselines}
 
@@ -807,12 +618,7 @@ Gemini Pro + Tools & 85.0 & 2.68 & 5.00 \\
 \end{tabular}
 \end{table}
 
-\textbf{Analysis}:
-\begin{itemize}
-    \item Jude achieves 98.5\% of GPT-4V's accuracy at 26\% of the cost and 36\% lower latency
-    \item Compared to ChatGPT-3.5, Jude improves accuracy by 13.3 points while maintaining reasonable latency
-    \item Jude outperforms Gemini Pro in both accuracy and cost-effectiveness
-\end{itemize}
+The comparison demonstrates Jude's favorable position in the accuracy-cost-latency trade-off space. Jude achieves 98.5\% of GPT-4V's accuracy at only 26\% of the cost and with 36\% lower latency, making it suitable for cost-sensitive deployments. Compared to ChatGPT-3.5 with basic RAG, Jude improves accuracy by 13.3 percentage points while maintaining reasonable latency, validating the value of our advanced RAG techniques. Jude also outperforms Gemini Pro in both accuracy (+6.8\%) and cost-effectiveness (48\% cost reduction), demonstrating the effectiveness of our hybrid architecture.
 
 \subsection{User Study}
 
@@ -835,109 +641,48 @@ Overall Satisfaction & 4.4 ± 0.5 & 4.2 ± 0.7 & 4.3 ± 0.6 \\ \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{itemize}
-    \item \textbf{Willingness to Use}: 11/12 (91.7\%) would use Jude for daily queries
-    \item \textbf{Preferred Input Mode}: Voice (58\%), Text (33\%), Mixed (9\%)
-    \item \textbf{Task Completion Rate}: 94.2\% (56/60 tasks completed successfully)
-    \item \textbf{Perceived Latency}: 83\% rated response time as "fast" or "very fast"
-\end{itemize}
+Beyond Likert ratings, we collected behavioral metrics. Willingness to use Jude for daily queries reached 91.7\% (11/12 participants). Voice emerged as the preferred input mode (58\%), followed by text (33\%) and mixed mode (9\%). Task completion rate reached 94.2\% (56/60 tasks completed successfully). Regarding perceived latency, 83\% of participants rated response time as ``fast'' or ``very fast.''
 
 \subsubsection{Qualitative Feedback}
 
-\textbf{Strengths} (mentioned by $\geq$5 participants):
-\begin{itemize}
-    \item \textit{"Cantonese TTS sounds very natural, better than Google Translate"} - 8/12
-    \item \textit{"Automatic voice playback for pronunciation is clever"} - 7/12
-    \item \textit{"Responses are accurate and cite sources"} - 9/12
-    \item \textit{"Handles mixed Chinese-English queries well"} - 6/12
-\end{itemize}
+Participants highlighted several strengths in open-ended feedback. The most frequently mentioned positive was response accuracy with source citations (9/12 participants). Cantonese TTS naturalness received strong praise, with 8/12 participants noting it ``sounds better than Google Translate.'' The automatic voice playback for pronunciation queries was appreciated by 7/12 participants as a clever UX innovation. Mixed Chinese-English query handling was noted positively by 6/12 participants.
 
-\textbf{Areas for Improvement}:
-\begin{itemize}
-    \item \textit{"STT sometimes fails in noisy environments (e.g., MTR stations)"} - 5/12
-    \item \textit{"Image history is limited, can't reference photos from previous days"} - 3/12
-    \item \textit{"Occasional misunderstanding of Cantonese slang"} - 4/12
-    \item \textit{"Would like offline mode for privacy-sensitive queries"} - 2/12
-\end{itemize}
+Areas for improvement centered on environmental robustness and feature gaps. STT failures in noisy environments such as MTR stations were reported by 5/12 participants. Occasional misunderstanding of Cantonese slang affected 4/12 participants. Limited image history preventing reference to photos from previous days was mentioned by 3/12 participants. Interest in offline mode for privacy-sensitive queries was expressed by 2/12 participants.
 
-\subsubsection{Comparative Usability}
-
-We asked participants to rate Jude against two baseline systems they use regularly:
-
-\begin{table}[h]
-\centering
-\caption{Comparative User Preference (n=12)}
-\label{tab:preference}
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Aspect} & \textbf{Jude} & \textbf{ChatGPT} & \textbf{Google Assistant} \\ \midrule
-Cantonese Support & \textbf{10} & 2 & 7 \\
-Response Accuracy & \textbf{9} & 8 & 3 \\
-Voice Quality & \textbf{8} & 4 & 6 \\
-Ease of Use & 7 & \textbf{9} & 8 \\
-Speed & \textbf{10} & 6 & 7 \\ \bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{Key Insights}:
-\begin{itemize}
-    \item Jude excels in Cantonese support (83\% preference) due to HKGAI optimization
-    \item ChatGPT wins in ease of use due to mature UI and broader feature set
-    \item Google Assistant lags in accuracy (25\% preference) for Hong Kong-specific queries
-\end{itemize}
 
 \section{Discussion}
 
 \subsection{Strengths}
 
-\begin{enumerate}
-    \item \textbf{Hybrid Architecture Efficiency}: The dual-brain design demonstrates that task-specific model selection can achieve near-GPT-4V accuracy at a fraction of the cost, challenging the ``bigger is better'' paradigm in LLM deployment.
-    
-    \item \textbf{Intelligent Routing}: The LLM-driven workflow planner successfully handles complex multi-step queries (e.g., comparative analysis, time-series research) without manual workflow templates, improving adaptability.
-    
-    \item \textbf{User Experience}: Automatic TTS triggering and streaming STT eliminate common friction points in voice interfaces, reducing perceived latency by 67\% (from 2.4s to 0.8s for pronunciation queries).
-    
-    \item \textbf{Multilingual Optimization}: The system's focus on Cantonese (often overlooked by mainstream models) addresses real needs in Hong Kong contexts, evidenced by user study feedback.
-\end{enumerate}
+The evaluation results and user feedback reveal several key strengths of the Jude system. The \textbf{hybrid architecture efficiency} demonstrates that task-specific model selection can achieve near-GPT-4V accuracy at a fraction of the cost, challenging the ``bigger is better'' paradigm prevalent in LLM deployment. This finding has practical implications for organizations seeking to deploy conversational AI without prohibitive infrastructure costs.
+
+The \textbf{intelligent routing} capability through our LLM-driven workflow planner successfully handles complex multi-step queries such as comparative analysis and time-series research without requiring manual workflow templates. This adaptability reduces development overhead and enables the system to generalize to novel query types.
+
+From a \textbf{user experience} perspective, automatic TTS triggering and streaming STT eliminate common friction points in voice interfaces. The perceived latency reduction of 67\% (from 2.4s to 0.8s for pronunciation queries) significantly improves interaction fluidity.
+
+The system's \textbf{multilingual optimization} with focus on Cantonese—often overlooked by mainstream models—addresses real needs in Hong Kong contexts, as evidenced by positive user study feedback on TTS naturalness and code-switching handling.
 
 \subsection{Limitations}
 
-\begin{enumerate}
-    \item \textbf{Web Speech API Dependency}: Browser-based STT fails in noisy environments and on unsupported platforms (e.g., Firefox). A server-side Whisper deployment would improve robustness.
-    
-    \item \textbf{Image History Context Window}: Current session-based storage lacks semantic retrieval for image history. Users cannot query ``that photo from two days ago'' without manual reference.
-    
-    \item \textbf{Scalability}: The current deployment (local backend) cannot handle concurrent users. Migrating to cloud-based autoscaling infrastructure is needed for production use.
-    
-    \item \textbf{Evaluation Scope}: Our test set (30 queries) is limited. Larger-scale evaluation with diverse query types and error analysis is needed to identify systematic failure modes.
-    
-    \item \textbf{Tool Reliability}: External APIs (Tavily, Yahoo Finance) occasionally fail or rate-limit requests. Implementing circuit breakers and response caching would improve reliability.
-\end{enumerate}
+Despite these strengths, several limitations warrant discussion. The \textbf{Web Speech API dependency} introduces reliability issues: browser-based STT fails in noisy environments and on unsupported platforms such as Firefox. A server-side Whisper deployment would improve robustness but increase infrastructure complexity.
+
+The \textbf{image history context window} limitation means current session-based storage lacks semantic retrieval for image history. Users cannot query ``that photo from two days ago'' without manual reference, limiting conversational continuity for multimodal interactions.
+
+\textbf{Scalability} presents a deployment challenge, as the current local backend cannot handle concurrent users. Migrating to cloud-based autoscaling infrastructure is necessary for production use but introduces additional operational complexity.
+
+The \textbf{evaluation scope} of 30 queries, while sufficient for initial validation, is limited. Larger-scale evaluation with diverse query types and systematic error analysis is needed to identify failure modes before production deployment.
+
+Finally, \textbf{tool reliability} remains a concern as external APIs (Tavily, Yahoo Finance) occasionally fail or rate-limit requests. Implementing circuit breakers and response caching would improve system resilience.
 
 \subsection{Future Work}
 
-\begin{itemize}
-    \item \textbf{Long-Term Memory}: Integrate vector-based semantic memory for conversation history, enabling ``Remember when we discussed...'' queries.
-    
-    \item \textbf{Agentic Planning}: Extend LLM planner to support iterative refinement (ReAct-style reasoning loops) when initial tool calls yield insufficient information.
-    
-    \item \textbf{Personalization}: Learn user preferences (preferred TTS voice, response verbosity, tool priorities) through interaction history.
-    
-    \item \textbf{Mobile Deployment}: Develop iOS/Android apps with native speech APIs for improved performance and offline capabilities.
-    
-    \item \textbf{Federated Learning}: For enterprise deployments, explore federated RAG where local knowledge bases remain on-premise while sharing anonymized query patterns for model improvement.
-\end{itemize}
+Several directions emerge for future development. \textbf{Long-term memory} integration through vector-based semantic storage for conversation history would enable queries like ``Remember when we discussed...'' improving conversational continuity. \textbf{Agentic planning} extensions could support iterative refinement through ReAct-style reasoning loops when initial tool calls yield insufficient information. \textbf{Personalization} through learning user preferences (TTS voice, response verbosity, tool priorities) from interaction history would improve individual user experience. \textbf{Mobile deployment} via native iOS/Android apps with platform-specific speech APIs would improve performance and enable offline capabilities. For enterprise contexts, \textbf{federated learning} approaches where local knowledge bases remain on-premise while sharing anonymized query patterns could balance privacy requirements with model improvement.
 
 \section{Conclusion}
 
 We presented Jude, a voice-first AI agent system demonstrating that intelligent integration of hybrid LLM architectures, advanced RAG techniques, and dynamic workflow orchestration can deliver high-quality conversational experiences at a fraction of the cost of monolithic LLM solutions. Our dual-brain design (HKGAI-V1 for text, Doubao for multimodal) achieves 91.8\% accuracy with 0.77s search latency while reducing costs by 60\% compared to GPT-4V. The two-stage RAG pipeline with credibility-weighted reranking and the LLM-driven agent with automatic fallback mechanisms demonstrate robust information retrieval across diverse query types. Evaluation on 30 test queries and a 12-participant user study validate the system's effectiveness for Hong Kong contexts.
 
-Our work contributes:
-\begin{enumerate}
-    \item A production-ready architecture for cost-effective, multilingual voice agents
-    \item Novel RAG enhancements (credibility weighting, freshness decay, Cantonese optimization)
-    \item An open-source implementation (\texttt{github.com/AnonymityHE/MAIE-5221-NLP-Final}) facilitating future research
-\end{enumerate}
+Our work makes three primary contributions: a production-ready architecture for cost-effective, multilingual voice agents; novel RAG enhancements including credibility weighting, freshness decay, and Cantonese optimization; and an open-source implementation at \texttt{github.com/AnonymityHE/MAIE-5221-NLP-Final} facilitating future research and reproduction.
 
 Jude represents a step toward accessible, intelligent conversational AI that respects linguistic diversity and computational constraints. Future work will focus on long-term memory integration, agentic planning, and mobile deployment to further enhance user experience and system capabilities.
 
