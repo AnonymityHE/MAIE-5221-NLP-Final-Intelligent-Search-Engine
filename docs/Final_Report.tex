@@ -358,15 +358,17 @@ Unlike traditional systems requiring manual TTS activation, Jude automatically d
 
 \begin{verbatim}
 def should_speak(query: str, answer: str) -> bool:
-    keywords = ["怎么说", "how to say", "发音", "pronunciation"]
+    keywords = ["zenme shuo", "how to say", "fayin", "pronunciation"]
     return any(kw in query.lower() for kw in keywords)
 \end{verbatim}
+
+\noindent Note: The actual implementation uses Chinese keywords (怎么说, 发音) for detection.
 
 When \texttt{should\_speak=True}, the backend pre-generates TTS audio (Edge TTS with HiuGaaiNeural for Cantonese, XiaoxiaoNeural for Mandarin) and embeds it as base64 in the response:
 
 \begin{verbatim}
 {
-  "answer": "请勿靠近车门 is pronounced as...",
+  "answer": "[Chinese phrase] is pronounced as...",
   "should_speak": true,
   "audio_url": "data:audio/mp3;base64,..."
 }
@@ -693,13 +695,13 @@ Several directions emerge for future development. \textbf{Long-term memory} inte
 
 We presented Jude, a voice-first AI agent system demonstrating that intelligent integration of hybrid LLM architectures, advanced RAG techniques, and dynamic workflow orchestration can deliver high-quality conversational experiences at a fraction of the cost of monolithic LLM solutions. Our dual-brain design (HKGAI-V1 for text, Doubao for multimodal) achieves 91.8\% accuracy with 0.77s search latency while reducing costs by 60\% compared to GPT-4V. The two-stage RAG pipeline with credibility-weighted reranking and the LLM-driven agent with automatic fallback mechanisms demonstrate robust information retrieval across diverse query types. Evaluation on 30 test queries and a 12-participant user study validate the system's effectiveness for Hong Kong contexts.
 
-Our work makes three primary contributions: a production-ready architecture for cost-effective, multilingual voice agents; novel RAG enhancements including credibility weighting, freshness decay, and Cantonese optimization; and an open-source implementation at \texttt{github.com/AnonymityHE/MAIE-5221-NLP-Final} facilitating future research and reproduction.
+Our work makes three primary contributions: a production-ready architecture for cost-effective, multilingual voice agents; novel RAG enhancements including credibility weighting, freshness decay, and Cantonese optimization; and an open-source implementation facilitating future research and reproduction.\footnote{Code available at: \url{https://github.com/AnonymityHE/MAIE-5221-NLP-Final}}
 
 Jude represents a step toward accessible, intelligent conversational AI that respects linguistic diversity and computational constraints. Future work will focus on long-term memory integration, agentic planning, and mobile deployment to further enhance user experience and system capabilities.
 
 \section*{Acknowledgments}
 
-We thank Professor [Name] for guidance on RAG system design, the HKGAI and Doubao teams for API access, and our user study participants for valuable feedback. This work was supported by MAIE5221 NLP course resources at HKUST.
+We thank Professor Xue Wei for guidance on RAG system design, the HKGAI and Doubao teams for API access, and our user study participants for valuable feedback. This work was supported by MAIE5221 NLP course resources at HKUST.
 
 \begin{thebibliography}{10}
 
