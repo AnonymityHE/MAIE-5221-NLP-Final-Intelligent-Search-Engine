@@ -30,6 +30,24 @@
 \usepackage{enumitem}
 \usepackage{tcolorbox}
 \usepackage{fancyhdr}
+\usepackage{listings}
+
+% Code listing style - compact with smaller font
+\lstset{
+    basicstyle=\ttfamily\footnotesize\linespread{1.0}\selectfont,
+    breaklines=true,
+    frame=single,
+    framesep=3pt,
+    xleftmargin=5pt,
+    xrightmargin=5pt,
+    backgroundcolor=\color{gray!8},
+    rulecolor=\color{gray!30},
+    aboveskip=10pt,
+    belowskip=10pt,
+    showstringspaces=false,
+    tabsize=4,
+    columns=flexible,
+}
 
 % Define colors (Morandi palette)
 \definecolor{primarycolor}{RGB}{70, 90, 120}  % Morandi deep blue
@@ -152,7 +170,7 @@
     colbacktitle=primarycolor,
     fonttitle=\bfseries
 ]
-We present \textbf{Jude}, a production-grade voice-first AI agent system that integrates multimodal Retrieval-Augmented Generation (RAG), real-time speech interaction, and dynamic workflow orchestration. The system addresses three critical challenges in current conversational AI: fragmented user interactions, limited contextual understanding, and single-model limitations. Jude employs a dual-brain architecture leveraging HKGAI-V1 for Chinese text comprehension and Doubao Seed-1-6 for multimodal processing, achieving cost-effective task distribution. Our two-stage RAG pipeline combines Milvus vector search with cross-encoder reranking, weighted by credibility and freshness metrics. The LLM-driven agent dynamically routes queries to specialized tools (local RAG, web search, weather, finance APIs) with automatic fallback mechanisms. Evaluation across 30 test queries demonstrates \textbf{91.8\% accuracy} with an average search latency of \textbf{0.77 seconds}. The system supports streamed voice interaction via Web Speech API and Edge TTS, with intelligent TTS triggering for pronunciation queries. Our work demonstrates that combining hybrid LLM architectures, advanced RAG techniques, and intelligent workflow orchestration can deliver seamless, multilingual conversational experiences optimized for Hong Kong contexts.
+We present \textbf{Jude}, a production-grade voice-first AI agent system that integrates multimodal Retrieval-Augmented Generation (RAG), real-time speech interaction, and dynamic workflow orchestration. The system addresses three critical challenges in current conversational AI: fragmented user interactions, limited contextual understanding, and single-model limitations. Jude employs a dual-brain architecture leveraging HKGAI-V1 for Chinese text comprehension and Doubao Seed-1-6 for multimodal processing, achieving cost-effective task distribution. Our two-stage RAG pipeline combines Milvus vector search with cross-encoder reranking, weighted by credibility and freshness metrics. The LLM-driven agent dynamically routes queries to specialized tools (local RAG, web search, weather, finance APIs) with automatic fallback mechanisms. Preliminary evaluation demonstrates \textbf{100\% task completion rate} with \textbf{90\% tool routing accuracy} across functional tests. The system supports streamed voice interaction via Web Speech API and Edge TTS, with intelligent TTS triggering for pronunciation queries. Our work demonstrates that combining hybrid LLM architectures, advanced RAG techniques, and intelligent workflow orchestration can deliver seamless, multilingual conversational experiences optimized for Hong Kong contexts.
 \end{tcolorbox}
 
 \vspace{0.5em}
@@ -186,7 +204,7 @@ Our first contribution is a \textbf{Streamed Voice Interaction Pipeline} that im
 
 Our second contribution is a \textbf{Dual-Brain LLM Architecture} that achieves cost-effective task distribution. HKGAI-V1 handles Chinese text comprehension and Hong Kong-specific knowledge, while Doubao Seed-1-6-251015 processes multimodal tasks including image understanding and OCR. This task-specific model distribution reduces inference costs by 60\% compared to uniform GPT-4V deployment while improving Cantonese accuracy by 23\%.
 
-Our third contribution is \textbf{Dynamic Workflow Orchestration} through an LLM-driven agent with intelligent tool routing. The agent automatically selects from 5+ tools (local RAG, Tavily web search, wttr.in weather API, Yahoo Finance, Hong Kong Transport API) based on query intent analysis. Our two-stage RAG pipeline combines Milvus cosine similarity search with cross-encoder reranking, weighted by credibility (70\%), recency (20\%), and source trust (10\%), achieving 91.8\% accuracy with 0.77s average search latency.
+Our third contribution is \textbf{Dynamic Workflow Orchestration} through an LLM-driven agent with intelligent tool routing. The agent automatically selects from 5+ tools (local RAG, Tavily web search, wttr.in weather API, Yahoo Finance, Hong Kong Transport API) based on query intent analysis. Our two-stage RAG pipeline combines Milvus cosine similarity search with cross-encoder reranking, weighted by credibility (70\%), recency (20\%), and source trust (10\%), demonstrating effective query routing and response generation.
 
 The system is deployed with a React-based frontend featuring an interactive landing page, a system dashboard with real-time evaluation metrics, and a demo interface supporting text, voice, and image inputs.
 
@@ -279,7 +297,7 @@ The agent employs a hybrid approach combining rule-based heuristics for common q
 
 Each tool has timeout (120s) and retry (3 attempts with exponential backoff) mechanisms:
 
-\begin{verbatim}
+\begin{lstlisting}[language=Python]
 def execute_with_fallback(tools: List[str], query: str):
     for tool in tools:
         try:
@@ -289,7 +307,7 @@ def execute_with_fallback(tools: List[str], query: str):
         except TimeoutError:
             logger.warning(f"{tool} timeout, trying next")
     return direct_llm_answer(query)
-\end{verbatim}
+\end{lstlisting}
 
 Priority order: specialized tool $\rightarrow$ web\_search $\rightarrow$ local\_rag $\rightarrow$ direct LLM.
 
@@ -320,7 +338,7 @@ We distribute tasks across two LLMs based on modality and language requirements 
 
 \subsubsection{Task Routing Logic}
 
-\begin{verbatim}
+\begin{lstlisting}[language=Python]
 def select_model(query: QueryRequest):
     if query.images:
         return DoubaoClient(model="seed-1-6-251015")
@@ -328,7 +346,7 @@ def select_model(query: QueryRequest):
         return HKGAIClient(model="HKGAI-V1")
     else:
         return HKGAIClient()  # default for Chinese/English
-\end{verbatim}
+\end{lstlisting}
 
 This architecture reduces inference costs by 60\% compared to uniform GPT-4V deployment, as multimodal queries comprise only 15\% of total traffic.
 
@@ -342,11 +360,11 @@ For a representative workload of 1000 queries comprising 850 text queries and 15
 
 We employ the Web Speech API (webkitSpeechRecognition) configured for Chinese Mandarin (\texttt{zh-CN}):
 
-\begin{verbatim}
+\begin{lstlisting}[language=JavaScript]
 recognitionRef.current.lang = 'zh-CN';
 recognitionRef.current.continuous = false;  // auto-stop
 recognitionRef.current.interimResults = true;  // streaming
-\end{verbatim}
+\end{lstlisting}
 
 Streaming mode enables real-time transcription display as the user speaks. We set \texttt{continuous=false} to automatically stop recognition after speech pauses, improving UX for presentation demos.
 
@@ -356,23 +374,23 @@ Streaming mode enables real-time transcription display as the user speaks. We se
 
 Unlike traditional systems requiring manual TTS activation, Jude automatically detects pronunciation queries:
 
-\begin{verbatim}
+\begin{lstlisting}[language=Python]
 def should_speak(query: str, answer: str) -> bool:
     keywords = ["zenme shuo", "how to say", "fayin", "pronunciation"]
     return any(kw in query.lower() for kw in keywords)
-\end{verbatim}
+\end{lstlisting}
 
-\noindent Note: The actual implementation uses Chinese keywords (怎么说, 发音) for detection.
+\noindent\small\textit{Note: The actual implementation uses Chinese keywords for detection.}\normalsize
 
 When \texttt{should\_speak=True}, the backend pre-generates TTS audio (Edge TTS with HiuGaaiNeural for Cantonese, XiaoxiaoNeural for Mandarin) and embeds it as base64 in the response:
 
-\begin{verbatim}
+\begin{lstlisting}
 {
   "answer": "[Chinese phrase] is pronounced as...",
   "should_speak": true,
   "audio_url": "data:audio/mp3;base64,..."
 }
-\end{verbatim}
+\end{lstlisting}
 
 The frontend automatically plays the audio without user interaction, reducing TTS latency from 2.4s to 0.3s (perceived delay).
 
@@ -439,241 +457,100 @@ The frontend is deployed to Cloudflare Pages at \texttt{jude.darkdark.me} with a
 
 \section{Evaluation}
 
-\subsection{Experimental Setup}
+\subsection{Functional Testing}
 
-\subsubsection{Test Sets}
+We conducted functional testing to validate the system's core capabilities. The test suite covers 10 queries across four categories: basic knowledge retrieval, technical knowledge, real-time information, and comparative analysis.
 
-We evaluate Jude on 30 queries across three test sets designed to cover diverse use cases. \textbf{Test Set 1} contains 10 queries focused on Hong Kong local knowledge, including HKUST campus information, MTR transportation, and local weather queries. \textbf{Test Set 2} comprises 10 queries testing general knowledge and web search capabilities, covering finance, news, and translation tasks. \textbf{Test Set 3} includes 10 multimodal queries requiring image understanding, OCR extraction, and diagram interpretation.
-
-\subsubsection{Evaluation Metrics}
-
-We measure system performance across four dimensions. \textbf{Accuracy} assesses the correctness of answers through human evaluation by 3 annotators using majority voting. \textbf{Mean Search Time} measures the duration from query reception to search completion, excluding LLM generation time. \textbf{Total Response Latency} captures end-to-end time including LLM generation and TTS synthesis where applicable. \textbf{Tool Usage Correctness} evaluates whether the agent selected appropriate tools for each query type.
-
-\subsection{Results}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{visualizations/overall_metrics_dashboard.png}
-\caption{Overall system performance dashboard showing key metrics across all test sets.}
-\label{fig:overall_dashboard}
-\end{figure}
-
-\subsubsection{Overall Performance}
+\subsubsection{Test Results}
 
 \begin{table}[h]
 \centering
-\caption{Evaluation Results Across Test Sets}
+\caption{Functional Test Results (from test\_agent\_with\_tools.log)}
 \label{tab:results}
-\begin{tabular}{@{}lcccr@{}}
-\toprule
-\textbf{Metric} & \textbf{Set 1} & \textbf{Set 2} & \textbf{Set 3} & \textbf{Overall} \\ \midrule
-Accuracy (\%) & 95.0 & 90.0 & 90.0 & \textbf{91.8} \\
-Mean Search Time (s) & 0.52 & 0.68 & 1.12 & \textbf{0.77} \\
-Total Latency (s) & 2.15 & 2.48 & 2.78 & \textbf{2.47} \\
-Tool Correctness (\%) & 100.0 & 90.0 & 90.0 & \textbf{93.3} \\ \bottomrule
-\end{tabular}
-\end{table}
-
-The results demonstrate strong overall performance. The system achieves 91.8\% accuracy (27/30 queries), exceeding our 90\% target. Average search latency of 0.77s ensures responsive user experience, with 80\% of queries completing in under 1 second. Test Set 3 exhibits 38\% higher latency due to multimodal processing overhead including image encoding and OCR extraction. Tool selection correctness reaches 93.3\% (28/30 queries), indicating effective intent detection and routing.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.95\textwidth]{visualizations/test_sets_comparison.png}
-\caption{Performance comparison across three test sets showing accuracy, search time, total latency, and tool correctness metrics.}
-\label{fig:test_sets}
-\end{figure}
-
-\subsubsection{Latency Breakdown Analysis}
-
-We decompose the total response latency into five stages to identify bottlenecks:
-
-\begin{table}[h]
-\centering
-\caption{Average Latency Breakdown (in seconds)}
-\label{tab:latency}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-\textbf{Stage} & \textbf{Set 1} & \textbf{Set 2} & \textbf{Set 3} & \textbf{Avg} \\ \midrule
-Preprocessing & 0.08 & 0.09 & 0.35 & 0.17 \\
-Intent Detection & 0.15 & 0.18 & 0.16 & 0.16 \\
-Tool Execution & 0.29 & 0.41 & 0.61 & 0.44 \\
-LLM Generation & 1.35 & 1.48 & 1.38 & 1.40 \\
-TTS Synthesis & 0.28 & 0.32 & 0.28 & 0.29 \\ \midrule
-\textbf{Total} & 2.15 & 2.48 & 2.78 & 2.47 \\ \bottomrule
+\textbf{Category} & \textbf{Queries} & \textbf{Success} & \textbf{Tool Accuracy} & \textbf{Avg Response Time} \\ \midrule
+Basic Knowledge & 2 & 2/2 (100\%) & 2/2 (100\%) & 10.3s \\
+Technical Knowledge & 2 & 2/2 (100\%) & 2/2 (100\%) & 11.0s \\
+Real-time Information & 4 & 4/4 (100\%) & 3/4 (75\%) & 10.6s \\
+Comparative Analysis & 2 & 2/2 (100\%) & 2/2 (100\%) & 16.3s \\ \midrule
+\textbf{Overall} & \textbf{10} & \textbf{10/10 (100\%)} & \textbf{9/10 (90\%)} & \textbf{12.1s} \\ \bottomrule
 \end{tabular}
 \end{table}
 
-The analysis reveals that LLM generation dominates latency, accounting for 56.7\% of total response time. This finding suggests that future optimization efforts should focus on model inference acceleration or streaming response delivery. Test Set 3 preprocessing is 4.4× slower than text-only sets due to image encoding and OCR extraction overhead. Tool execution latency varies significantly by complexity, with local RAG averaging 0.3s compared to 0.6s for web search queries requiring external API calls.
+The functional tests demonstrate that the system successfully completes all query types with a 100\% task completion rate. Tool routing accuracy reaches 90\%, with one case where a weather query was incorrectly routed to local RAG instead of the weather API.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.95\textwidth]{visualizations/latency_breakdown.png}
-\caption{Stacked bar chart showing latency breakdown across five processing stages for each test set.}
-\label{fig:latency_breakdown}
-\end{figure}
+\subsubsection{Tool Usage Statistics}
 
-\subsubsection{RAG Retrieval Quality}
-
-We evaluate the quality of our two-stage RAG pipeline using manual relevance judgments:
+Based on the test logs, tool invocation distribution was as follows:
 
 \begin{table}[h]
 \centering
-\caption{RAG Retrieval Metrics (Test Set 1, n=10)}
-\label{tab:rag_quality}
+\caption{Tool Invocation Statistics}
+\label{tab:tool_stats}
 \begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Metric} & \textbf{Stage 1 (Milvus)} & \textbf{Stage 2 (Reranked)} \\ \midrule
-Recall@20 / Recall@5 & 92.5\% & 87.5\% \\
-Precision@20 / Precision@5 & 46.3\% & 75.0\% \\
-MRR (Mean Reciprocal Rank) & 0.68 & 0.82 \\
-Average Retrieval Time (s) & 0.18 & 0.29 \\ \bottomrule
+\textbf{Tool} & \textbf{Invocations} & \textbf{Success Rate} \\ \midrule
+Local RAG & 5 & 100\% \\
+Finance API & 3 & 100\% \\
+Weather API & 2 & 100\% \\ \bottomrule
 \end{tabular}
 \end{table}
 
-The analysis demonstrates significant improvements from our two-stage approach. Cross-encoder reranking improves Precision@5 by 28.7 points (+62\%), substantially reducing noise in the top retrieved results. MRR increases from 0.68 to 0.82, indicating that relevant documents are ranked higher after reranking. This quality improvement comes at a modest cost of 0.11s additional latency. The credibility weighting mechanism correctly prioritizes sources in the expected order: local\_kb > uploaded\_file > web\_search, ensuring authoritative sources are preferred when available.
+\subsubsection{Example Test Cases}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.7\textwidth]{visualizations/rag_quality_comparison.png}
-\caption{Radar chart comparing RAG retrieval quality between Stage 1 (Milvus vector search) and Stage 2 (cross-encoder reranking).}
-\label{fig:rag_quality}
-\end{figure}
-
-\subsubsection{Tool Performance Analysis}
+Table \ref{tab:examples} presents representative test cases demonstrating system capabilities:
 
 \begin{table}[h]
 \centering
-\caption{Per-Tool Success Rate and Latency}
-\label{tab:tool_performance}
-\begin{tabular}{@{}lccc@{}}
+\caption{Representative Test Cases}
+\label{tab:examples}
+\small
+\begin{tabular}{@{}p{0.25\textwidth}p{0.12\textwidth}p{0.45\textwidth}@{}}
 \toprule
-\textbf{Tool} & \textbf{Invocations} & \textbf{Success Rate} & \textbf{Avg Latency (s)} \\ \midrule
-Local RAG & 12 & 91.7\% & 0.31 \\
-Web Search (Tavily) & 8 & 100.0\% & 0.58 \\
-Weather API & 3 & 100.0\% & 0.22 \\
-Finance API & 4 & 100.0\% & 0.41 \\
-Multimodal (Doubao) & 5 & 80.0\% & 1.15 \\ \bottomrule
+\textbf{Query} & \textbf{Tool Used} & \textbf{Response Summary} \\ \midrule
+``香港科技大学在哪里？'' & local\_rag & Correctly identified HKUST location in Hong Kong SAR \\
+``苹果公司的股价是多少？'' & finance & Retrieved real-time AAPL price (\$271.11) \\
+``比较香港和北京今天的天气'' & weather & Provided detailed comparison (temperature, humidity, wind) \\
+``比亚迪和特斯拉哪个股价更高？'' & finance & Correctly compared TSLA (\$386.39) vs BYD (\$92.70) \\ \bottomrule
 \end{tabular}
 \end{table}
-
-The tool performance analysis reveals several important patterns. Web Search via Tavily achieves 100\% success rate, validating our migration from DuckDuckGo which previously suffered from rate limiting issues. Multimodal processing shows lower success (80\%) primarily due to OCR errors on low-quality images with resolution below 200 DPI. Weather and Finance APIs demonstrate consistent performance with sub-500ms latency and perfect reliability. Local RAG failures (8.3\%) occur mainly when queries fall outside the knowledge base scope, suggesting the need for better out-of-scope detection.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.95\textwidth]{visualizations/tool_performance.png}
-\caption{Scatter plot showing tool performance with success rate vs. latency. Bubble size represents invocation frequency.}
-\label{fig:tool_performance}
-\end{figure}
 
 \subsubsection{Error Analysis}
 
-We manually analyze the 3 failed queries (out of 30):
+One routing error was observed: the query ``现在香港的天气怎么样？'' (What's the weather in Hong Kong now?) was routed to local\_rag instead of the weather tool. This occurred because the intent detection prioritized the local knowledge base. The system still provided a helpful response by suggesting alternative methods to obtain weather information, demonstrating graceful degradation.
 
-\begin{table}[h]
-\centering
-\caption{Error Cases and Root Causes}
-\label{tab:errors}
-\small
-\begin{tabular}{@{}p{0.15\textwidth}p{0.35\textwidth}p{0.35\textwidth}@{}}
-\toprule
-\textbf{Query Type} & \textbf{Example} & \textbf{Root Cause} \\ \midrule
-Out-of-scope & "What's the population of Greenland?" & Local KB doesn't contain this info; web search returned outdated data \\
-Ambiguous intent & "Apple news" & Agent misrouted to finance tool (stock) instead of web search (news) \\
-OCR failure & "Extract text from blurry handwriting" & Doubao OCR failed on low-resolution image (< 200 DPI) \\ \bottomrule
-\end{tabular}
-\end{table}
+\subsection{Qualitative Assessment}
 
-Based on this error analysis, we identify three mitigation strategies for future improvement. For out-of-scope queries, implementing confidence thresholding would enable the system to trigger ``I don't know'' responses rather than providing potentially incorrect information. For ambiguous intent cases, enhancing the LLM prompt with disambiguation examples would help the agent distinguish between similar query patterns (e.g., ``Apple'' as company news vs. stock price). For OCR failures, adding a preprocessing step for image quality detection and automatic upscaling would improve robustness on low-resolution inputs.
+Beyond functional testing, we assessed system quality through informal user trials during development:
 
-\subsection{Ablation Study}
+\textbf{Strengths observed:}
+\begin{itemize}
+\item Accurate retrieval of local knowledge base content
+\item Reliable real-time data from finance and weather APIs
+\item Natural-sounding TTS output in both Cantonese and Mandarin
+\item Successful handling of comparative queries requiring multiple tool calls
+\end{itemize}
 
-To validate the contribution of each component, we conduct ablation experiments:
-
-\begin{table}[h]
-\centering
-\caption{Ablation Study Results}
-\label{tab:ablation}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Configuration} & \textbf{Accuracy (\%)} & \textbf{Latency (s)} \\ \midrule
-Full System (Jude) & 91.8 & 2.47 \\
-- Cross-encoder reranking & 84.2 & 2.31 \\
-- Credibility weighting & 88.3 & 2.45 \\
-- Dual-brain (HKGAI only) & 87.5 & 2.52 \\
-- Workflow planner & 89.2 & 2.39 \\ \bottomrule
-\end{tabular}
-\end{table}
-
-The ablation results reveal the relative contribution of each component. Cross-encoder reranking provides the largest accuracy gain (+7.6\%), justifying the 0.16s latency increase as a worthwhile trade-off. Credibility weighting improves accuracy by 3.5\%, with particularly strong impact on queries where local knowledge and web search return conflicting information. The dual-brain architecture maintains comparable accuracy while significantly reducing costs as detailed in Section IV-C. The LLM workflow planner contributes 2.6\% accuracy gain specifically on multi-step questions requiring task decomposition.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.95\textwidth]{visualizations/ablation_study.png}
-\caption{Ablation study results showing the impact of removing each component on accuracy and latency.}
-\label{fig:ablation}
-\end{figure}
-
-\subsection{Comparison with Baselines}
-
-We compare Jude against three baseline systems:
-
-\begin{table}[h]
-\centering
-\caption{Comparison with Baseline Systems}
-\label{tab:comparison}
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{System} & \textbf{Accuracy (\%)} & \textbf{Latency (s)} & \textbf{Cost (\$/1k)} \\ \midrule
-GPT-4V + Web Search & 93.2 & 3.85 & 10.00 \\
-ChatGPT-3.5 + RAG & 78.5 & 1.92 & 1.50 \\
-Gemini Pro + Tools & 85.0 & 2.68 & 5.00 \\
-\textbf{Jude (Ours)} & \textbf{91.8} & \textbf{2.47} & \textbf{2.60} \\ \bottomrule
-\end{tabular}
-\end{table}
-
-The comparison demonstrates Jude's favorable position in the accuracy-cost-latency trade-off space. Jude achieves 98.5\% of GPT-4V's accuracy at only 26\% of the cost and with 36\% lower latency, making it suitable for cost-sensitive deployments. Compared to ChatGPT-3.5 with basic RAG, Jude improves accuracy by 13.3 percentage points while maintaining reasonable latency, validating the value of our advanced RAG techniques. Jude also outperforms Gemini Pro in both accuracy (+6.8\%) and cost-effectiveness (48\% cost reduction), demonstrating the effectiveness of our hybrid architecture.
-
-\subsection{User Study}
-
-We conduct a controlled user study with 12 participants (6 native Cantonese speakers, 6 Mandarin speakers, age 22-28, all HKUST students) over 2 weeks. Each participant completed 5 tasks spanning different query types.
-
-\subsubsection{Quantitative Results}
-
-\begin{table}[h]
-\centering
-\caption{User Study Results (5-point Likert scale)}
-\label{tab:user_study}
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Dimension} & \textbf{Cantonese} & \textbf{Mandarin} & \textbf{Overall} \\ \midrule
-Response Quality & 4.5 ± 0.5 & 4.2 ± 0.7 & 4.3 ± 0.6 \\
-Voice Naturalness & 4.3 ± 0.6 & 3.9 ± 0.8 & 4.1 ± 0.7 \\
-System Responsiveness & 4.6 ± 0.4 & 4.4 ± 0.5 & 4.5 ± 0.5 \\
-Ease of Use & 4.7 ± 0.3 & 4.5 ± 0.6 & 4.6 ± 0.5 \\
-Overall Satisfaction & 4.4 ± 0.5 & 4.2 ± 0.7 & 4.3 ± 0.6 \\ \bottomrule
-\end{tabular}
-\end{table}
-
-Beyond Likert ratings, we collected behavioral metrics. Willingness to use Jude for daily queries reached 91.7\% (11/12 participants). Voice emerged as the preferred input mode (58\%), followed by text (33\%) and mixed mode (9\%). Task completion rate reached 94.2\% (56/60 tasks completed successfully). Regarding perceived latency, 83\% of participants rated response time as ``fast'' or ``very fast.''
-
-\subsubsection{Qualitative Feedback}
-
-Participants highlighted several strengths in open-ended feedback. The most frequently mentioned positive was response accuracy with source citations (9/12 participants). Cantonese TTS naturalness received strong praise, with 8/12 participants noting it ``sounds better than Google Translate.'' The automatic voice playback for pronunciation queries was appreciated by 7/12 participants as a clever UX innovation. Mixed Chinese-English query handling was noted positively by 6/12 participants.
-
-Areas for improvement centered on environmental robustness and feature gaps. STT failures in noisy environments such as MTR stations were reported by 5/12 participants. Occasional misunderstanding of Cantonese slang affected 4/12 participants. Limited image history preventing reference to photos from previous days was mentioned by 3/12 participants. Interest in offline mode for privacy-sensitive queries was expressed by 2/12 participants.
+\textbf{Areas for improvement:}
+\begin{itemize}
+\item Intent detection occasionally misroutes queries between similar categories
+\item Response latency (averaging 12 seconds) could be reduced through optimization
+\item STT accuracy depends heavily on browser and environmental conditions
+\end{itemize}
 
 
 \section{Discussion}
 
 \subsection{Strengths}
 
-The evaluation results and user feedback reveal several key strengths of the Jude system. The \textbf{hybrid architecture efficiency} demonstrates that task-specific model selection can achieve near-GPT-4V accuracy at a fraction of the cost, challenging the ``bigger is better'' paradigm prevalent in LLM deployment. This finding has practical implications for organizations seeking to deploy conversational AI without prohibitive infrastructure costs.
+The functional testing and development experience reveal several key strengths of the Jude system. The \textbf{hybrid architecture efficiency} demonstrates that task-specific model selection can achieve effective results at reduced cost, challenging the ``bigger is better'' paradigm prevalent in LLM deployment. Using HKGAI-V1 for text and Doubao for multimodal tasks provides a practical balance between capability and cost.
 
-The \textbf{intelligent routing} capability through our LLM-driven workflow planner successfully handles complex multi-step queries such as comparative analysis and time-series research without requiring manual workflow templates. This adaptability reduces development overhead and enables the system to generalize to novel query types.
+The \textbf{intelligent routing} capability through our LLM-driven workflow planner successfully handles complex multi-step queries such as comparative analysis (e.g., comparing stock prices or weather across cities) without requiring manual workflow templates. This adaptability reduces development overhead and enables the system to generalize to novel query types.
 
-From a \textbf{user experience} perspective, automatic TTS triggering and streaming STT eliminate common friction points in voice interfaces. The perceived latency reduction of 67\% (from 2.4s to 0.8s for pronunciation queries) significantly improves interaction fluidity.
+From a \textbf{user experience} perspective, automatic TTS triggering and streaming STT eliminate common friction points in voice interfaces. The intelligent detection of pronunciation-related queries provides a seamless voice interaction experience.
 
-The system's \textbf{multilingual optimization} with focus on Cantonese—often overlooked by mainstream models—addresses real needs in Hong Kong contexts, as evidenced by positive user study feedback on TTS naturalness and code-switching handling.
+The system's \textbf{multilingual optimization} with focus on Cantonese—often overlooked by mainstream models—addresses real needs in Hong Kong contexts. Edge TTS with HiuGaaiNeural provides natural-sounding Cantonese synthesis.
 
 \subsection{Limitations}
 
@@ -693,7 +570,7 @@ Several directions emerge for future development. \textbf{Long-term memory} inte
 
 \section{Conclusion}
 
-We presented Jude, a voice-first AI agent system demonstrating that intelligent integration of hybrid LLM architectures, advanced RAG techniques, and dynamic workflow orchestration can deliver high-quality conversational experiences at a fraction of the cost of monolithic LLM solutions. Our dual-brain design (HKGAI-V1 for text, Doubao for multimodal) achieves 91.8\% accuracy with 0.77s search latency while reducing costs by 60\% compared to GPT-4V. The two-stage RAG pipeline with credibility-weighted reranking and the LLM-driven agent with automatic fallback mechanisms demonstrate robust information retrieval across diverse query types. Evaluation on 30 test queries and a 12-participant user study validate the system's effectiveness for Hong Kong contexts.
+We presented Jude, a voice-first AI agent system demonstrating that intelligent integration of hybrid LLM architectures, advanced RAG techniques, and dynamic workflow orchestration can deliver effective conversational experiences at reduced cost compared to monolithic LLM solutions. Our dual-brain design (HKGAI-V1 for text, Doubao for multimodal) provides task-appropriate model selection. The two-stage RAG pipeline with credibility-weighted reranking and the LLM-driven agent with automatic fallback mechanisms demonstrate robust information retrieval across diverse query types. Functional testing with 10 queries achieved 100\% task completion and 90\% tool routing accuracy, validating the system's core capabilities.
 
 Our work makes three primary contributions: a production-ready architecture for cost-effective, multilingual voice agents; novel RAG enhancements including credibility weighting, freshness decay, and Cantonese optimization; and an open-source implementation facilitating future research and reproduction.\footnote{Code available at: \url{https://github.com/AnonymityHE/MAIE-5221-NLP-Final}}
 
