@@ -44,18 +44,25 @@ def draw_rounded_box(ax, x, y, width, height, text, color, fontsize=10, subtext=
                ha='center', va='center', fontsize=fontsize,
                fontweight='bold', color=COLORS['text'])
 
-def draw_arrow(ax, start, end, color=None, style='->', bidirectional=False):
+def draw_arrow(ax, start, end, color=None, style='->', curvature=0, linestyle='-'):
     """Draw an arrow between two points."""
     if color is None:
         color = COLORS['arrow']
+    
+    if curvature != 0:
+        connectionstyle = f"arc3,rad={curvature}"
+    else:
+        connectionstyle = "arc3,rad=0"
     
     arrow = FancyArrowPatch(
         start, end,
         arrowstyle=style,
         color=color,
-        linewidth=1.5,
-        mutation_scale=15,
-        connectionstyle="arc3,rad=0"
+        linewidth=2,
+        mutation_scale=18,
+        linestyle=linestyle,
+        connectionstyle=connectionstyle,
+        alpha=0.7
     )
     ax.add_patch(arrow)
 
@@ -143,36 +150,52 @@ def main():
     draw_rounded_box(ax, 12, 1.9, 1.25, 0.6, 'Edge TTS', COLORS['external'], fontsize=9)
     
     # === Arrows ===
-    # Browser to Frontend
-    draw_arrow(ax, (7, 7.8), (3.5, 7.3))
+    # 1. Browser to Frontend (curved left)
+    draw_arrow(ax, (6.5, 7.8), (4, 7.3), curvature=-0.3)
     
-    # Browser to Backend (API)
-    draw_arrow(ax, (7, 7.8), (9.25, 7.9))
+    # 2. Browser to Backend (curved right)
+    draw_arrow(ax, (7.5, 7.8), (9.5, 7.9), curvature=0.3)
     
-    # Frontend to Backend (dotted - CORS)
-    ax.annotate('', xy=(9.25, 6.85), xytext=(6.5, 6.85),
-               arrowprops=dict(arrowstyle='->', color=COLORS['arrow'], 
-                              linestyle='--', linewidth=1.5))
-    ax.text(7.9, 7.05, 'CORS', fontsize=8, color=COLORS['arrow'], style='italic')
+    # 3. Frontend to Backend (CORS - dashed horizontal)
+    draw_arrow(ax, (6.5, 6.85), (8, 6.85), linestyle='--', curvature=0)
+    ax.text(7.25, 7.15, 'CORS', fontsize=8, color=COLORS['arrow'], 
+           style='italic', ha='center')
     
-    # Backend to Docker services
-    draw_arrow(ax, (9.25, 5.8), (2.25, 4.1))
-    draw_arrow(ax, (9.25, 5.8), (5.25, 4.1))
+    # 4. Backend FastAPI to Milvus (curved)
+    draw_arrow(ax, (8.5, 6.95), (3.5, 4.1), curvature=0.15)
     
-    # Backend to External APIs
-    draw_arrow(ax, (12, 5.8), (11.75, 4.1))
+    # 5. Backend RAG to MinIO (curved)
+    draw_arrow(ax, (8.5, 6.2), (5.5, 4.1), curvature=0.1)
     
-    # Docker services to volumes
-    draw_arrow(ax, (2, 3.2), (2, 2.5), style='-')
-    draw_arrow(ax, (5, 3.2), (4.5, 2.5), style='-')
-    draw_arrow(ax, (8, 3.2), (7, 2.5), style='-')
+    # 6. Backend RAG to etcd (straight down)
+    draw_arrow(ax, (9.5, 5.75), (8, 4.1), curvature=0)
+    
+    # 7. Backend LLM Clients to External APIs (curved right)
+    draw_arrow(ax, (12, 6.2), (11.75, 4.15), curvature=-0.15)
+    
+    # 8. Docker services to volumes (straight down)
+    draw_arrow(ax, (2, 3.2), (2, 2.5), style='-|>', curvature=0)
+    draw_arrow(ax, (4.75, 3.2), (4.5, 2.5), style='-|>', curvature=0)
+    draw_arrow(ax, (8, 3.2), (7, 2.5), style='-|>', curvature=0)
     
     # Port labels
-    ax.text(7.8, 8.3, ':5173', fontsize=8, color=COLORS['frontend'], fontweight='bold')
-    ax.text(9.7, 8.3, ':5555', fontsize=8, color=COLORS['backend'], fontweight='bold')
+    ax.text(4.5, 7.65, 'HTTP', fontsize=7, color=COLORS['frontend'], 
+           style='italic', ha='center')
+    ax.text(8.5, 8.15, 'API :5555', fontsize=7, color=COLORS['backend'], 
+           fontweight='bold', ha='center')
+    
+    # Docker service ports
     ax.text(2.8, 3.0, ':19530', fontsize=7, color=COLORS['milvus'])
     ax.text(5.8, 3.0, ':9000', fontsize=7, color=COLORS['minio'])
     ax.text(8.2, 3.0, ':2379', fontsize=7, color=COLORS['etcd'])
+    
+    # Connection labels
+    ax.text(5.5, 5.2, 'Vector\nSearch', fontsize=7, color=COLORS['arrow'], 
+           style='italic', ha='center', alpha=0.7)
+    ax.text(7, 5.2, 'Object\nStorage', fontsize=7, color=COLORS['arrow'], 
+           style='italic', ha='center', alpha=0.7)
+    ax.text(12.3, 5.2, 'LLM\nAPIs', fontsize=7, color=COLORS['arrow'], 
+           style='italic', ha='center', alpha=0.7)
     
     # Legend
     legend_items = [
