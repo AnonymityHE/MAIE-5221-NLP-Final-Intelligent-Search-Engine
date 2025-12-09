@@ -20,6 +20,8 @@
 
 **Jude** 是一个生产级的语音优先AI Agent系统，专为MAIE5221 NLP Final Project开发。系统整合了多模态RAG、实时语音交互、双LLM架构和动态工具编排，提供无缝的智能问答体验。
 
+> 📄 **[查看完整项目报告 (Final_Report.pdf)](Final_Report.pdf)** - 20页详细技术文档，包含系统架构、实现细节、评估结果和部署方案。
+
 ### 🎯 三大核心创新
 
 1. **🎙️ Streamed Voice Interaction**
@@ -905,6 +907,16 @@ curl -X POST "http://localhost:5555/api/multimodal/query" \
 
 ## 📚 文档
 
+### 📄 Final Report
+- **[Final_Report.pdf](Final_Report.pdf)** - 完整项目报告（20页）
+  - 系统架构设计
+  - 核心技术实现（RAG、Agent、语音、多模态）
+  - 评估结果（40查询测试，77.5%工具路由准确率）
+  - 部署架构图
+  - 完整参考文献
+  - 📍 同时可在 [docs/Final_Report.pdf](docs/Final_Report.pdf) 查看
+
+### 📖 技术文档
 - **[前端设计规范](docs/FRONTEND_DESIGN_SPEC.md)** - UI/UX设计、API接口
 - **[Agent架构设计](docs/WORKFLOW_ARCHITECTURE.md)** - LangGraph工作流详解
 - **[Presentation演讲稿](docs/PRESENTATION_SCRIPT.md)** - 5分钟演讲脚本
