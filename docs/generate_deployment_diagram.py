@@ -76,16 +76,16 @@ def main():
     fig.patch.set_facecolor(COLORS['bg'])
     
     # Title
-    ax.text(7, 9.5, 'Jude Deployment Architecture', 
+    ax.text(7, 9.8, 'Jude Deployment Architecture', 
            ha='center', va='center', fontsize=16, fontweight='bold',
            color=COLORS['text'])
     
     # === User Layer ===
-    ax.text(7, 8.8, 'User Layer', ha='center', fontsize=11, 
+    ax.text(7, 9.45, 'User Layer', ha='center', fontsize=11, 
            color=COLORS['text'], style='italic')
     
     # Browser
-    draw_rounded_box(ax, 5.5, 7.8, 3, 0.8, 'Web Browser', COLORS['frontend'],
+    draw_rounded_box(ax, 5.5, 8.6, 3, 0.8, 'Web Browser', COLORS['frontend'],
                     subtext='Chrome/Safari')
     
     # === Frontend Layer ===
@@ -150,11 +150,11 @@ def main():
     draw_rounded_box(ax, 12, 1.9, 1.25, 0.6, 'Edge TTS', COLORS['external'], fontsize=9)
     
     # === Arrows ===
-    # 1. Browser to Frontend (curved left)
-    draw_arrow(ax, (6.5, 7.8), (4, 7.3), curvature=-0.3)
+    # 1. Browser to Frontend (smooth curved left, from bottom-left of browser)
+    draw_arrow(ax, (6.0, 8.6), (3.5, 7.3), curvature=-0.18)
     
-    # 2. Browser to Backend (curved right)
-    draw_arrow(ax, (7.5, 7.8), (9.5, 7.9), curvature=0.3)
+    # 2. Browser to Backend (smooth curved right, from bottom-right of browser)
+    draw_arrow(ax, (8.0, 8.6), (9.25, 7.9), curvature=0.18)
     
     # 3. Frontend to Backend (CORS - dashed horizontal)
     draw_arrow(ax, (6.5, 6.85), (8, 6.85), linestyle='--', curvature=0)
@@ -179,9 +179,9 @@ def main():
     draw_arrow(ax, (8, 3.2), (7, 2.5), style='-|>', curvature=0)
     
     # Port labels
-    ax.text(4.5, 7.65, 'HTTP', fontsize=7, color=COLORS['frontend'], 
+    ax.text(4.5, 8.1, 'HTTP', fontsize=7, color=COLORS['frontend'], 
            style='italic', ha='center')
-    ax.text(8.5, 8.15, 'API :5555', fontsize=7, color=COLORS['backend'], 
+    ax.text(8.7, 8.65, 'API :5555', fontsize=7, color=COLORS['backend'], 
            fontweight='bold', ha='center')
     
     # Docker service ports
