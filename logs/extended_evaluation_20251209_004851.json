@@ -1,0 +1,835 @@
+{
+  "timestamp": "2025-12-09 00:38:27",
+  "summary": {
+    "total_queries": 40,
+    "success_count": 40,
+    "success_rate": 100.0,
+    "tool_accuracy": 62.5,
+    "avg_response_time": 13.651439827680587,
+    "categories": {
+      "基础知识": {
+        "total": 3,
+        "success": 3,
+        "tool_match": 0,
+        "avg_time": 12.294050375620523
+      },
+      "技术知识": {
+        "total": 7,
+        "success": 7,
+        "tool_match": 2,
+        "avg_time": 15.618937798908778
+      },
+      "金融查询": {
+        "total": 4,
+        "success": 4,
+        "tool_match": 4,
+        "avg_time": 9.385505259037018
+      },
+      "金融对比": {
+        "total": 3,
+        "success": 3,
+        "tool_match": 2,
+        "avg_time": 12.874388456344604
+      },
+      "加密货币": {
+        "total": 1,
+        "success": 1,
+        "tool_match": 1,
+        "avg_time": 9.943347930908203
+      },
+      "天气查询": {
+        "total": 4,
+        "success": 4,
+        "tool_match": 4,
+        "avg_time": 11.459581077098846
+      },
+      "天气对比": {
+        "total": 3,
+        "success": 3,
+        "tool_match": 3,
+        "avg_time": 19.812440633773804
+      },
+      "天气预测": {
+        "total": 1,
+        "success": 1,
+        "tool_match": 1,
+        "avg_time": 10.841990947723389
+      },
+      "实时新闻": {
+        "total": 2,
+        "success": 2,
+        "tool_match": 2,
+        "avg_time": 13.570078372955322
+      },
+      "本地信息": {
+        "total": 2,
+        "success": 2,
+        "tool_match": 2,
+        "avg_time": 15.29837191104889
+      },
+      "技术新闻": {
+        "total": 1,
+        "success": 1,
+        "tool_match": 1,
+        "avg_time": 30.657580852508545
+      },
+      "科技事件": {
+        "total": 1,
+        "success": 1,
+        "tool_match": 1,
+        "avg_time": 11.60673975944519
+      },
+      "娱乐信息": {
+        "total": 1,
+        "success": 1,
+        "tool_match": 1,
+        "avg_time": 17.509950876235962
+      },
+      "产品信息": {
+        "total": 1,
+        "success": 1,
+        "tool_match": 1,
+        "avg_time": 9.981403827667236
+      },
+      "语言翻译": {
+        "total": 5,
+        "success": 5,
+        "tool_match": 0,
+        "avg_time": 11.45400538444519
+      },
+      "粤普翻译": {
+        "total": 1,
+        "success": 1,
+        "tool_match": 0,
+        "avg_time": 12.854103088378906
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "KB-1",
+      "question": "香港科技大学在哪里？",
+      "category": "基础知识",
+      "language": "zh",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "香港科技大学位于香港九龙清水湾。",
+      "response_time": 12.975780010223389,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "KB-2",
+      "question": "What is HKUST known for?",
+      "category": "基础知识",
+      "language": "en",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "HKUST is known for being a world-renowned university with a strong reputation for innovative education, cutting-edge research, and transformative knowledge transfer. It is particularly recognized for its engineering and business school, and it has a young and vibrant student body with many talented individuals, innovative programs, and abundant opportunities for students.",
+      "response_time": 16.451422929763794,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "KB-3",
+      "question": "RAG系统的核心组件有哪些？",
+      "category": "技术知识",
+      "language": "zh",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "RAG系统的核心组件包括：\n1. 检索组件（Retrieval）：负责从知识库中检索相关信息；\n2. 生成组件（Generation）：基于检索到的信息生成答案；\n3. 多语言处理组件：支持中文、粤语和英文等多种语言；\n4. 优化组件：包括混合语言检测、粤语查询优化等；\n5. 安全组件：确保数据安全和API密钥安全；\n6. 文档处理组件：负责文档的分块和处理；\n7. 存储后端：如Milvus或PostgreSQL，用于存储和检索数据；\n8. 工具扩展：如金融数据工具、交通查询工具等。",
+      "response_time": 14.328622817993164,
+      "tools_used": [
+        "local_rag"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "KB-4",
+      "question": "How does retrieval-augmented generation work?",
+      "category": "技术知识",
+      "language": "en",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "Retrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external, authoritative data sources. This process improves the model's output by enhancing its accuracy, relevancy, and usefulness. The technique involves retrieving relevant data and then augmenting the model's response with this information. \n\nTo put it simply, RAG works by first retrieving pertinent information from an external source and then using this information to generate a more accurate and reliable response. This method ensures that the model's output is not solely based on its pre-existing knowledge but also incorporates up-to-date and specific information from reliable sources. This makes the model's responses more accurate, relevant, and useful. \n\nThe process can be likened to a court clerk who retrieves relevant case laws to assist a judge in making a decision. Similarly, RAG retrieves relevant data to assist the language model in generating a response. This technique is particularly useful in enhancing the reliability of generative AI models by grounding their responses in specific and relevant data sources. \n\nIn summary, retrieval-augmented generation works by retrieving relevant information from external sources and incorporating this information into the model's response generation process, thereby improving the accuracy and reliability of the output.",
+      "response_time": 19.36550498008728,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "KB-5",
+      "question": "什么是向量数据库？",
+      "category": "技术知识",
+      "language": "zh",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "向量数据库是一种组织有序的向量嵌入集合，整合了可以随时创建、读取、更新和删除的向量嵌入。向量嵌入将数据块(例如文本或图像) 表示为数值。 向量数据库是一种特殊的数据库，它具备数据存储和读取的基础能力，同时也有一个特殊的查询操作，即向量检索。 向量检索是通过向量的匹配来找到最",
+      "response_time": 12.639839172363281,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "KB-6",
+      "question": "Explain the concept of embedding in NLP",
+      "category": "技术知识",
+      "language": "en",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "Embedding in NLP refers to the process of converting words, phrases, or documents into numerical vectors to capture their semantic meaning and relationships for machine learning tasks.",
+      "response_time": 11.395797967910767,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "KB-7",
+      "question": "香港有多少所大学？",
+      "category": "基础知识",
+      "language": "zh",
+      "expected_tools": [
+        "local_rag",
+        "web_search"
+      ],
+      "success": true,
+      "answer": "香港有11所大学。",
+      "response_time": 7.45494818687439,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "KB-8",
+      "question": "What is cross-encoder reranking?",
+      "category": "技术知识",
+      "language": "en",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "Cross-encoder reranking is a technique used in NLP and RAG (Retrieval-Augmented Generation) models to improve the quality of search results by precisely scoring the relevance between a query and a document. Unlike other models that can search large amounts of data, cross-encoders are specialized for reranking a smaller set of data with high accuracy. This process enhances the effectiveness of the RAG model in generating coherent and relevant responses to queries.",
+      "response_time": 13.713632822036743,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "KB-9",
+      "question": "Milvus向量数据库的特点是什么？",
+      "category": "技术知识",
+      "language": "zh",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "Milvus 是一个开源的向量数据库，专为 AI 和机器学习应用设计，具有高性能、可扩展、支持多种向量相似度搜索算法、多语言 SDK、分布式架构和云原生支持等特点。",
+      "response_time": 10.204824924468994,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "KB-10",
+      "question": "How to improve RAG retrieval quality?",
+      "category": "技术知识",
+      "language": "en",
+      "expected_tools": [
+        "local_rag"
+      ],
+      "success": true,
+      "answer": "To improve RAG retrieval quality, you can implement the following strategies:\n\n1. **Advanced RAG Techniques**:\n   - **Reranking**: After an initial retrieval, use a more sophisticated model to reorder the documents based on relevance to the query.\n   - **Hybrid Search**: Combine multiple search methods (e.g., keyword and vector search) to improve retrieval accuracy.\n   - **Query Expansion**: Enhance the query with additional relevant terms or context to retrieve more pertinent documents.\n\n2. **Chunking Strategies**:\n   - **Chunk Size Optimization**: Experiment with different chunk sizes to balance context richness and retrieval efficiency.\n   - **Metadata Filtering**: Use metadata to provide additional context and improve retrieval accuracy.\n\n3. **Data and Model Optimization**:\n   - **Data Collection and Preprocessing**: Collect and preprocess a diverse and high-quality dataset that is representative of the tasks the RAG system will perform.\n   - **Model Selection**: Choose appropriate pre-trained models for both the retriever and generator components.\n   - **Fine-Tuning**: Fine-tune the models on your specific task to improve performance.\n\n4. **Evaluation and Scalability**:\n   - **Evaluation**: Regularly evaluate the system's performance using appropriate metrics to identify issues and areas for improvement.\n   - **Scalability**: Ensure the system is scalable to handle large amounts of data and high user loads, possibly using distributed computing techniques or cloud-based solutions.\n\n5. **Security and Documentation**:\n   - **Security**: Implement robust security measures to protect user data and prevent misuse of the system.\n   - **Documentation**: Maintain comprehensive documentation for the system to aid in troubleshooting, maintenance, and future development.\n\nBy applying these strategies, you can enhance the effectiveness of your RAG system's retrieval component, leading to better overall performance.",
+      "response_time": 27.68434190750122,
+      "tools_used": [
+        "local_rag",
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "FIN-1",
+      "question": "苹果公司的股价是多少？",
+      "category": "金融查询",
+      "language": "zh",
+      "expected_tools": [
+        "finance"
+      ],
+      "success": true,
+      "answer": "苹果公司的股价是$277.11。",
+      "response_time": 9.18693494796753,
+      "tools_used": [
+        "finance"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "FIN-2",
+      "question": "What is Tesla's current stock price?",
+      "category": "金融查询",
+      "language": "en",
+      "expected_tools": [
+        "finance"
+      ],
+      "success": true,
+      "answer": "Tesla's current stock price is $439.33.",
+      "response_time": 9.473422288894653,
+      "tools_used": [
+        "finance"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "FIN-3",
+      "question": "比亚迪和特斯拉哪个股价更高？",
+      "category": "金融对比",
+      "language": "zh",
+      "expected_tools": [
+        "finance"
+      ],
+      "success": true,
+      "answer": "特斯拉的股价为439.16美元，比比亚迪的股价96.53美元高出342.63美元。因此，特斯拉的股价更高。",
+      "response_time": 12.614725112915039,
+      "tools_used": [
+        "finance"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "FIN-4",
+      "question": "Compare Microsoft and Google stock prices",
+      "category": "金融对比",
+      "language": "en",
+      "expected_tools": [
+        "finance"
+      ],
+      "success": true,
+      "answer": "Microsoft's current stock price is $491.03, showing an increase of +$7.87 (+1.63%) from the previous close of $483.16.\nGoogle's current stock price is $315.15, showing a decrease of -$5.91 (-1.84%) from the previous close of $321.06.",
+      "response_time": 14.848929166793823,
+      "tools_used": [
+        "finance"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "FIN-5",
+      "question": "英伟达股价多少？",
+      "category": "金融查询",
+      "language": "zh",
+      "expected_tools": [
+        "finance"
+      ],
+      "success": true,
+      "answer": "英伟达的股价是$183.45。",
+      "response_time": 8.85304880142212,
+      "tools_used": [
+        "finance"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "FIN-6",
+      "question": "Amazon stock price today",
+      "category": "金融查询",
+      "language": "en",
+      "expected_tools": [
+        "finance"
+      ],
+      "success": true,
+      "answer": "Amazon stock price today is $228.06, which is down by $1.47 (0.64%) from the previous close of $229.53.",
+      "response_time": 10.02861499786377,
+      "tools_used": [
+        "finance"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "FIN-7",
+      "question": "腾讯和阿里巴巴哪个市值更高？",
+      "category": "金融对比",
+      "language": "zh",
+      "expected_tools": [
+        "finance",
+        "web_search"
+      ],
+      "success": true,
+      "answer": "截至2023年5月，腾讯的市值约为4.3万亿港元，阿里巴巴的市值约为2.8万亿港元。因此，腾讯的市值更高。",
+      "response_time": 11.159511089324951,
+      "tools_used": [
+        "llm_workflow_failed"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "FIN-8",
+      "question": "What is the current price of Bitcoin?",
+      "category": "加密货币",
+      "language": "en",
+      "expected_tools": [
+        "finance"
+      ],
+      "success": true,
+      "answer": "The current price of Bitcoin (BTC) is $90,376.00.",
+      "response_time": 9.943347930908203,
+      "tools_used": [
+        "finance"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WX-1",
+      "question": "香港现在天气怎么样？",
+      "category": "天气查询",
+      "language": "zh",
+      "expected_tools": [
+        "weather"
+      ],
+      "success": true,
+      "answer": "香港现在的天气晴朗，温度为21°C，体感温度也是21°C，湿度为69%，风速为33 km/h，风向为ENE。",
+      "response_time": 11.89525318145752,
+      "tools_used": [
+        "weather"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WX-2",
+      "question": "What's the weather in Beijing now?",
+      "category": "天气查询",
+      "language": "en",
+      "expected_tools": [
+        "weather"
+      ],
+      "success": true,
+      "answer": "The current weather in Beijing is clear with a temperature of -6°C, feeling like -7°C. The humidity is at 68%, and there's a light north wind blowing at 4 km/h.",
+      "response_time": 12.604535102844238,
+      "tools_used": [
+        "weather"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WX-3",
+      "question": "比较香港和北京今天的天气",
+      "category": "天气对比",
+      "language": "zh",
+      "expected_tools": [
+        "weather"
+      ],
+      "success": true,
+      "answer": "香港和北京今天天气比较如下：\n- 温度：香港21°C，明显高于北京的-6°C。\n- 体感温度：香港21°C，北京-7°C，差异更加明显。\n- 天气状况：两市均为晴朗天气。\n- 湿度：香港69%，北京68%，非常接近。\n- 风速：香港33 km/h（偏东风），北京4 km/h（北风），香港风力明显更大。\n\n总结：香港温暖有风，北京寒冷无风，两地天气差异较大。",
+      "response_time": 20.56116771697998,
+      "tools_used": [
+        "weather"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WX-4",
+      "question": "Weather forecast for Tokyo",
+      "category": "天气查询",
+      "language": "en",
+      "expected_tools": [
+        "weather"
+      ],
+      "success": true,
+      "answer": "The weather in Tokyo is currently overcast with a temperature of 15°C (feels like 13°C). The humidity is at 53%, and there's a NW wind blowing at 26 km/h.",
+      "response_time": 10.581881046295166,
+      "tools_used": [
+        "weather"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WX-5",
+      "question": "深圳明天会下雨吗？",
+      "category": "天气预测",
+      "language": "zh",
+      "expected_tools": [
+        "weather"
+      ],
+      "success": true,
+      "answer": "对不起，我无法提供深圳明天的天气预报。您可以咨询当地的天气预报或者使用天气预报应用来获取最新的信息。",
+      "response_time": 10.841990947723389,
+      "tools_used": [
+        "weather"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WX-6",
+      "question": "Is it raining in London now?",
+      "category": "天气查询",
+      "language": "en",
+      "expected_tools": [
+        "weather"
+      ],
+      "success": true,
+      "answer": "Yes, it is currently raining in London.",
+      "response_time": 10.756654977798462,
+      "tools_used": [
+        "weather"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WX-7",
+      "question": "上海和广州哪个更热？",
+      "category": "天气对比",
+      "language": "zh",
+      "expected_tools": [
+        "weather"
+      ],
+      "success": true,
+      "answer": "根据当前天气情况，广州的温度为19°C，而上海的温度为22°C。因此，上海比广州更热一些。",
+      "response_time": 18.65214991569519,
+      "tools_used": [
+        "weather"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WX-8",
+      "question": "Compare weather in New York and Los Angeles",
+      "category": "天气对比",
+      "language": "en",
+      "expected_tools": [
+        "weather"
+      ],
+      "success": true,
+      "answer": "New York is currently colder than Los Angeles with a temperature of -2°C (feels like -8°C) compared to LA's 11°C (feels like 11°C). Both cities are sunny at the moment, though LA's humidity is much higher at 80% compared to New York's 28%. New York is experiencing stronger winds at 23 km/h from the north while Los Angeles has gentler winds at 5 km/h also from the north.",
+      "response_time": 20.22400426864624,
+      "tools_used": [
+        "weather"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WEB-1",
+      "question": "最近有什么热门新闻？",
+      "category": "实时新闻",
+      "language": "zh",
+      "expected_tools": [
+        "web_search"
+      ],
+      "success": true,
+      "answer": "根据提供的上下文，最近的热门新闻包括：\n1. 美国白宫新闻秘书卡罗琳·莱维特的新闻发布会。\n2. 特朗普签署《台湾保证实施法案》的相关报道。\n3. 香港大埔火灾的报道。\n\n这些新闻来自美国之音中文网和BBC News 中文。",
+      "response_time": 12.281015872955322,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WEB-2",
+      "question": "What are the latest AI developments?",
+      "category": "实时新闻",
+      "language": "en",
+      "expected_tools": [
+        "web_search"
+      ],
+      "success": true,
+      "answer": "2023年AI领域取得了许多重要进展，其中最具影响力的包括：\n\n1. AI Flywheel：构建了自我强化的AI发展循环，可以推动持续的创新和进步。\n\n2. AI Literacy：提高了人们对AI的理解和认识，帮助更多人更好地利用AI技术。\n\n3. AI Regulation：随着AI技术的快速发展，各国开始加强对AI的监管，以确保其安全和负责任的使用。\n\n4. 多模态AI模型：这是一种能够处理和理解多种类型数据的AI模型，具有更广泛的应用潜力。\n\n5. 生成式AI的突破性增长：在2023年，生成式AI工具的使用出现了爆炸性增长，为各行各业带来了许多新的可能性。\n\n这些进展将进一步推动2024年的AI发展。",
+      "response_time": 14.859140872955322,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WEB-3",
+      "question": "铜锣湾有什么好吃的餐厅？",
+      "category": "本地信息",
+      "language": "zh",
+      "expected_tools": [
+        "web_search"
+      ],
+      "success": true,
+      "answer": "铜锣湾作为香港美食重镇，拥有众多优质餐厅选择。以下是一些铜锣湾地区的美食推荐：\n1.鹅颈桥四季火锅-主打怀旧老香港情怀的火锅店\n2.Mr.Steak Buffet à la minute-提供和牛海鲜等丰富选择的放题自助餐\n3.Urban Coffee Roaster-时尚咖啡烘焙坊\n4.日本人气千层蛋糕店GARIGUETTE\n5.美国爆红蛋料理Eggslut\n6.150分钟樱花牛烧肉放题餐厅\n\n此外，铜锣湾还有许多其他美食选择，包括米其林星级餐厅、人气关东煮店等。建议您根据自己的口味偏好，选择不同类型的餐厅尝试。",
+      "response_time": 18.38072395324707,
+      "tools_used": [
+        "local_rag",
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WEB-4",
+      "question": "Best hiking trails in Hong Kong",
+      "category": "本地信息",
+      "language": "en",
+      "expected_tools": [
+        "web_search"
+      ],
+      "success": true,
+      "answer": "根据上下文信息，香港一些最好的徒步旅行路线包括：\n\n1. Dragon's Back（龙脊）\n2. Lamma Island（南丫岛）\n3. Lantau Trail（大屿山径）\n4. MacLehose Trail（麦理浩径）\n5. Old Peak Road（旧山顶道）\n6. Suicide（可能是自杀崖，但信息不完整）\n\n其中，龙脊被特别推荐为香港最受欢迎的景点之一，提供了海滩、大潭湾和山脊的壮丽景色。",
+      "response_time": 12.216019868850708,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WEB-5",
+      "question": "GPT-4o有什么新功能？",
+      "category": "技术新闻",
+      "language": "zh",
+      "expected_tools": [
+        "web_search"
+      ],
+      "success": true,
+      "answer": "GPT-4o（GPT-4 optimized）是OpenAI推出的GPT-4优化版本，相比之前的版本，它带来了多项新功能和改进：\n\n1. **智能图像编辑功能**: GPT-4o彻底改变了传统修图流程。用户只需将图片上传至GPT-4o并输入需求，即可完成复杂的图像编辑任务，无需使用Photoshop等专业软件进行耗时的编辑。\n\n2. **更逼真的图像生成**: GPT-4o支持自然对话生成逼真图像，生成的图像告别了AI痕迹，质量更加真实。具体功能包括：\n   - 美女照片生成\n   - 老照片上色\n   - 视角转换\n   - 人物换装\n   - 换脸\n   - 3D像素风生成\n\n3. **技术优化与性能提升**: 相比GPT-4，GPT-4o在模型能力、应用场景及模型精确度上有显著改进。具体包括：\n   - 更高的参数规模（1750亿个参数）\n   - 更好的多语言支持\n   - 更高的回答准确性\n\n4. **Agent工具扩展**:\n   - 金融数据工具：支持股票价格查询（Yahoo Finance）、加密货币价格查询（CoinGecko）\n   - 交通查询工具：支持旅行时间和路线查询（OpenRouteService）\n   - 总共支持5种工具：本地RAG、网页搜索、天气、金融、交通\n\n5. **Jarvis语音助手功能**:\n   - 语音识别（Whisper，支持多语言）\n   - 唤醒词检测（\"Jarvis\"）\n   - 文本转语音（Edge TTS）\n   - WebSocket实时交互\n\n6. **流式STT/TTS**:\n   - Faster Whisper（流式语音识别，内存占用低95%）\n   - Parler-TTS / MeloTTS（流式语音合成）\n   - 实时处理，降低延迟\n\n7. **多语言支持增强**:\n   - 支持100+语言，包括粤语、普通话、英语\n   - 多语言Embedding模型（paraphrase-multilingual-MiniLM-L12-v2）\n\n8. **代码重构与模块化**:\n   - Services目录按功能分类：`core/`, `llm/`, `vector/`, `storage/`, `agent/`\n   - 保持向后兼容，旧导入方式仍可用\n\n这些新功能使GPT-4o在图像处理、语音交互、多语言支持和工具集成等方面都有了显著提升，为用户提供了更强大、更全面的AI体验。",
+      "response_time": 30.657580852508545,
+      "tools_used": [
+        "local_rag",
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WEB-6",
+      "question": "When is the next Apple event?",
+      "category": "科技事件",
+      "language": "en",
+      "expected_tools": [
+        "web_search"
+      ],
+      "success": true,
+      "answer": "The next Apple event is scheduled for Tuesday, September 9, 2025, at 1 p.m. ET/10 a.m. PT. It can be livestreamed on the Apple website or Apple TV app.",
+      "response_time": 11.60673975944519,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WEB-7",
+      "question": "香港红馆最近有什么演唱会？",
+      "category": "娱乐信息",
+      "language": "zh",
+      "expected_tools": [
+        "web_search"
+      ],
+      "success": true,
+      "answer": "最近在香港红馆举行的演唱会有：\n\n1. 盧冠廷红馆演唱会2025《MY MUSIC‧MY LIFE 盧冠廷「一生所愛」演唱會2025》，这是一场充满细腻旋律与真挚情感的演唱会，定能勾起歌迷们的共同记忆。\n\n2. 陈慧娴红馆演唱会2025也将举行，具体信息可参考相关售票平台。\n\n3. 《2025 PLAVE Asia Tour [DASH: Quantum Leap] in Hong Kong》将于2025年10月1日举行。\n\n4. 刘德华《今天…is the Day》巡回演唱会香港站将于2024年12月31日20:15开始。\n\n5. WayV [ON THE Way] 演唱会2025香港站也将举行，票价有$1988、$1888、$1488、$1088和$888等不同档次。\n\n6. 脸红的思春期 「Bloom」 香港演唱会也将举办。\n\n建议您访问Trip.com或相关售票平台获取更详细的信息和购票方式。",
+      "response_time": 17.509950876235962,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "WEB-8",
+      "question": "Latest iPhone release date",
+      "category": "产品信息",
+      "language": "en",
+      "expected_tools": [
+        "web_search"
+      ],
+      "success": true,
+      "answer": "2025年9月19日",
+      "response_time": 9.981403827667236,
+      "tools_used": [
+        "web_search"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": true
+    },
+    {
+      "id": "LANG-1",
+      "question": "香港粤语怎么说？",
+      "category": "语言翻译",
+      "language": "zh",
+      "expected_tools": [
+        "llm_direct"
+      ],
+      "success": true,
+      "answer": "香港讲嘅粤语同广东话比较接近，但系有啲发音同用词会有一啲唔同。",
+      "response_time": 12.980985164642334,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "LANG-2",
+      "question": "How do you say 'thank you' in Cantonese?",
+      "category": "语言翻译",
+      "language": "en",
+      "expected_tools": [
+        "llm_direct"
+      ],
+      "success": true,
+      "answer": "In Cantonese, \"thank you\" is pronounced as \"do1 ze6\" (多謝) or \"m4 goi1\" (唔該), depending on the context. \"Do1 ze6\" is more formal and used to show gratitude for gifts or favors, while \"m4 goi1\" is more casual and used in everyday situations like when someone does something for you.",
+      "response_time": 14.2655668258667,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "LANG-3",
+      "question": "早安用日语怎么说？",
+      "category": "语言翻译",
+      "language": "zh",
+      "expected_tools": [
+        "llm_direct"
+      ],
+      "success": true,
+      "answer": "おはようございます (Ohayou gozaimasu)",
+      "response_time": 11.497052907943726,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "LANG-4",
+      "question": "Translate 'I love Hong Kong' to Chinese",
+      "category": "语言翻译",
+      "language": "en",
+      "expected_tools": [
+        "llm_direct"
+      ],
+      "success": true,
+      "answer": "我爱香港。",
+      "response_time": 9.499973773956299,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "LANG-5",
+      "question": "唔该用普通话怎么说？",
+      "category": "粤普翻译",
+      "language": "zh",
+      "expected_tools": [
+        "llm_direct"
+      ],
+      "success": true,
+      "answer": "请用普通话怎么说？",
+      "response_time": 12.854103088378906,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    },
+    {
+      "id": "LANG-6",
+      "question": "What does '多谢' mean in English?",
+      "category": "语言翻译",
+      "language": "en",
+      "expected_tools": [
+        "llm_direct"
+      ],
+      "success": true,
+      "answer": "多谢 means \"Thank you\" or \"Thanks a lot\" in English.",
+      "response_time": 9.026448249816895,
+      "tools_used": [
+        "direct_llm"
+      ],
+      "provider": "",
+      "model": "",
+      "tool_match": false
+    }
+  ]
+}

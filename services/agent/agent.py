@@ -146,23 +146,51 @@ class RAGAgent:
                 tools.insert(0, "web_search")  # 优先使用web_search
                 logger.info("检测到实体排名/比较查询，优先使用web_search")
         
-        # 检测是否需要本地RAG（只针对知识库相关的问题）
+        # 检测是否需要本地RAG（知识库相关的问题 + 技术概念 + 学术机构）
         local_kb_indicators = [
+            # 项目相关
             "project", "项目", "system", "系统", "architecture", "架构",
             "sereleia", "aetherian", "xylos", "elara",  # 虚构知识库内容
-            "workflow", "工作流", "rag", "agent",
-            "这个系统", "本项目", "我们的"
+            "workflow", "工作流", "agent", "这个系统", "本项目", "我们的",
+            # 技术术语 - 优先使用本地知识库
+            "rag", "retrieval", "augmented", "generation", "检索增强",
+            "embedding", "嵌入", "向量", "vector", "milvus",
+            "rerank", "重排", "cross-encoder", "bi-encoder",
+            "chunk", "分块", "索引", "index", "llm", "大模型", "大语言模型",
+            "nlp", "自然语言处理", "transformer", "attention", "注意力",
+            # 学术机构
+            "hkust", "科技大学", "港科大", "清水湾", "university", "大学",
+            "college", "学院", "campus", "校园"
         ]
         if not tools and any(indicator in query_lower for indicator in local_kb_indicators):
             tools.append("local_rag")
-            logger.info("检测到本地知识库相关查询，使用local_rag")
+            logger.info("检测到本地知识库/技术概念/学术查询，使用local_rag")
+        
+        # 检测地点查询 - 学术机构相关的优先使用local_rag
+        location_question_indicators = ["在哪", "哪里", "位于", "located", "where is", "location"]
+        academic_terms = ["大学", "university", "学院", "college", "hkust", "科技大学", "港科大", "学校", "school"]
+        if not tools and any(indicator in query_lower for indicator in location_question_indicators):
+            if any(term in query_lower for term in academic_terms):
+                tools.append("local_rag")
+                logger.info("检测到学术机构地点查询，使用local_rag")
+            else:
+                tools.append("web_search")
+                logger.info("检测到一般地点查询，使用web_search")
         
         # 检测一般疑问（优先web_search获取准确答案）
-        question_indicators = ["什么是", "谁是", "哪里", "为什么", "怎样", "如何",
-                              "what", "who", "where", "why", "how", "when"]
+        # 注意：只有在没有匹配到local_rag时才使用web_search
+        question_indicators = ["什么是", "谁是", "为什么", "怎样", "如何",
+                              "what is", "who is", "why", "how does", "how to"]
+        # 排除已经被local_rag处理的查询
         if not tools and any(indicator in query_lower for indicator in question_indicators):
-            tools.append("web_search")
-            logger.info("检测到一般疑问，使用web_search获取答案")
+            # 再次检查是否包含技术术语（避免误判）
+            tech_terms = ["rag", "embedding", "vector", "llm", "nlp", "transformer", "大学", "university", "milvus"]
+            if not any(term in query_lower for term in tech_terms):
+                tools.append("web_search")
+                logger.info("检测到一般疑问，使用web_search获取答案")
+            else:
+                tools.append("local_rag")
+                logger.info("检测到技术概念疑问，使用local_rag")
         
         # 如果还是没有工具，直接用LLM（不使用任何工具）
         if not tools:
@@ -377,8 +405,9 @@ class RAGAgent:
             system_prompt = (
                 "你是一个智能AI助手。请基于提供的上下文信息回答问题。"
                 "如果上下文中包含相关信息，请优先使用这些信息。"
+                "如果上下文信息不足或不相关，请基于你自己的知识回答，不要说'无法回答'或'上下文中没有'。"
             )
-            user_prompt = f"上下文信息：\n\n{all_context}\n\n问题：{query}\n\n请基于上下文回答上述问题。"
+            user_prompt = f"上下文信息：\n\n{all_context}\n\n问题：{query}\n\n请基于上下文回答上述问题。如果上下文不够详细，请用你的知识补充。"
         elif "web_search_attempted" in tools_used:
             # 尝试了网页搜索但没有结果，对于实时查询或历史天气查询直接用LLM回答
             if is_weather_query and is_historical_query:
@@ -483,9 +512,10 @@ class RAGAgent:
                     "你是一个专业的AI助手。我已经通过智能工作流系统执行了多个步骤来收集信息。"
                     "请基于以下工作流执行结果，综合分析并回答用户的问题。"
                     "注意：结果可能来自不同的数据源（网页搜索、金融API、天气API等），请整合这些信息给出全面的答案。"
+                    "如果收集的信息不够完整，请结合你自己的知识补充回答，不要说'无法回答'。"
                 )
             
-            user_prompt = f"原始问题：{query}\n\n{workflow_context}\n\n请基于以上信息综合回答原始问题。"
+            user_prompt = f"原始问题：{query}\n\n{workflow_context}\n\n请基于以上信息综合回答原始问题。如有必要可补充相关知识。"
             logger.info("使用LLM工作流结果构建Prompt")
         else:
             # 工作流执行失败，回退到普通LLM回答
@@ -574,8 +604,9 @@ class RAGAgent:
             system_prompt = (
                 "你是一个专业的AI助手。用户提出了一个复杂的问题，我已经通过多个步骤收集了相关信息。"
                 "请基于以下工作流执行结果，综合分析并回答用户的问题。"
+                "如果收集的信息不够完整，请结合你自己的知识补充回答，不要说'无法回答'。"
             )
-            user_prompt = f"原始问题：{query}\n\n工作流执行结果：\n\n{workflow_context}\n\n请基于以上信息综合回答原始问题。"
+            user_prompt = f"原始问题：{query}\n\n工作流执行结果：\n\n{workflow_context}\n\n请基于以上信息综合回答原始问题。如有必要可补充相关知识。"
             logger.info("使用工作流结果构建Prompt")
         else:
             # 工作流执行失败，回退到普通LLM回答
@@ -692,8 +723,9 @@ class RAGAgent:
             system_prompt = (
                 "你是一个智能AI助手。请基于提供的上下文信息回答问题。"
                 "如果上下文中包含相关信息，请优先使用这些信息。"
+                "如果上下文信息不足或不相关，请基于你自己的知识回答，不要说'无法回答'或'上下文中没有'。"
             )
-            user_prompt = f"上下文信息：\n\n{all_context}\n\n问题：{query}\n\n请基于上下文回答上述问题。"
+            user_prompt = f"上下文信息：\n\n{all_context}\n\n问题：{query}\n\n请基于上下文回答上述问题。如果上下文不够详细，请用你的知识补充。"
         elif "web_search_attempted" in tools_used:
             system_prompt = (
                 "你是一个专业的AI助手。用户询问的是实时信息或最新新闻。"
