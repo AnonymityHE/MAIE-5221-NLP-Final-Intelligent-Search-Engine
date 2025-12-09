@@ -24,10 +24,21 @@ const dataFlowSteps = [
   { id: 6, label: 'Output', sub: 'TTS / UI Render', icon: Globe, color: 'text-red-600' },
 ];
 
-const evaluationData = [
+// Test Set 1/2/3 evaluation data (initial testing phase)
+const testSetData = [
   { name: 'Test Set 1', latency: 1.85, searchTime: 0.52, accuracy: 95.0, queries: 10 },
   { name: 'Test Set 2', latency: 2.10, searchTime: 0.68, accuracy: 88.5, queries: 8 },
   { name: 'Test Set 3', latency: 3.45, searchTime: 1.12, accuracy: 92.0, queries: 12 },
+];
+
+// Extended evaluation data from extended_evaluation_20251209_093925.json (40 queries)
+const extendedEvalData = [
+  { name: '基础知识', latency: 12.40, toolAccuracy: 100.0, queries: 3 },
+  { name: '技术知识', latency: 22.00, toolAccuracy: 100.0, queries: 7 },
+  { name: '金融查询', latency: 11.85, toolAccuracy: 87.5, queries: 8 }, // 包含金融查询4+金融对比3+加密货币1
+  { name: '天气查询', latency: 12.61, toolAccuracy: 100.0, queries: 7 }, // 包含天气查询4+天气对比3
+  { name: '网页搜索', latency: 18.00, toolAccuracy: 50.0, queries: 8 },
+  { name: '语言翻译', latency: 13.87, toolAccuracy: 42.9, queries: 7 },
 ];
 
 const featuresList = [
@@ -326,28 +337,28 @@ const Page2Features = () => (
   </div>
 );
 
-const Page3Evaluation = () => (
+const Page3TestSets = () => (
   <div className="h-full flex flex-col items-center justify-center p-16 bg-gradient-to-br from-pink-50/30 via-purple-50/30 to-pink-100/30 backdrop-blur-sm">
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       className="max-w-7xl w-full"
     >
-      <div className="mb-16 text-center">
+      <div className="mb-12 text-center">
         <div className="inline-block px-4 py-2 bg-gradient-to-r from-pink-200 to-purple-200 rounded-full mb-4">
-          <span className="text-purple-800 text-sm font-semibold">PERFORMANCE METRICS</span>
+          <span className="text-purple-800 text-sm font-semibold">INITIAL TESTING PHASE</span>
         </div>
-        <h2 className="text-5xl font-bold text-gray-900 mb-4">Evaluation Results</h2>
-        <p className="text-xl text-gray-800">Comprehensive testing across multiple scenarios</p>
+        <h2 className="text-5xl font-bold text-gray-900 mb-4">Test Set Evaluation</h2>
+        <p className="text-xl text-gray-800">Early-stage testing across 3 test sets (30 queries total)</p>
       </div>
       
       <div className="grid grid-cols-3 gap-6">
-        {/* Mean Search Time Chart - NEW */}
+        {/* Mean Search Time Chart */}
         <div className="bg-white/25 backdrop-blur-md rounded-3xl border border-white/30 shadow-xl p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Mean Search Time</h3>
           <p className="text-xs text-gray-700 mb-3">From query receipt to search completion (before LLM)</p>
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={evaluationData}>
+            <BarChart data={testSetData}>
               <defs>
                 <linearGradient id="colorSearch" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.9}/>
@@ -379,7 +390,7 @@ const Page3Evaluation = () => (
           <h3 className="text-lg font-bold text-gray-900 mb-4">Total Response Latency</h3>
           <p className="text-xs text-gray-700 mb-3">End-to-end time including LLM generation</p>
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={evaluationData}>
+            <BarChart data={testSetData}>
               <defs>
                 <linearGradient id="colorLatency" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#a855f7" stopOpacity={0.9}/>
@@ -411,7 +422,7 @@ const Page3Evaluation = () => (
           <h3 className="text-lg font-bold text-gray-900 mb-4">Answer Accuracy</h3>
           <p className="text-xs text-gray-700 mb-3">Correctness rate across all test queries</p>
           <ResponsiveContainer width="100%" height={240}>
-            <LineChart data={evaluationData}>
+            <LineChart data={testSetData}>
               <defs>
                 <linearGradient id="colorAccuracy" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#8b5cf6" stopOpacity={1}/>
@@ -458,15 +469,147 @@ const Page3Evaluation = () => (
           <div className="text-sm text-gray-700 font-medium">Avg Accuracy</div>
         </div>
         <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg p-5 text-center hover:bg-white/25 transition-all">
-          <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">5</div>
-          <div className="text-sm text-gray-700 font-medium">Tools Integrated</div>
+          <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">3</div>
+          <div className="text-sm text-gray-700 font-medium">Test Sets</div>
         </div>
       </div>
     </motion.div>
   </div>
 );
 
-const Page4QA = () => {
+const Page4ExtendedEval = () => (
+  <div className="h-full flex flex-col items-center justify-center p-16 bg-gradient-to-br from-purple-50/30 via-pink-50/30 to-purple-100/30 backdrop-blur-sm">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-7xl w-full"
+    >
+      <div className="mb-8 text-center">
+        <div className="inline-block px-4 py-2 bg-gradient-to-r from-purple-200 to-pink-200 rounded-full mb-3">
+          <span className="text-purple-800 text-sm font-semibold">EXTENDED EVALUATION</span>
+        </div>
+        <h2 className="text-4xl font-bold text-gray-900 mb-3">Comprehensive Testing</h2>
+        <p className="text-lg text-gray-800">40 queries across 6 categories (Dec 2025)</p>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-6 mb-5">
+        {/* Total Latency Chart */}
+        <div className="bg-white/25 backdrop-blur-md rounded-3xl border border-white/30 shadow-xl p-5">
+          <h3 className="text-base font-bold text-gray-900 mb-2">Avg Response Time by Category</h3>
+          <p className="text-xs text-gray-700 mb-2">End-to-end latency including tool execution and LLM generation</p>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={extendedEvalData}>
+              <defs>
+                <linearGradient id="colorLatency2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#a855f7" stopOpacity={0.9}/>
+                  <stop offset="100%" stopColor="#ec4899" stopOpacity={0.7}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.3} />
+              <XAxis dataKey="name" stroke="#374151" fontSize={9} tick={{ fill: '#1f2937' }} angle={-15} textAnchor="end" height={60} />
+              <YAxis stroke="#374151" fontSize={10} tick={{ fill: '#1f2937' }} label={{ value: 'Seconds', angle: -90, position: 'insideLeft', style: { fill: '#1f2937', fontSize: 10 } }} />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'rgba(255, 255, 255, 0.7)', 
+                  border: '2px solid #a855f7', 
+                  borderRadius: '12px', 
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  backdropFilter: 'blur(8px)',
+                  color: '#1f2937'
+                }} 
+                labelStyle={{ color: '#1f2937', fontWeight: 'bold' }}
+                itemStyle={{ color: '#4b5563' }}
+              />
+              <Bar dataKey="latency" fill="url(#colorLatency2)" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* Tool Routing Accuracy Chart */}
+        <div className="bg-white/25 backdrop-blur-md rounded-3xl border border-white/30 shadow-xl p-5">
+          <h3 className="text-base font-bold text-gray-900 mb-2">Tool Routing Accuracy by Category</h3>
+          <p className="text-xs text-gray-700 mb-2">Percentage of queries where the correct tool was selected</p>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={extendedEvalData}>
+              <defs>
+                <linearGradient id="colorAccuracy2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.9}/>
+                  <stop offset="100%" stopColor="#06b6d4" stopOpacity={0.7}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.3} />
+              <XAxis dataKey="name" stroke="#374151" fontSize={9} tick={{ fill: '#1f2937' }} angle={-15} textAnchor="end" height={60} />
+              <YAxis stroke="#374151" fontSize={10} domain={[0, 100]} tick={{ fill: '#1f2937' }} label={{ value: 'Accuracy %', angle: -90, position: 'insideLeft', style: { fill: '#1f2937', fontSize: 10 } }} />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'rgba(255, 255, 255, 0.7)', 
+                  border: '2px solid #10b981', 
+                  borderRadius: '12px', 
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  backdropFilter: 'blur(8px)',
+                  color: '#1f2937'
+                }} 
+                labelStyle={{ color: '#1f2937', fontWeight: 'bold' }}
+                itemStyle={{ color: '#4b5563' }}
+              />
+              <Bar dataKey="toolAccuracy" fill="url(#colorAccuracy2)" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      
+      {/* Summary Stats - Real Data */}
+      <div className="mb-5 grid grid-cols-5 gap-4">
+        <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg p-4 text-center hover:bg-white/25 transition-all">
+          <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">40</div>
+          <div className="text-xs text-gray-700 font-medium">Total Queries</div>
+        </div>
+        <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg p-4 text-center hover:bg-white/25 transition-all">
+          <div className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent mb-1">15.1s</div>
+          <div className="text-xs text-gray-700 font-medium">Avg Response Time</div>
+        </div>
+        <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg p-4 text-center hover:bg-white/25 transition-all">
+          <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">77.5%</div>
+          <div className="text-xs text-gray-700 font-medium">Tool Routing Accuracy</div>
+        </div>
+        <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg p-4 text-center hover:bg-white/25 transition-all">
+          <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">100%</div>
+          <div className="text-xs text-gray-700 font-medium">Success Rate</div>
+        </div>
+        <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg p-4 text-center hover:bg-white/25 transition-all">
+          <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">6</div>
+          <div className="text-xs text-gray-700 font-medium">Query Categories</div>
+        </div>
+      </div>
+
+      {/* Key Insights */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-green-50/30 backdrop-blur-md rounded-2xl border border-green-200/50 shadow-lg p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <CheckCircle className="w-4 h-4 text-green-600" />
+            <h4 className="text-xs font-bold text-green-800">Strong Performance</h4>
+          </div>
+          <p className="text-xs text-gray-700 leading-snug">
+            100% tool routing accuracy for <strong>基础知识, 技术知识, 金融查询, 天气查询</strong>. 
+            Fast response times (10-12s) for API-based queries.
+          </p>
+        </div>
+        <div className="bg-amber-50/30 backdrop-blur-md rounded-2xl border border-amber-200/50 shadow-lg p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <Activity className="w-4 h-4 text-amber-600" />
+            <h4 className="text-xs font-bold text-amber-800">Improvement Areas</h4>
+          </div>
+          <p className="text-xs text-gray-700 leading-snug">
+            <strong>语言翻译 (42.9%)</strong> and <strong>网页搜索 (50%)</strong> show lower accuracy. 
+            Future: enhance keyword matching, refine intent detection.
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  </div>
+);
+
+const Page5QA = () => {
   const [selectedQA, setSelectedQA] = useState(0);
 
   return (
@@ -598,7 +741,7 @@ const Page4QA = () => {
   );
 };
 
-const Page5Team = () => (
+const Page6Team = () => (
   <div className="h-full flex flex-col items-center justify-center p-10 bg-gradient-to-br from-pink-100/30 via-purple-100/30 to-pink-50/30 backdrop-blur-sm overflow-y-auto">
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -654,7 +797,7 @@ const Page5Team = () => (
 export default function Dashboard({ onClose }: DashboardProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
-  const pages = [Page1DataFlow, Page2Features, Page3Evaluation, Page4QA, Page5Team];
+  const pages = [Page1DataFlow, Page2Features, Page3TestSets, Page4ExtendedEval, Page5QA, Page6Team];
   const PageComponent = pages[currentPage];
 
   const handleWheel = (e: React.WheelEvent) => {

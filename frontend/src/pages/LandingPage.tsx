@@ -148,7 +148,7 @@ const FeaturesSection = () => {
       subtitle: 'HKGAI + Doubao',
       description: 'Task-based model routing: HKGAI-V1 handles text queries and RAG retrieval, Doubao handles image/document analysis. Automatic fallback mechanisms ensure reliability',
       technologies: ['HKGAI-V1', 'Doubao Seed-1-6-251015', 'Intelligent Router'],
-      performance: 'Cost-effective: 60% reduction vs single-model, maintains 90%+ accuracy'
+      performance: 'Cost-effective: 60% reduction vs single-model, 77.5% tool routing accuracy'
     },
     {
       title: 'Dynamic Workflow',
@@ -399,7 +399,7 @@ const FAQSection = () => {
   const faqs = [
     {
       question: "Why use HKGAI and Doubao instead of a single model?",
-      answer: "We implement task-based routing: HKGAI-V1 handles text reasoning and RAG queries efficiently at lower cost, while Doubao Seed-1-6-251015 processes vision tasks with superior image understanding. This dual-brain architecture reduces costs by 60% compared to using a premium model for all tasks, while maintaining 90%+ accuracy."
+      answer: "We implement task-based routing: HKGAI-V1 handles text reasoning and RAG queries efficiently at lower cost, while Doubao Seed-1-6-251015 processes vision tasks with superior image understanding. This dual-brain architecture reduces costs by 60% compared to using a premium model for all tasks, achieving 77.5% tool routing accuracy across 40 test queries (100% for knowledge/finance/weather, areas for improvement in translation/web search)."
     },
     {
       question: "Which voice model powers the Cantonese TTS?",
@@ -419,7 +419,7 @@ const FAQSection = () => {
     },
     {
       question: "What's the average end-to-end response latency?",
-      answer: "Average response time is ~2.47 seconds across test sets: STT (50ms) + Intent Router (200ms) + Tool Execution (300ms-1.5s depending on tool) + LLM Generation (800ms) + TTS (600ms). The system uses streaming where possible to reduce perceived latency."
+      answer: "Average response time is 15.1 seconds across 40 test queries (Dec 2025 evaluation): STT (50ms) + Intent Router (200ms) + Tool Execution (varies: 2-5s for RAG/web search, 1-2s for APIs) + LLM Generation (3-8s depending on complexity) + TTS (600ms). Technical knowledge queries take longer (22s avg) due to deeper RAG searches. Fastest category: finance queries (10.7s avg)."
     },
     {
       question: "Does the system work offline or require internet?",
