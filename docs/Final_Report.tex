@@ -23,6 +23,7 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{titlesec}
@@ -558,14 +559,28 @@ Figure \ref{fig:latency} shows the latency distribution across system components
 \caption{Representative Test Cases with Responses}
 \label{tab:examples}
 \small
-\begin{tabular}{@{}p{0.28\textwidth}p{0.1\textwidth}p{0.48\textwidth}@{}}
+\begin{tabular}{@{}p{0.32\textwidth}>{\centering\arraybackslash}m{0.12\textwidth}>{\centering\arraybackslash}m{0.43\textwidth}@{}}
 \toprule
 \textbf{Query} & \textbf{Tool} & \textbf{Response Summary} \\ \midrule
-``香港科技大学在哪里？'' & local\_rag & ``位于中国香港特别行政区'' (9.58s) \\
-``苹果公司的股价是多少？'' & finance & ``当前股价是\$271.11'' (8.98s) \\
-``比较香港和北京今天的天气'' & weather & Detailed comparison: HK 21°C, Beijing -1°C (21.06s) \\
-``比亚迪和特斯拉哪个股价更高？'' & finance & ``特斯拉(\$386.39)比比亚迪(\$92.70)更高'' (11.61s) \\
-``RAG系统的核心组件有哪些？'' & local\_rag & Listed 5 core components from knowledge base (11.00s) \\ \bottomrule
+\textbf{ZH}: ``香港科技大学在哪里？'' \newline
+\textbf{EN}: ``Where is HKUST located?'' \newline
+\textbf{YUE}: ``香港科技大學喺邊度？'' & local\_rag & ``位于中国香港特别行政区'' (9.58s) \\ \midrule
+
+\textbf{ZH}: ``苹果公司的股价是多少？'' \newline
+\textbf{EN}: ``What's Apple's stock price?'' \newline
+\textbf{YUE}: ``蘋果公司嘅股價係幾多？'' & finance & ``当前股价是\$271.11'' (8.98s) \\ \midrule
+
+\textbf{ZH}: ``比较香港和北京今天的天气'' \newline
+\textbf{EN}: ``Compare today's weather in HK and Beijing'' \newline
+\textbf{YUE}: ``比較香港同北京今日嘅天氣'' & weather & Detailed comparison: HK 21°C, Beijing -1°C (21.06s) \\ \midrule
+
+\textbf{ZH}: ``比亚迪和特斯拉哪个股价更高？'' \newline
+\textbf{EN}: ``Which has higher stock price: BYD or Tesla?'' \newline
+\textbf{YUE}: ``比亞迪同特斯拉邊個股價更高？'' & finance & ``特斯拉(\$386.39)比比亚迪(\$92.70)更高'' (11.61s) \\ \midrule
+
+\textbf{ZH}: ``RAG系统的核心组件有哪些？'' \newline
+\textbf{EN}: ``What are the core components of RAG system?'' \newline
+\textbf{YUE}: ``RAG系統嘅核心組件有邊啲？'' & local\_rag & Listed 5 core components from knowledge base (11.00s) \\ \bottomrule
 \end{tabular}
 \end{table}
 
