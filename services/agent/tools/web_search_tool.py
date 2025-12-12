@@ -31,8 +31,9 @@ def web_search(query: str, num_results: int = 5) -> Dict:
             tavily_result = tavily_client.search(
                 query=query,
                 max_results=num_results,
-                search_depth="basic",
-                include_answer=True
+                search_depth="basic",  # 可选: "basic" (平衡) 或 "advanced" (深度)
+                include_answer=True,
+                timeout=8  # 🔥 添加8秒超时限制
             )
             
             if "error" not in tavily_result and tavily_result.get("results"):

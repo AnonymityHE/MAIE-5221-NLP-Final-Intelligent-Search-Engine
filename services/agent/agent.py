@@ -118,21 +118,28 @@ class RAGAgent:
                 tools.append("web_search")
                 logger.info("检测到交通查询，使用web_search获取路线信息")
         
-        # 检测天气查询
+        # 检测天气查询 - 优先使用weather API（更快更准确）
         # 注意：如果是历史天气查询，应该使用web_search而不是weather工具
-        if any(kw in query_lower for kw in ["weather", "天气", "rain", "下雨", "temperature", "温度", "forecast", "预报", "cloud", "云", "怎麼樣", "怎么样"]):
+        weather_keywords = ["weather", "天气", "rain", "下雨", "temperature", "温度", 
+                           "forecast", "预报", "cloud", "云", "怎麼樣", "怎么样", "今天", "now", "现在"]
+        if any(kw in query_lower for kw in weather_keywords):
             if is_historical_query:
                 # 历史天气查询：使用web_search（weather工具只支持当前天气）
                 tools.append("web_search")
                 logger.info("检测到历史天气查询，使用web_search工具")
             else:
-                # 当前天气查询：使用weather工具
+                # 当前天气查询：优先使用weather工具（更快）
                 tools.append("weather")
+                logger.info("检测到天气查询，优先使用weather API（避免慢速web_search）")
         
         # 检测实时/新闻查询（需要网页搜索）
-        if any(kw in query_lower for kw in ["latest", "最新", "news", "新闻", "current", "现在", "recently", "最近"]):
-            if "web_search" not in tools:  # 避免重复添加
+        # ⚠️ 排除天气/金融查询（它们有专用API，更快）
+        news_keywords = ["latest", "最新", "news", "新闻", "recently", "最近"]
+        if any(kw in query_lower for kw in news_keywords):
+            # 确保不与天气/金融查询冲突
+            if "weather" not in tools and "finance" not in tools and "web_search" not in tools:
                 tools.append("web_search")
+                logger.info("检测到新闻/实时查询，使用web_search")
         
         # 检测需要网页搜索的实体查询（如"香港第二大学校"）
         # 这类查询通常包含地名 + 实体描述 + 排名/比较词

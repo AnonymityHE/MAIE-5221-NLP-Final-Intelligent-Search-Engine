@@ -5,8 +5,13 @@ Tavily AI Search 客户端
 专为AI/RAG优化的搜索API
 """
 import requests
+import time
 from typing import List, Dict, Optional, Any
 from services.core import logger, settings
+
+# 🔥 简单的内存缓存（避免重复搜索）
+_search_cache = {}
+_cache_ttl = 300  # 缓存5分钟
 
 
 class TavilySearchClient:
@@ -76,6 +81,14 @@ class TavilySearchClient:
             }
         """
         try:
+            # 🔥 检查缓存
+            cache_key = f"{query}_{max_results}_{search_depth}"
+            if cache_key in _search_cache:
+                cached_data, cached_time = _search_cache[cache_key]
+                if time.time() - cached_time < _cache_ttl:
+                    logger.info(f"⚡ 使用缓存结果（避免重复搜索）")
+                    return cached_data
+            
             # 构建请求
             payload = {
                 "api_key": self.api_key,
@@ -98,7 +111,7 @@ class TavilySearchClient:
             response = requests.post(
                 self.search_endpoint,
                 json=payload,
-                timeout=30
+                timeout=10  # 🔥 减少到10秒超时（原30秒）
             )
             
             response.raise_for_status()
@@ -120,6 +133,9 @@ class TavilySearchClient:
                 "results": results,
                 "response_time": data.get("response_time", 0)
             }
+            
+            # 🔥 缓存结果
+            _search_cache[cache_key] = (result, time.time())
             
             logger.info(f"✅ Tavily搜索成功: 找到{len(results)}个结果，响应时间{result['response_time']:.2f}秒")
             
