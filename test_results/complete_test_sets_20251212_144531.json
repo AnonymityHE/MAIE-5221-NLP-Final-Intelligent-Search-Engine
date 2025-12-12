@@ -1,0 +1,377 @@
+{
+  "timestamp": "20251212_144531",
+  "summary": {
+    "test_set_1": {
+      "total": 4,
+      "success": 4,
+      "success_rate": 100.0,
+      "avg_response_time": 16.97,
+      "tool_accuracy": 25.0
+    },
+    "test_set_2": {
+      "total": 4,
+      "success": 4,
+      "success_rate": 100.0,
+      "avg_response_time": 22.93,
+      "tool_accuracy": 75.0
+    },
+    "test_set_3": {
+      "total": 10,
+      "success": 10,
+      "success_rate": 100.0,
+      "avg_response_time": 13.78,
+      "tool_accuracy": 70.0
+    }
+  },
+  "detailed_results": {
+    "test_set_1": [
+      {
+        "id": "SET1-1",
+        "question": "香港科技大学在哪里？",
+        "language": "中文",
+        "category": "基础知识",
+        "expected_tools": [
+          "local_rag"
+        ],
+        "result": {
+          "success": true,
+          "answer": "香港科技大学位于香港九龙清水湾。",
+          "response_time": 13.857286930084229,
+          "tools_used": [
+            "direct_llm"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": false
+        }
+      },
+      {
+        "id": "SET1-2",
+        "question": "现在香港的天气怎么样？",
+        "language": "中文",
+        "category": "实时信息",
+        "expected_tools": [
+          "weather"
+        ],
+        "result": {
+          "success": true,
+          "answer": "香港目前的天气情况没有在提供的上下文中给出。但是，香港天文台提供了天气预报服务，您可以访问香港天文台的官方网站或下载其官方应用程序以获取最新的天气信息。",
+          "response_time": 25.258219003677368,
+          "tools_used": [
+            "web_search"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": false
+        }
+      },
+      {
+        "id": "SET1-3",
+        "question": "苹果公司的股价是多少？",
+        "language": "中文",
+        "category": "实时信息",
+        "expected_tools": [
+          "finance"
+        ],
+        "result": {
+          "success": true,
+          "answer": "根据提供的上下文信息，苹果公司（股票代码：AAPL）的当前股价是$278.03。",
+          "response_time": 13.309595108032227,
+          "tools_used": [
+            "finance"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET1-4",
+        "question": "RAG系统是什么？",
+        "language": "中文",
+        "category": "技术知识",
+        "expected_tools": [
+          "local_rag"
+        ],
+        "result": {
+          "success": true,
+          "answer": "RAG（Retrieval-Augmented Generation）系统是一种结合了信息检索与文本生成技术的人工智能系统。它首先从大型文档集合中检索相关信息，然后基于检索到的内容生成回答或文本。这种方法旨在提高生成内容的准确性和相关性，尤其适用于需要大量背景知识的任务，如问答、内容创作等。",
+          "response_time": 15.458781957626343,
+          "tools_used": [
+            "direct_llm"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": false
+        }
+      }
+    ],
+    "test_set_2": [
+      {
+        "id": "SET2-1",
+        "question": "比亚迪和特斯拉哪个股价更高？",
+        "language": "中文",
+        "category": "对比分析",
+        "expected_tools": [
+          "finance"
+        ],
+        "result": {
+          "success": true,
+          "answer": "根据当前数据,特斯拉的股价($446.89)高于比亚迪的股价($97.55)。",
+          "response_time": 17.342366933822632,
+          "tools_used": [
+            "finance"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET2-2",
+        "question": "比较香港和北京的天气",
+        "language": "中文",
+        "category": "对比分析",
+        "expected_tools": [
+          "weather"
+        ],
+        "result": {
+          "success": true,
+          "answer": "香港和北京的天气差异显著。香港天气温和，温度为24°C，体感温度26°C，部分多云，湿度为54%，风速较高，为38 km/h，风向为东风。而北京天气寒冷，温度为-3°C，体感温度-7°C，有小雪，湿度为63%，风速较低，为10 km/h，风向为南风。总体来看，香港气候较为温暖湿润，而北京则寒冷干燥，伴有降雪。",
+          "response_time": 20.80004096031189,
+          "tools_used": [
+            "weather"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET2-3",
+        "question": "RAG系统的核心组件有哪些？",
+        "language": "中文",
+        "category": "技术知识",
+        "expected_tools": [
+          "local_rag"
+        ],
+        "result": {
+          "success": true,
+          "answer": "RAG（Retrieval-Augmented Generation）系统的核心组件通常包括以下几个部分：\n\n1. 检索系统（Retriever）：从大规模数据源中检索相关的文档或段落。\n2. 生成模型（Generator）：基于检索到的信息生成连贯、准确的回答。\n3. 数据存储（Document Store）：存储用于检索的文档或知识库。\n4. 查询处理器（Query Processor）：对用户查询进行预处理，以便更好地匹配检索内容。\n5. 排序和过滤模块（Ranking/Filtering Module）：对检索结果进行排序或过滤，选择最相关的信息。\n6. 融合模块（Fusion Module）：将检索到的信息与生成模型的内部知识进行融合，生成最终回答。\n\n这些组件共同工作，使得RAG系统能够结合检索到的外部知识和生成模型的内部知识，提供更准确和丰富的回答。",
+          "response_time": 19.549668788909912,
+          "tools_used": [
+            "direct_llm"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": false
+        }
+      },
+      {
+        "id": "SET2-4",
+        "question": "如何优化RAG系统的检索质量？",
+        "language": "中文",
+        "category": "技术知识",
+        "expected_tools": [
+          "local_rag"
+        ],
+        "result": {
+          "success": true,
+          "answer": "优化RAG系统的检索质量可以从以下几个方面入手：\n\n1. 改进文档索引和检索算法：通过优化文档索引和检索算法，可以减少延迟并保持准确性。例如，可以使用更高效的索引结构，如倒排索引或向量索引，以提高检索速度。同时，可以使用更先进的检索算法，如BM25或语义检索，以提高检索的准确性。\n\n2. 增强数据粒度：数据预处理是提升RAG系统性能的关键步骤。通过删除不相关的信息、消除实体和数据中的歧义、更新过时的数据等方法，可以提高文本的标准化、一致性、事实准确性和丰富的上下文，从而提高检索质量。\n\n3. 使用新型RAG技术：随着RAG技术的快速发展，出现了许多新型的RAG技术，如多代理系统、图结构导航和因果推理等。这些技术代表了当前研究的前沿，可以显著提高AI系统的性能。因此，可以考虑采用这些新型技术来优化RAG系统的检索质量。\n\n4. 结合多种检索策略：不同的检索策略在不同的场景下可能具有不同的优势。因此，可以尝试结合多种检索策略，如关键词检索、语义检索和混合检索等，以提高检索的全面性和准确性。\n\n5. 优化系统配置：RAG系统的性能受多种组件和配置的影响。通过系统地分析和优化这些组件和配置，如语言模型的选择、知识库的构建和检索参数的设置等，可以显著提高系统的检索质量。\n\n6. 应用场景的适配：不同的应用场景可能对RAG系统的检索质量有不同的要求。因此，在优化RAG系统时，需要考虑具体的应用场景，并根据场景的特点进行相应的优化。\n\n综上所述，优化RAG系统的检索质量需要从多个角度进行综合考虑，包括文档索引和检索算法的改进、数据粒度的增强、新型RAG技术的应用、多种检索策略的结合、系统配置的优化以及应用场景的适配等。通过这些方法，可以显著提高RAG系统的检索质量，从而提升整个系统的性能。",
+          "response_time": 34.03281092643738,
+          "tools_used": [
+            "local_rag",
+            "web_search"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      }
+    ],
+    "test_set_3": [
+      {
+        "id": "SET3-1",
+        "question": "香港科技大学在哪里？",
+        "language": "中文",
+        "category": "基础知识",
+        "expected_tools": [
+          "local_rag"
+        ],
+        "result": {
+          "success": true,
+          "answer": "香港科技大学位于香港新界西贡区清水湾。",
+          "response_time": 8.943173170089722,
+          "tools_used": [
+            "direct_llm"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": false
+        }
+      },
+      {
+        "id": "SET3-2",
+        "question": "RAG系统的核心组件有哪些？",
+        "language": "中文",
+        "category": "技术知识",
+        "expected_tools": [
+          "local_rag"
+        ],
+        "result": {
+          "success": true,
+          "answer": "RAG（Retrieval-Augmented Generation）系统的核心组件包括：\n1. 检索模块（Retriever）：用于从大规模文档库中检索与输入相关的文档片段或段落。\n2. 生成模块（Generator）：基于检索到的文档片段或段落，生成自然语言文本作为输出。\n3. 文档库（Document Store）：存储大量文档片段或段落的数据库，用于检索模块的查询。\n4. 查询编码器（Query Encoder）：将输入的自然语言查询编码为向量表示，以便与文档库中的文档片段进行相似度计算。\n5. 文档编码器（Document Encoder）：将文档库中的文档片段编码为向量表示，以便与查询向量进行相似度计算。\n6. 相似度计算模块（Similarity Calculator）：计算查询向量与文档向量之间的相似度，用于检索模块的排序和筛选。\n7. 后处理模块（Post-processor）：对生成模块输出的文本进行后处理，例如去重、排序、过滤等，以提高输出质量。",
+          "response_time": 14.719102144241333,
+          "tools_used": [
+            "direct_llm"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": false
+        }
+      },
+      {
+        "id": "SET3-3",
+        "question": "现在香港的天气怎么样？",
+        "language": "中文",
+        "category": "实时信息",
+        "expected_tools": [
+          "weather"
+        ],
+        "result": {
+          "success": true,
+          "answer": "香港现在天气部分多云，温度为24°C，体感温度26°C，湿度为54%，风速为38 km/h，风向为东。",
+          "response_time": 10.35354995727539,
+          "tools_used": [
+            "weather"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET3-4",
+        "question": "苹果公司的股价是多少？",
+        "language": "中文",
+        "category": "实时信息",
+        "expected_tools": [
+          "finance"
+        ],
+        "result": {
+          "success": true,
+          "answer": "苹果公司的股价是$278.03。",
+          "response_time": 8.243374109268188,
+          "tools_used": [
+            "finance"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET3-5",
+        "question": "比亚迪和特斯拉哪个股价更高？",
+        "language": "中文",
+        "category": "对比分析",
+        "expected_tools": [
+          "finance"
+        ],
+        "result": {
+          "success": true,
+          "answer": "根据当前数据，特斯拉的股价($446.89)明显高于比亚迪的股价($97.54)。特斯拉股价约为比亚迪的4.58倍。",
+          "response_time": 12.142417907714844,
+          "tools_used": [
+            "finance"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET3-6",
+        "question": "比较香港和北京今天的天气",
+        "language": "中文",
+        "category": "对比分析",
+        "expected_tools": [
+          "weather"
+        ],
+        "result": {
+          "success": true,
+          "answer": "根据获取的天气信息，香港和北京今天的天气有很大的差异：\n1. 温度方面：香港的气温较高，为24°C，体感温度26°C；而北京的气温较低，为-3°C，体感温度-7°C。\n2. 天气状况：香港为多云天气，而北京则有小雪。\n3. 湿度：香港的湿度为54%，北京为63%，北京的湿度略高。\n4. 风速和风向：香港的风速较大，为38 km/h，风向为东；北京的风速较小，为10 km/h，风向为南。\n\n由于香港和北京位于不同的气候带，香港属于亚热带气候，冬季温暖潮湿；北京属于温带季风气候，冬季寒冷干燥。因此，两地的天气差异较大。在香港的人们需要关注防风，在北京的人们则需要注意保暖和防滑。",
+          "response_time": 17.706305027008057,
+          "tools_used": [
+            "weather"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET3-7",
+        "question": "Where is the Hong Kong University of Science and Technology located?",
+        "language": "英文",
+        "category": "基础知识",
+        "expected_tools": [
+          "local_rag"
+        ],
+        "result": {
+          "success": true,
+          "answer": "The Hong Kong University of Science and Technology is located in Clear Water Bay, Hong Kong.",
+          "response_time": 11.678839206695557,
+          "tools_used": [
+            "direct_llm"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": false
+        }
+      },
+      {
+        "id": "SET3-8",
+        "question": "What are the core components of a RAG system?",
+        "language": "英文",
+        "category": "技术知识",
+        "expected_tools": [
+          "local_rag"
+        ],
+        "result": {
+          "success": true,
+          "answer": "A RAG system consists of two core components: the retriever and the generator. The retriever is responsible for finding relevant documents or passages from a knowledge base, while the generator uses the retrieved information to generate a coherent and contextually appropriate response. These components work together to enhance the system's ability to provide accurate and informative answers.",
+          "response_time": 17.15959119796753,
+          "tools_used": [
+            "local_rag"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET3-9",
+        "question": "What's the weather like in Hong Kong now?",
+        "language": "英文",
+        "category": "实时信息",
+        "expected_tools": [
+          "weather"
+        ],
+        "result": {
+          "success": true,
+          "answer": "Hong Kong is currently experiencing partly cloudy weather with a temperature of 24°C (feels like 26°C). The humidity is at 54%, and there are eastern winds blowing at 38 km/h.",
+          "response_time": 22.1193630695343,
+          "tools_used": [
+            "weather"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      },
+      {
+        "id": "SET3-10",
+        "question": "What is Apple's stock price?",
+        "language": "英文",
+        "category": "实时信息",
+        "expected_tools": [
+          "finance"
+        ],
+        "result": {
+          "success": true,
+          "answer": "Apple's stock price is currently $278.03.",
+          "response_time": 14.72082781791687,
+          "tools_used": [
+            "finance"
+          ],
+          "workflow_steps": 0,
+          "tool_correct": true
+        }
+      }
+    ]
+  }
+}
