@@ -357,6 +357,23 @@ For a representative workload of 1000 queries comprising 850 text queries and 15
 
 \subsection{Speech Processing Pipeline}
 
+Our speech processing pipeline integrates multiple technologies for robust voice interaction across different platforms and use cases:
+
+\begin{table}[h]
+\centering
+\caption{Voice Input Technologies}
+\label{tab:voice_input}
+\begin{tabular}{@{}p{0.25\textwidth}p{0.65\textwidth}@{}}
+\toprule
+\textbf{Component} & \textbf{Implementation} \\ \midrule
+Speech-to-Text & Whisper/Faster Whisper with multilingual support (Cantonese, Mandarin, English) \\
+Streaming STT & Real-time transcription for immediate feedback \\
+Mac Optimization & Lightning Whisper MLX with Apple Silicon acceleration \\
+Voice Activity Detection & Web Audio API + Silero VAD for accurate speech detection \\
+Wake Word Detection & "Jarvis" activation keyword recognition \\ \bottomrule
+\end{tabular}
+\end{table}
+
 \subsubsection{Real-Time Speech-to-Text}
 
 We employ the Web Speech API (webkitSpeechRecognition) configured for Chinese Mandarin (\texttt{zh-CN}):
@@ -397,6 +414,32 @@ The frontend automatically plays the audio without user interaction, reducing TT
 
 \subsubsection{Voice Selection}
 
+We evaluate multiple TTS engines for optimal voice quality and latency:
+
+\begin{table}[h]
+\centering
+\caption{Text-to-Speech Solutions}
+\label{tab:tts_solutions}
+\begin{tabular}{@{}p{0.25\textwidth}p{0.65\textwidth}@{}}
+\toprule
+\textbf{TTS Engine} & \textbf{Features} \\ \midrule
+Edge TTS & Cloud-based service with high-quality voice synthesis \\
+Parler-TTS & Streaming capability for real-time audio generation \\
+MeloTTS & Mac-optimized local processing for low latency \\
+Streaming Delivery & Real-time audio chunks via WebSocket for smooth playback \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Challenges Encountered}:
+\begin{itemize}
+\item Audio format compatibility: Web Audio API for cross-browser support
+\item Large file handling: Chunked processing for memory efficiency
+\item Streaming synchronization: Dynamic buffering system
+\item Mac MLX compatibility: Parameter mapping and graceful fallback
+\end{itemize}
+
+For production deployment, we select Edge TTS for its balance of quality and reliability:
+
 \begin{table}[h]
 \centering
 \caption{Edge TTS Voice Configuration}
@@ -410,7 +453,7 @@ English & AriaNeural & +0Hz / 1.0x \\ \bottomrule
 \end{tabular}
 \end{table}
 
-Voice selection is determined by language detection on the answer text.
+Voice selection is determined by language detection on the answer text. The system automatically switches between voices based on detected language to provide the most natural-sounding output for each query.
 
 \subsection{Multimodal Processing}
 
@@ -681,6 +724,24 @@ We presented Jude, a voice-first AI agent system demonstrating that intelligent 
 Our work makes three primary contributions: a production-ready architecture for cost-effective, multilingual voice agents; novel RAG enhancements including credibility weighting, freshness decay, and Cantonese optimization; and an open-source implementation facilitating future research and reproduction.\footnote{Code available at: \url{https://github.com/AnonymityHE/MAIE-5221-NLP-Final}}
 
 Jude represents a step toward accessible, intelligent conversational AI that respects linguistic diversity and computational constraints. Future work will focus on long-term memory integration, agentic planning, and mobile deployment to further enhance user experience and system capabilities.
+
+\section{Team Plan and Roles}
+
+This project was developed collaboratively with clear division of responsibilities to ensure comprehensive system coverage:
+
+\begin{table}[h]
+\centering
+\caption{Team Plan and Roles}
+\label{tab:team_roles}
+\begin{tabular}{@{}p{0.18\textwidth}p{0.12\textwidth}p{0.60\textwidth}@{}}
+\toprule
+\textbf{Team Member} & \textbf{Student No.} & \textbf{Key Responsibilities} \\ \midrule
+Yunlin He & 21270701 & Overall project management, system architecture design, Agent system and LangGraph workflow implementation, and integrating all components. \\
+Letian Wang & 21211913 & Implementing specialized tools (Weather, Finance, Transport, Web Search), API integration, and managing external service connections and error handling. \\
+Ziyao Su & 21272577 & Document processing pipeline, multimodal support (file upload, audio/voice), Milvus vector database management, and knowledge base indexing. \\
+Ziyu Jing & 21280146 & RAG retrieval optimization, reranking and filtering implementation, caching mechanisms, performance optimization, and system testing. \\ \bottomrule
+\end{tabular}
+\end{table}
 
 \section*{Acknowledgments}
 
