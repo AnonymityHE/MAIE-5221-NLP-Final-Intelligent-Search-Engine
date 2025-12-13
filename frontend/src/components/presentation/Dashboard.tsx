@@ -6,7 +6,7 @@ import {
   BarChart2, Clock, Zap, Code
 } from 'lucide-react';
 import { 
-  BarChart, Bar, LineChart, Line, 
+  BarChart, Bar, 
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from 'recharts';
 
