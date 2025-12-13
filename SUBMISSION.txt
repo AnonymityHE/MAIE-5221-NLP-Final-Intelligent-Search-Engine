@@ -1,0 +1,119 @@
+MAIE5221 NLP Final Project Submission
+===========================================
+
+Project Title: Jude - Voice-First AI Agent System
+Team Members: Yunlin He (21270701), Letian Wang (21211913), Ziyao Su (21272577), Ziyu Jing (21280146)
+Submission Date: December 14, 2024
+
+===========================================
+📄 1. PROJECT REPORT
+===========================================
+
+File: Final_Report.pdf (attached to Canvas)
+Pages: 20+ pages
+Content: Complete technical documentation including:
+  - Executive Summary
+  - System Architecture with diagrams
+  - Technology Stack (HKGAI-V1, Doubao, Milvus, FastAPI, React)
+  - Methodology & Implementation (RAG, Agent, Multimodal)
+  - Evaluation Results (Test Sets 1/2/3)
+  - Team Contributions
+
+===========================================
+💻 2. SOURCE CODE
+===========================================
+
+GitHub Repository:
+https://github.com/AnonymityHE/MAIE-5221-NLP-Final-Intelligent-Search-Engine
+
+Note: The complete codebase is hosted on GitHub due to size constraints.
+The repository includes:
+  - Backend (FastAPI + Agent System)
+  - Frontend (React + Dashboard)
+  - All services (RAG, LLM, Speech, Vision)
+  - Complete test suite
+  - Docker configuration
+  - Documentation
+
+To run the project:
+  1. Clone the repository
+  2. Follow instructions in README.md (Quick Start section)
+  3. Or visit the live demo (see below)
+
+===========================================
+📊 3. PRESENTATION / DEMO
+===========================================
+
+Live Interactive Demo:
+https://https://jude.darkdark.me
+
+The live demo replaces traditional PowerPoint slides and provides:
+  - 5-page Interactive Dashboard with charts and metrics
+  - Real-time Demo Interface (text/voice/image input)
+  - Complete system functionality demonstration
+  - Evaluation results visualization
+
+Pages:
+  1. Data Flow & System Architecture
+  2. Core Features & Technologies
+  3. Optimized Performance (111 test queries results)
+  4. Q&A Section
+  5. Team Members & Contributions
+
+===========================================
+📖 4. DOCUMENTATION
+===========================================
+
+All documentation is available in the GitHub repository:
+
+1. Main README (Chinese):
+   https://github.com/AnonymityHE/MAIE-5221-NLP-Final-Intelligent-Search-Engine/blob/main/README.md
+   
+2. English README:
+   https://github.com/AnonymityHE/MAIE-5221-NLP-Final-Intelligent-Search-Engine/blob/main/README_EN.md
+   
+3. Test Suite Documentation:
+   https://github.com/AnonymityHE/MAIE-5221-NLP-Final-Intelligent-Search-Engine/blob/main/scripts/README.md
+
+Each README includes:
+  - Project overview
+  - Quick start guide (4 steps)
+  - Complete file structure explanation
+  - How to run the project
+  - Performance metrics
+  - Team contributions
+
+===========================================
+🎯 5. KEY ACHIEVEMENTS
+===========================================
+
+Performance Metrics (111 test queries):
+  ✅ Success Rate: 100%
+  ✅ Tool Routing Accuracy: 100%
+  ✅ Average Response Time: 6.98s (optimized from 40.44s)
+  ✅ Performance Improvement: 82.7%
+
+Test Coverage:
+  ✅ Test Set 1: 48 queries (Basic knowledge, weather, finance)
+  ✅ Test Set 2: 45 queries (Multi-step, comparison, analysis)
+  ✅ Test Set 3: 18 text + 6 image queries (Advanced features)
+
+Technologies:
+  ✅ Dual-LLM Architecture (HKGAI-V1 + Doubao Seed-1-6)
+  ✅ Two-Stage RAG with Cross-Encoder Reranking
+  ✅ Intelligent Agent with Dynamic Tool Routing
+  ✅ Multimodal Support (Text, Voice, Image)
+  ✅ Real-time Voice Interaction (STT + TTS)
+
+===========================================
+📧 CONTACT
+===========================================
+
+For any questions about the project, please contact:
+  - Yunlin He: yhebc@connect.ust.hk (Team Lead)
+  - GitHub Issues: https://github.com/AnonymityHE/MAIE-5221-NLP-Final-Intelligent-Search-Engine/issues
+
+===========================================
+Thank you for reviewing our project!
+===========================================
+
