@@ -78,7 +78,7 @@
 
 ### 🎨 Interactive Frontend
 - ✅ **Landing Page**: 3D scroll animations, gradient text effects, FAQ accordion
-- ✅ **System Dashboard**: 6-page fullscreen scroll (Data Flow / Features / Test Sets / Extended Eval / Q&A / Team)
+- ✅ **System Dashboard**: 5-page fullscreen scroll (Data Flow / Features / Optimized Performance / Q&A / Team)
 - ✅ **Demo Interface**: Real-time chat, voice input, image upload, auto-play TTS
 - ✅ **Responsive Design**: Pink-purple gradient theme, glassmorphism style
 
@@ -401,12 +401,12 @@ TTS_VOLUME=+0%
 
 ## 👥 Team
 
-| Name | Student ID | Role | Contributions |
-|------|------------|------|---------------|
-| **Yunlin He** | 21270701 | Project Lead & System Architect | Project management, system architecture, Agent implementation, dual-model integration, frontend development |
-| **Letian Wang** | 21211913 | API Integration Specialist | Professional tool implementation, Tavily integration, API error handling, rate limiting |
-| **Ziyao Su** | 21272577 | Multimodal & Database Engineer | Document processing, multimodal support, streaming voice processing, Milvus management |
-| **Ziyu Jing** | 21280146 | RAG Optimization & QA Engineer | RAG optimization, two-stage reranking, credibility algorithm, system testing |
+| Name | Student ID | Key Responsibilities |
+|------|------------|----------------------|
+| **Yunlin He** | 21270701 | Overall project management, system architecture design, Agent system and LangGraph workflow implementation, and integrating all components |
+| **Letian Wang** | 21211913 | Implementing specialized tools (Weather, Finance, Transport, Web Search), API integration, and managing external service connections and error handling |
+| **Ziyao Su** | 21272577 | Document processing pipeline, multimodal support (file upload, audio/voice), Milvus vector database management, and knowledge base indexing |
+| **Ziyu Jing** | 21280146 | RAG retrieval optimization, reranking and filtering implementation, caching mechanisms, performance optimization, and system testing |
 
 ---
 
