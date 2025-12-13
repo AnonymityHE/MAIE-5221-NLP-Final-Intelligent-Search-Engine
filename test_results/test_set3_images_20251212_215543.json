@@ -1,0 +1,84 @@
+{
+  "timestamp": "20251212_215543",
+  "total_questions": 6,
+  "successful": 0,
+  "failed": 6,
+  "success_rate": 0.0,
+  "avg_response_time": 0,
+  "total_time_minutes": 0.2514379541079203,
+  "note": "使用Doubao多模态模型测试图片问题",
+  "results": [
+    {
+      "id": "EN-IMG-1",
+      "image": "figures/hkust.png",
+      "question": "Identify this sculpture, explain its symbolic meaning, and tell me where exactly on campus it is located.",
+      "language": "English",
+      "category": "Image-Recognition",
+      "result": {
+        "success": false,
+        "error": "HTTP 400: {\"detail\":\"至少需要一张图片\"}",
+        "response_time": 0.016489028930664062
+      }
+    },
+    {
+      "id": "EN-IMG-2",
+      "image": "figures/snack.png",
+      "question": "Is this snack suitable for someone on a low-sodium diet? Extract the sodium content to justify your answer.",
+      "language": "English",
+      "category": "OCR-Analysis",
+      "result": {
+        "success": false,
+        "error": "HTTP 400: {\"detail\":\"至少需要一张图片\"}",
+        "response_time": 0.00823974609375
+      }
+    },
+    {
+      "id": "EN-IMG-3",
+      "image": "figures/error_info.png",
+      "question": "Analyze this error screenshot and suggest a fix for the Python code.",
+      "language": "English",
+      "category": "Code-Debug",
+      "result": {
+        "success": false,
+        "error": "HTTP 400: {\"detail\":\"至少需要一张图片\"}",
+        "response_time": 0.003765106201171875
+      }
+    },
+    {
+      "id": "CN-IMG-1",
+      "image": "figures/hkust.png",
+      "question": "識別這座雕塑，解釋它的象徵意義，並告訴我它具體位於校園的哪個位置。",
+      "language": "Chinese",
+      "category": "Image-Recognition",
+      "result": {
+        "success": false,
+        "error": "HTTP 400: {\"detail\":\"至少需要一张图片\"}",
+        "response_time": 0.009724140167236328
+      }
+    },
+    {
+      "id": "CN-IMG-2",
+      "image": "figures/snack.png",
+      "question": "這個零食適合低鈉飲食的人嗎？提取鈉含量來支持你的回答。",
+      "language": "Chinese",
+      "category": "OCR-Analysis",
+      "result": {
+        "success": false,
+        "error": "HTTP 400: {\"detail\":\"至少需要一张图片\"}",
+        "response_time": 0.009387969970703125
+      }
+    },
+    {
+      "id": "CN-IMG-3",
+      "image": "figures/error_info.png",
+      "question": "分析這個錯誤截圖並建議修復此 Python 代碼的方法。",
+      "language": "Chinese",
+      "category": "Code-Debug",
+      "result": {
+        "success": false,
+        "error": "HTTP 400: {\"detail\":\"至少需要一张图片\"}",
+        "response_time": 0.0059621334075927734
+      }
+    }
+  ]
+}

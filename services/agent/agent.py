@@ -119,25 +119,30 @@ class RAGAgent:
                 logger.info("检测到交通查询，使用web_search获取路线信息")
         
         # 检测天气查询 - 优先使用weather API（更快更准确）
-        # 注意：如果是历史天气查询，应该使用web_search而不是weather工具
+        # 注意：如果是历史天气查询或未来天气，应该使用web_search而不是weather工具
         weather_keywords = ["weather", "天气", "rain", "下雨", "temperature", "温度", 
                            "forecast", "预报", "cloud", "云", "怎麼樣", "怎么样", "今天", "now", "现在"]
+        future_keywords = ["tomorrow", "明天", "next week", "下周", "will", "会不会", "會不會"]
+        is_future_query = any(kw in query_lower for kw in future_keywords)
+        
         if any(kw in query_lower for kw in weather_keywords):
-            if is_historical_query:
-                # 历史天气查询：使用web_search（weather工具只支持当前天气）
+            if is_historical_query or is_future_query:
+                # 历史/未来天气查询：使用web_search（weather工具只支持当前天气）
                 tools.append("web_search")
-                logger.info("检测到历史天气查询，使用web_search工具")
+                logger.info("检测到历史/未来天气查询，使用web_search工具")
             else:
                 # 当前天气查询：优先使用weather工具（更快）
                 tools.append("weather")
                 logger.info("检测到天气查询，优先使用weather API（避免慢速web_search）")
         
         # 检测实时/新闻查询（需要网页搜索）
-        # ⚠️ 排除天气/金融查询（它们有专用API，更快）
-        news_keywords = ["latest", "最新", "news", "新闻", "recently", "最近"]
+        # ⚠️ 排除已经有工具的查询（避免重复）
+        news_keywords = ["latest", "最新", "news", "新闻", "recently", "最近", 
+                        "now", "现在", "目前", "当前", "currently", "懸掛", "悬挂", 
+                        "开放", "关闭", "营业", "运营", "警告", "信号", "signal", "warning"]
         if any(kw in query_lower for kw in news_keywords):
-            # 确保不与天气/金融查询冲突
-            if "weather" not in tools and "finance" not in tools and "web_search" not in tools:
+            # 如果没有其他工具，使用web_search
+            if not tools:
                 tools.append("web_search")
                 logger.info("检测到新闻/实时查询，使用web_search")
         
@@ -184,6 +189,14 @@ class RAGAgent:
                 tools.append("web_search")
                 logger.info("检测到一般地点查询，使用web_search")
         
+        # 检测常识问题（应该direct_llm，不需要web_search）
+        common_knowledge_keywords = [
+            "capital", "首都", "president", "总统", "famous", "著名",
+            "olympic", "奥运", "world cup", "世界杯", "wrote", "写了",
+            "invented", "发明", "discovered", "发现"
+        ]
+        is_common_knowledge = any(kw in query_lower for kw in common_knowledge_keywords)
+        
         # 检测一般疑问（优先web_search获取准确答案）
         # 注意：只有在没有匹配到local_rag时才使用web_search
         question_indicators = ["什么是", "谁是", "为什么", "怎样", "如何",
@@ -192,7 +205,10 @@ class RAGAgent:
         if not tools and any(indicator in query_lower for indicator in question_indicators):
             # 再次检查是否包含技术术语（避免误判）
             tech_terms = ["rag", "embedding", "vector", "llm", "nlp", "transformer", "大学", "university", "milvus"]
-            if not any(term in query_lower for term in tech_terms):
+            # 如果是常识问题，不使用web_search
+            if is_common_knowledge:
+                logger.info("检测到常识问题，直接使用LLM")
+            elif not any(term in query_lower for term in tech_terms):
                 tools.append("web_search")
                 logger.info("检测到一般疑问，使用web_search获取答案")
             else:
@@ -217,12 +233,15 @@ class RAGAgent:
             "北京": "Beijing",
             "shanghai": "Shanghai",
             "上海": "Shanghai",
+            "shenzhen": "Shenzhen",
+            "深圳": "Shenzhen",
+            "guangzhou": "Guangzhou",
+            "广州": "Guangzhou",
             "taipei": "Taipei",
             "台北": "Taipei",
             "tokyo": "Tokyo",
             "东京": "Tokyo",
             "new york": "New York",
-            "london": "London",
             "london": "London"
         }
         
@@ -232,13 +251,54 @@ class RAGAgent:
         
         return None
     
+    def _is_complex_query(self, query: str) -> bool:
+        """
+        检测是否为复杂查询（需要LLM工作流规划）
+        
+        简单查询直接使用规则路由，节省~13秒LLM调用时间
+        """
+        query_lower = query.lower()
+        
+        # 复杂查询关键词
+        complex_keywords = [
+            # 比较类
+            "比较", "compare", "对比", "差异", "difference", "vs", "versus", "哪个更", "which is better",
+            "邊個", "边个", "更高", "更低", "更好", "更差",
+            # 分析类
+            "分析", "analyze", "analysis", "評估", "评估", "evaluate", "解释为什么", "explain why",
+            "為什麼", "为什么", "原因", "reason",
+            # 计算类
+            "计算", "calculate", "總共", "总共", "total", "加起来", "sum up", "相加", "相减",
+            # 多步骤类
+            "然后", "接着", "之后", "先...再", "first...then", "步驟", "步骤", "step",
+            "接住", "跟住", "跟着",
+            # 综合类
+            "综合", "整合", "combine", "一起", "together", "同時", "同时", "both", "埋一齊"
+        ]
+        
+        # 检测是否包含复杂关键词
+        has_complex_keyword = any(kw in query_lower for kw in complex_keywords)
+        
+        # 检测是否包含多个问句（多个问号或多个疑问词）
+        question_marks = query.count("？") + query.count("?")
+        has_multiple_questions = question_marks >= 2
+        
+        is_complex = has_complex_keyword or has_multiple_questions
+        
+        if is_complex:
+            logger.info(f"✅ 检测到复杂查询，将使用LLM工作流规划")
+        else:
+            logger.info(f"⚡ 简单查询，跳过LLM规划（节省~13秒）")
+        
+        return is_complex
+    
     def execute(self, query: str, model: Optional[str] = None) -> Dict:
         """
         执行Agent推理，选择合适的工具并获取答案
         支持动态工作流（多步骤查询）
         
         工作流执行优先级：
-        1. LLM驱动的智能工作流（优先）
+        1. LLM驱动的智能工作流（仅复杂查询）
         2. 基于规则的工作流模板（fallback）
         3. 单工具直接调用（简单查询）
         
@@ -249,10 +309,10 @@ class RAGAgent:
         Returns:
             包含答案、使用的工具和上下文的字典
         """
-        # 0. 尝试LLM驱动的工作流规划（优先）
-        if self.llm_planner and self.dynamic_engine:
+        # 0. 智能判断：只对复杂查询使用LLM工作流规划（节省90%查询的13秒）
+        if self.llm_planner and self.dynamic_engine and self._is_complex_query(query):
             try:
-                logger.info("🧠 尝试LLM驱动的工作流规划...")
+                logger.info("🧠 启用LLM驱动的工作流规划...")
                 plan = self.llm_planner.analyze_query(query)
                 
                 # 检查是否需要工作流且置信度足够
@@ -260,7 +320,7 @@ class RAGAgent:
                     logger.info(f"✅ LLM规划成功 (置信度: {plan.confidence:.2f}), 使用动态工作流")
                     return self._execute_llm_workflow(query, model, plan)
                 else:
-                    logger.info(f"ℹ️  LLM认为不需要工作流 (置信度: {plan.confidence:.2f}), 尝试规则引擎")
+                    logger.info(f"ℹ️  LLM认为不需要工作流 (置信度: {plan.confidence:.2f}), 使用规则引擎")
             except Exception as e:
                 logger.warning(f"⚠️  LLM工作流规划失败: {e}, 回退到规则引擎")
         

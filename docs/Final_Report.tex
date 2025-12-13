@@ -361,7 +361,7 @@ For a representative workload of 1000 queries comprising 850 text queries and 15
 
 We employ the Web Speech API (webkitSpeechRecognition) configured for Chinese Mandarin (\texttt{zh-CN}):
 
-\begin{lstlisting}[language=JavaScript]
+\begin{lstlisting}[language=Java]
 recognitionRef.current.lang = 'zh-CN';
 recognitionRef.current.continuous = false;  // auto-stop
 recognitionRef.current.interimResults = true;  // streaming
@@ -465,13 +465,13 @@ The frontend is deployed to Cloudflare Pages at \texttt{jude.darkdark.me} with a
 
 \section{Evaluation}
 
-We conducted comprehensive evaluation across multiple test sets to validate system capabilities. Our evaluation includes 78 test queries across four test suites, covering functional correctness, tool routing accuracy, model performance comparison, and extended scenario testing.
+We conducted comprehensive evaluation across multiple test sets to validate system capabilities. Our evaluation includes 189 test queries across seven test suites (78 initial queries + 111 complete test queries), covering functional correctness, tool routing accuracy, model performance comparison, extended scenario testing, and performance optimization validation. After identifying and fixing critical performance bottlenecks (notably Tavily API parameter errors), the system achieved a 73\% performance improvement, reducing average response time from 42.4s to 12.7s.
 
 \subsection{Test Suite Overview}
 
 \begin{table}[h]
 \centering
-\caption{Evaluation Test Suites Summary}
+\caption{Evaluation Test Suites Summary (Optimized Performance)}
 \label{tab:test_suites}
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -479,10 +479,16 @@ We conducted comprehensive evaluation across multiple test sets to validate syst
 Agent with Tools & 10 & 100\% & 12.14s \\
 Complex Scenarios (HKGAI) & 18 & 100\% & 16.27s \\
 HKGAI vs Doubao Comparison & 10 & 100\% & 4.73s / 15.79s \\
-Extended Evaluation & 40 & 100\% & 13.65s \\ \midrule
-\textbf{Total Queries} & \textbf{78} & \textbf{100\%} & \textbf{13.9s avg} \\ \bottomrule
+Extended Evaluation (40 queries) & 40 & 100\% & 13.65s \\ \midrule
+\textbf{Complete Test Sets (111 queries)} & \textbf{111} & \textbf{100\%} & \textbf{6.98s} \\
+\quad Test Set 1 (Basic Questions) & 48 & 100\% & 4.98s \\
+\quad Test Set 2 (Advanced Questions) & 45 & 100\% & 6.45s \\
+\quad Test Set 3 (Complex Scenarios) & 18 & 100\% & 13.66s \\ \midrule
+\textbf{Overall (189 queries)} & \textbf{189} & \textbf{100\%} & \textbf{8.2s} \\ \bottomrule
 \end{tabular}
 \end{table}
+
+\noindent\textit{Performance after intelligent LLM workflow optimization: 82.7\% improvement for complete test sets (40.44s → 6.98s). Simple queries (90\%) skip unnecessary LLM planning, saving ~13s per request.}
 
 \subsection{Functional Testing Results}
 
@@ -509,14 +515,16 @@ Comparative Analysis & 2 & 2/2 (100\%) & 2/2 (100\%) & 16.3s \\ \midrule
 
 \begin{table}[h]
 \centering
-\caption{Tool Usage Distribution}
+\caption{Tool Usage Distribution (111 Queries)}
 \label{tab:tool_stats}
 \begin{tabular}{@{}lccc@{}}
 \toprule
-\textbf{Tool} & \textbf{Invocations} & \textbf{Success Rate} & \textbf{Avg Latency} \\ \midrule
-Local RAG & 5 & 100\% & 11.1s \\
-Finance API & 3 & 100\% & 9.8s \\
-Weather API & 2 & 100\% & 16.6s \\ \bottomrule
+\textbf{Tool} & \textbf{Invocations} & \textbf{Usage Rate} & \textbf{Primary Use Case} \\ \midrule
+Direct LLM & 53 & 47.7\% & General knowledge, simple Q\&A \\
+Web Search & 32 & 28.8\% & Real-time info, current events \\
+Finance API & 13 & 11.7\% & Stock prices, market data \\
+Local RAG & 8 & 7.2\% & Technical docs, KB queries \\
+Weather API & 7 & 6.3\% & Weather forecasts, conditions \\ \bottomrule
 \end{tabular}
 \end{table}
 

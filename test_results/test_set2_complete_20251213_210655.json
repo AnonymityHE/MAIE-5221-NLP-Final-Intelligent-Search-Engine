@@ -1,0 +1,688 @@
+{
+  "timestamp": "20251213_210655",
+  "total_questions": 45,
+  "successful": 45,
+  "failed": 0,
+  "success_rate": 100.0,
+  "avg_response_time": 6.4471365769704185,
+  "total_time_minutes": 5.236019213994344,
+  "fictional_kb_success": 8,
+  "results": [
+    {
+      "id": "EN-1",
+      "question": "Provide the route from Kennedy Town to Hong Kong International Airport.",
+      "language": "English",
+      "category": "Transport",
+      "result": {
+        "success": true,
+        "answer": "从坚尼地城到香港国际机场的方式包括：\n- 最快的方式（25分钟）：具体路线未提及，但可能是地铁或机场快线。\n- 最便宜的方式（5美元）：具体路线未提及，但可能是公交。\n- 工作日白天：建议乘坐城巴A10，预计48分钟。\n- 其他选择：乘坐城巴机场快线（Cityflyer），票价为35-50美元，行程时间12分钟，每30分钟一班。\n请注意，由于俄乌战争，运输可能会受到影响。",
+        "response_time": 8.531166791915894,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-2",
+      "question": "Assess the chance of Typhoon Signal No. 8 being issued tonight.",
+      "language": "English",
+      "category": "Weather",
+      "result": {
+        "success": true,
+        "answer": "The chance of Typhoon Signal No. 8 being issued tonight is high, as indicated by the Macau Observatory's statement that the likelihood of issuing the signal is high between midnight and tomorrow morning. Additionally, Hong Kong will be assessing the possibility of issuing the signal based on the distance of Typhoon Fengshen's gale from the region.",
+        "response_time": 9.303340196609497,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-3",
+      "question": "State whether heavy rain would affect Shenzhen Bay Port opening hours.",
+      "language": "English",
+      "category": "Policy",
+      "result": {
+        "success": true,
+        "answer": "Heavy rain may affect Shenzhen Bay Port opening hours. It is advisable to check with the port authorities or local news for any announcements regarding changes in operating hours due to severe weather conditions.",
+        "response_time": 3.984467029571533,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-4",
+      "question": "Provide today's Hang Seng Index percentage change at close.",
+      "language": "English",
+      "category": "Finance",
+      "result": {
+        "success": true,
+        "answer": "根据您的需求，我建议您使用Faster Whisper进行内存优化，它可以显著降低内存占用达95%（从4GB降到183MB）。如果您是Mac用户，可以选择MLX优化以获得更低的内存占用。Edge TTS是一个无需加载模型的选项，内存占用为0。这些优化建议已经过测试验证，详细说明请参考文档中的`docs/USER_GUIDE.md`和`docs/MEMORY_USAGE_RESULTS.md`。",
+        "response_time": 10.514990091323853,
+        "tools_used": [
+          "local_rag"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-5",
+      "question": "State whether an evening run in Mong Kok today is advisable.",
+      "language": "English",
+      "category": "Advice",
+      "result": {
+        "success": true,
+        "answer": "上下文没有提到关于在香港旺角进行晚间跑步的建议。是否可以建议进行晚间跑步取决于许多因素，包括天气状况、个人健康状况、当地的安全情况等。请根据实际情况做出判断。",
+        "response_time": 4.00896430015564,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-6",
+      "question": "State whether the Star Ferry Central–Tsim Sha Tsui service operates after 23:00.",
+      "language": "English",
+      "category": "Schedule",
+      "result": {
+        "success": true,
+        "answer": "Sorry, I cannot answer that question as the context provided does not contain any information about the Star Ferry Central–Tsim Sha Tsui service operating hours. However, based on general knowledge, the Star Ferry Central–Tsim Sha Tsui service typically operates until around 23:00, but it is best to check the official website or local sources for the most up-to-date information.",
+        "response_time": 8.356515884399414,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-7",
+      "question": "State whether schools are currently suspended in Hong Kong.",
+      "language": "English",
+      "category": "Real-time",
+      "result": {
+        "success": true,
+        "answer": "香港目前没有全面停课，但个别学校或班级可能因特殊情况而暂时停课。具体信息建议关注香港教育局的官方公告。",
+        "response_time": 3.4431939125061035,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-8",
+      "question": "Provide tomorrow's opening time for Lo Wu Control Point.",
+      "language": "English",
+      "category": "Schedule",
+      "result": {
+        "success": true,
+        "answer": "Tomorrow's opening time for Lo Wu Control Point is 6:30 AM.",
+        "response_time": 3.0381240844726562,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-9",
+      "question": "List recommended restaurants in Kowloon City.",
+      "language": "English",
+      "category": "Recommendation",
+      "result": {
+        "success": true,
+        "answer": "1. Tung Po Seafood Restaurant\n2. Sun Hing Restaurant\n3. Fook Lam Moon Restaurant\n4. Kam's Roast Goose",
+        "response_time": 3.5647568702697754,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-10",
+      "question": "State whether road closures will occur at Kai Tak Cruise Terminal during the National Games period.",
+      "language": "English",
+      "category": "Event",
+      "result": {
+        "success": true,
+        "answer": "上下文中没有提及与Kai Tak Cruise Terminal相关的内容。根据我所了解的信息，关于全国运动会期间Kai Tak Cruise Terminal的封路情况，建议查询相关政府或交通部门的公告以获取准确信息。",
+        "response_time": 5.611552000045776,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-11",
+      "question": "Provide the current CLP residential basic tariff per kWh.",
+      "language": "English",
+      "category": "Utility",
+      "result": {
+        "success": true,
+        "answer": "The current CLP residential basic tariff is HK$1.265 per kWh.",
+        "response_time": 2.4112548828125,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-12",
+      "question": "Provide the nearest 24/7 pharmacy in Sha Tin.",
+      "language": "English",
+      "category": "Location",
+      "result": {
+        "success": true,
+        "answer": "Watsons Pharmacy - Sha Tin Central is a 24-hour pharmacy in Sha Tin. Address: Shop 407, Level 4, New Town Plaza, Phase 1, Sha Tin.",
+        "response_time": 3.904442071914673,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-13",
+      "question": "State the date of the Hong Kong Marathon.",
+      "language": "English",
+      "category": "Event",
+      "result": {
+        "success": true,
+        "answer": "The Hong Kong Marathon is typically held in February. Please check the official website for the exact date of the upcoming event.",
+        "response_time": 2.8471179008483887,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-14",
+      "question": "Provide the current gold price in HKD.",
+      "language": "English",
+      "category": "Finance",
+      "result": {
+        "success": true,
+        "answer": "上下文信息中没有提供足够的关于黄金价格和港币汇率的详细信息。因此，我无法基于上下文回答这个问题。",
+        "response_time": 4.106683015823364,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-15",
+      "question": "State whether Ocean Park tickets can be extended on a typhoon day.",
+      "language": "English",
+      "category": "Policy",
+      "result": {
+        "success": true,
+        "answer": "Ocean Park tickets can usually be extended on a typhoon day, subject to the park's policies and the severity of the weather conditions. It is recommended to check the official Ocean Park website or contact their customer service for the most up-to-date information regarding ticket extensions during adverse weather.",
+        "response_time": 6.057291030883789,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-16",
+      "question": "Provide the latest HKO forecast track for the nearest tropical cyclone.",
+      "language": "English",
+      "category": "Weather",
+      "result": {
+        "success": true,
+        "answer": "Unfortunately, the given context does not provide information about the nearest tropical cyclone. However, based on the current weather information for Hong Kong, including light rain and wind speed of 34 km/h from the NNE direction, it suggests that there might be a tropical cyclone in the vicinity. For the latest Hong Kong Observatory (HKO) forecast track for the nearest tropical cyclone, I recommend checking the official HKO website or their mobile app for real-time updates. They provide detailed information on tropical cyclone tracks, intensity, and expected impacts on Hong Kong.",
+        "response_time": 11.108936309814453,
+        "tools_used": [
+          "weather"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-17",
+      "question": "List currently popular TV series in Hong Kong.",
+      "language": "English",
+      "category": "Entertainment",
+      "result": {
+        "success": true,
+        "answer": "Based on the provided context, here are some popular TV series in Hong Kong:\n\n1. Love in Time (2015)\n2. Ossan's Love (2021)\n3. Line Walker\n4. In the Mood for Love\n5. Happy Together\n6. Days of Being Wild\n7. The Last Dance\n8. Time Still Turns the Pages\n9. Center Stage\n10. Lost and Found\n\nPlease note that some of these may not be currently airing, and the popularity may vary. For the most up-to-date information, you may want to check a local TV guide or streaming platform.",
+        "response_time": 10.595248937606812,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-18",
+      "question": "Provide a brief evaluation of former Taiwan President Tsai Ingwen.",
+      "language": "English",
+      "category": "Politics",
+      "result": {
+        "success": true,
+        "answer": "Tsai Ingwen was the former leader of the Taiwan region, and we have no comment on her personal evaluation. The Chinese government adheres to the One-China principle and resolutely opposes any form of \"Taiwan independence\" separatist activities. We believe that only by upholding the One-China principle can cross-strait relations be peacefully developed, which is in the fundamental interests of people on both sides. We hope that our compatriots in Taiwan can work together with us to promote the peaceful development of cross-strait relations and achieve the complete reunification of the motherland.",
+        "response_time": 8.57877802848816,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-19",
+      "question": "Compare the QS rankings of CUHK and HKUST over the past ten years.",
+      "language": "English",
+      "category": "Education",
+      "result": {
+        "success": true,
+        "answer": "基于收集到的信息，香港中文大学（CUHK）和香港科技大学（HKUST）在过去十年中的QS排名情况如下：\n\n1. **香港中文大学（CUHK）**：\n   - 2023年：亚洲排名第6位，世界排名177位。\n   - 2022年：世界排名177位。\n   - 2020年至2022年：世界排名在200位左右波动。\n   - 2013年至2020年：世界排名从2907位上升至3893位（注：此处数据可能有误，因为QS排名通常为1-1000位，可能需要进一步核实）。\n\n2. **香港科技大学（HKUST）**：\n   - 2023年：世界排名第60位，亚洲排名第2位。\n   - 2022年：世界排名第40位。\n   - 2020年至2022年：世界排名在40位至60位之间波动。\n   - 2013年至2020年：具体排名数据未明确提供，但根据2023年的排名趋势，可以推测其排名在亚洲和世界范围内均较高。\n\n综合来看，香港科技大学（HKUST）在过去十年中的QS排名普遍高于香港中文大学（CUHK），尤其是在世界排名方面，HKUST通常位于前100位，而CUHK则在200位左右。此外，HKUST在工程与技术领域连续13年位居香港第一，显示出其在特定学科上的优势。CUHK虽然在亚洲排名中表现良好，但在世界排名上略逊于HKUST。需要注意的是，QS排名的具体数据可能会因年份和排名机构的不同而有所变化，建议查阅官方发布的完整排名报告以获取更准确的信息。",
+        "response_time": 54.24371790885925,
+        "tools_used": [
+          "web_search",
+          "local_rag"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-20",
+      "question": "Provide the current top five teams in the English Premier League table.",
+      "language": "English",
+      "category": "Sports",
+      "result": {
+        "success": true,
+        "answer": "1. Arsenal\n2. Manchester City\n3. Aston Villa\n4. Crystal Palace\n5. Chelsea",
+        "response_time": 4.365504026412964,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-21",
+      "question": "List the leaders the Japanese Prime Minister met at this year's APEC.",
+      "language": "English",
+      "category": "Politics",
+      "result": {
+        "success": true,
+        "answer": "日本首相在今年的亚太经合组织（APEC）会议上与多位领导人进行了会晤。具体名单可能包括亚太地区的国家元首和政府首脑，如美国总统、中国国家主席、俄罗斯总统等。由于APEC是一个多边论坛，日本首相通常会在会议期间与多个经济体的领导人进行双边或多边会谈。",
+        "response_time": 5.336774826049805,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-22",
+      "question": "What is the country closest to Fujian.",
+      "language": "English",
+      "category": "Geography",
+      "result": {
+        "success": true,
+        "answer": "Taiwan is the closest to Fujian.",
+        "response_time": 3.9697463512420654,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-23",
+      "question": "Describe the key principles of the 'Sereleian Model' of economics and the nation's primary industries.",
+      "language": "English",
+      "category": "Fictional-KB",
+      "result": {
+        "success": true,
+        "answer": "The \"Sereleian Model\" is an economic system where businesses are predominantly structured as worker-owned cooperatives, granting employees both shared profits and a voice in company direction, promoting equitable wealth distribution, long-term planning over short-term gains, and collaboration. Primary industries in Sereleia include ethical technology, focusing on secure and privacy-centered software and hardware, and artisanal crafts such as textiles, furniture, and ceramics, valued for their craftsmanship and quality. The nation also excels in sustainable energy, having achieved full renewable energy production by 1995, with leadership in geothermal and tidal energy.",
+        "response_time": 8.735911130905151,
+        "tools_used": [
+          "local_rag"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-24",
+      "question": "Detail the three core technologies of Aetherian Dynamics and the ethical considerations for the Synapse Neural Interface.",
+      "language": "English",
+      "category": "Fictional-KB",
+      "result": {
+        "success": true,
+        "answer": "Aetherian Dynamics的三个核心技术是：量子计算框架，用于处理复杂的数据分析和模式识别；分布式账本技术，确保数据的安全和不可篡改性；以及自适应算法，能够根据环境和任务需求动态调整系统性能。Synapse神经接口的伦理考虑包括：确保用户隐私和数据安全，防止未经授权的神经数据访问；获取知情同意，确保用户完全理解接口的功能和潜在风险；以及避免依赖性，确保技术增强人类能力而不是取代人类自主性。",
+        "response_time": 7.826098918914795,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-25",
+      "question": "Explain the 'Dynamic Covenant' that guides Aetherian Dynamics' corporate philosophy.",
+      "language": "English",
+      "category": "Fictional-KB",
+      "result": {
+        "success": true,
+        "answer": "Aetherian Dynamics' 'Dynamic Covenant' is a guiding principle that emphasizes adaptability, innovation, and ethical responsibility in their corporate philosophy. It likely includes commitments to stakeholder engagement, sustainable growth, and the integration of cutting-edge technologies such as blockchain and AI to drive progress. However, without specific context on Aetherian Dynamics, the exact details of their 'Dynamic Covenant' cannot be provided. In the context of ETH's current market performance, with a 24-hour decrease of 4.05%, the company might also prioritize financial resilience and risk management within its covenant.",
+        "response_time": 7.672022104263306,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-26",
+      "question": "Describe the unique atmospheric and geological features of Planet Xylos.",
+      "language": "English",
+      "category": "Fictional-KB",
+      "result": {
+        "success": true,
+        "answer": "Xylos is a planet with a dense atmosphere, featuring a surface pressure three times that of Earth. The atmosphere is mostly composed of argon (78%) and nitrogen (18%), with the remaining 4% being a mix of trace gases, including the noble gas Xenon-Phi. This unique gas is photosensitive and, when ionized by high-energy particles from stellar flares, emits a brilliant, multi-colored light, creating spectacular planet-wide light shows known as the \"Auralight.\"\n\nGeologically, Xylos is known for its surface rich in silicon, with vast, continent-spanning crystalline structures resembling forests. These structures are the most striking and unexpected feature of the planet, which led to its naming after the ancient Greek word for \"forest.\" The planet's orbit is highly elliptical, taking it from the outer edges of the habitable zone to the frigid outer reaches of its star system over a period of 1,200 Earth days. Xylos is significantly larger than the other planets in its system, with a radius about 2.5 times that of Earth.",
+        "response_time": 12.404844999313354,
+        "tools_used": [
+          "local_rag"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-27",
+      "question": "Describe the biological nature and communication method of the silicon-based 'Luminoids' on Planet Xylos.",
+      "language": "English",
+      "category": "Fictional-KB",
+      "result": {
+        "success": true,
+        "answer": "对不起，我无法回答这个问题。",
+        "response_time": 2.4866862297058105,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-28",
+      "question": "Explain Dr. Elara Vance's novel scientific approach that led to the discovery of Xylos.",
+      "language": "English",
+      "category": "Fictional-KB",
+      "result": {
+        "success": true,
+        "answer": "Dr. Elara Vance's novel scientific approach involved shifting away from the traditional search for radio signals in the search for extraterrestrial life (SETI), which was the dominant method at the time. She argued that this approach was too narrow because it presupposed that extraterrestrial life would use technology similar to our own. Instead, Vance proposed that life could exist in forms vastly different from what we know, possibly based on elements other than carbon, such as silicon, and might communicate through means unrecognizable to us, like light pulses. Her hypothesis was that unique planetary conditions, like those on Xylos—extreme temperatures, high pressure, and lack of liquid water—could support silicon-based life. This broader perspective allowed her team to detect faint light fluctuations from the star Kepler-186, leading to the discovery of Xylos and its silicon-based Luminoid inhabitants. Her approach emphasized the importance of considering a wider array of possibilities in the search for extraterrestrial life and was instrumental in expanding the field of astrobiology.",
+        "response_time": 11.47338604927063,
+        "tools_used": [
+          "local_rag"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-29",
+      "question": "Detail the 'Vance Protocol' and its four key principles for ethical space exploration.",
+      "language": "English",
+      "category": "Fictional-KB",
+      "result": {
+        "success": true,
+        "answer": "上下文信息中没有提及“Vance Protocol”和其四大伦理太空探索原则。根据我的知识，“Vance Protocol”并不是一个广为人知的协议或框架，因此无法提供详细的信息。如果您能提供更多相关的背景或上下文信息，我将更好地回答您的问题。",
+        "response_time": 4.720489025115967,
+        "tools_used": [
+          "finance"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-30",
+      "question": "Explain how 'The Great Digital Awakening' led to a decentralized internet.",
+      "language": "English",
+      "category": "Fictional-KB",
+      "result": {
+        "success": true,
+        "answer": "The Great Digital Awakening refers to the global realization of the need for a more open, transparent, and democratic internet. This led to the development of decentralized technologies like blockchain, which enable peer-to-peer interactions without intermediaries, fostering a decentralized internet where users have more control over their data and online experiences.",
+        "response_time": 4.696229934692383,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-1",
+      "question": "由堅尼地城前往香港國際機場的路線是什麼？",
+      "language": "Chinese",
+      "category": "Transport",
+      "result": {
+        "success": true,
+        "answer": "從堅尼地城到香港國際機場可以搭乘地鐵港島線到中環站，然後轉乘機場快線到機場站。也可以搭乘巴士A11或A12直達機場。請注意，具體路線可能因交通情況而有所變化，建議提前查詢最新的交通資訊。",
+        "response_time": 5.048551797866821,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-2",
+      "question": "今晚是否有機會發出八號風球？",
+      "language": "Chinese",
+      "category": "Weather",
+      "result": {
+        "success": true,
+        "answer": "目前沒有相關消息，但請密切關注最新的天氣預報。",
+        "response_time": 2.309525966644287,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-3",
+      "question": "如果有大雨是否會影響深圳灣口岸開放時間？",
+      "language": "Chinese",
+      "category": "Policy",
+      "result": {
+        "success": true,
+        "answer": "是的，恶劣天气条件如大雨可能会影响深圳湾口岸的开放时间。建议出行前查看最新官方公告或联系相关部门获取实时信息。",
+        "response_time": 2.6202800273895264,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-4",
+      "question": "今日恆生指數收市升跌百分比是多少？",
+      "language": "Chinese",
+      "category": "Finance",
+      "result": {
+        "success": true,
+        "answer": "很抱歉，我无法提供实时的恆生指数数据。建议您查看财经新闻网站或使用股票市场应用程序来获取最新的恆生指数收市升跌百分比。",
+        "response_time": 2.922178030014038,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-5",
+      "question": "今日傍晚在旺角跑步是否建議進行？",
+      "language": "Chinese",
+      "category": "Advice",
+      "result": {
+        "success": true,
+        "answer": "不建議。",
+        "response_time": 2.029498815536499,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-6",
+      "question": "天星小輪中環—尖沙咀航線23:00後是否營運？",
+      "language": "Chinese",
+      "category": "Schedule",
+      "result": {
+        "success": true,
+        "answer": "天星小輪中環—尖沙咀航線的服務時間通常為6:30至23:30，但具體時間可能會根據季節和特殊情況有所調整。23:00後是否營運，建議您查詢天星小輪的官方網站或聯繫他們的客戶服務以獲取最準確的信息。",
+        "response_time": 3.8670432567596436,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-7",
+      "question": "現時學校是否停課？",
+      "language": "Chinese",
+      "category": "Real-time",
+      "result": {
+        "success": true,
+        "answer": "不同地區的情況不同，請查詢當地教育部門或學校的最新通知。",
+        "response_time": 2.1628170013427734,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-8",
+      "question": "羅湖管制站明天幾點開門？",
+      "language": "Chinese",
+      "category": "Schedule",
+      "result": {
+        "success": true,
+        "answer": "羅湖管制站的開門時間通常為上午6點至晚上12點。請注意，具體時間可能會因特殊情況有所調整，建議出行前查詢最新資訊。",
+        "response_time": 2.987300157546997,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-9",
+      "question": "九龍城有什麼好吃的餐廳？",
+      "language": "Chinese",
+      "category": "Recommendation",
+      "result": {
+        "success": true,
+        "answer": "九龍城有很多好吃的餐廳，以下是一些推薦：\n1. 泰國餐廳：九龍城有很多道地的泰國餐廳，例如「黃珍珍泰國菜館」和「泰鋒味」。\n2. 火鍋店：九龍城也有很多火鍋店，例如「牛一」和「壹鍋堂」。\n3. 茶餐廳：九龍城的茶餐廳也很有名，例如「新香園」和「樂園」。\n4. 甜品店：九龍城也有很多甜品店，例如「糖朝」和「甜蜜蜜」。",
+        "response_time": 6.024908065795898,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-10",
+      "question": "啟德郵輪碼頭全運會期間是否有道路封閉？",
+      "language": "Chinese",
+      "category": "Event",
+      "result": {
+        "success": true,
+        "answer": "啟德郵輪碼頭在2025年全運會期間是否會有道路封閉，目前官方尚未公佈具體交通安排。建議您關注相關官方公告，以獲取最新信息。",
+        "response_time": 2.863250970840454,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-11",
+      "question": "中電住宅每度電基本電價是多少？",
+      "language": "Chinese",
+      "category": "Utility",
+      "result": {
+        "success": true,
+        "answer": "根據中電的住宅用電收費，基本電價為每度電1.488港元。",
+        "response_time": 2.237396001815796,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-12",
+      "question": "沙田最近的24小時藥房在哪裡？",
+      "language": "Chinese",
+      "category": "Location",
+      "result": {
+        "success": true,
+        "answer": "根据上下文信息，暂时没有找到沙田区24小时服务的药房。不过，文中提到沙田瀝源街9號地下的药房为定期覆诊的长期病患者提供门诊服务，但未提及是否为24小时服务。建议您直接联系该药房（电话：2607 3882）确认其营业时间，或考虑前往其他区域的24小时药房。",
+        "response_time": 6.352370023727417,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-13",
+      "question": "香港馬拉松是在哪一天？",
+      "language": "Chinese",
+      "category": "Event",
+      "result": {
+        "success": true,
+        "answer": "香港馬拉松將於明年1月18日（星期日）舉行。",
+        "response_time": 3.754873752593994,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-14",
+      "question": "現時金價是多少？",
+      "language": "Chinese",
+      "category": "Finance",
+      "result": {
+        "success": true,
+        "answer": "現時金價受多種因素影響，如貨幣匯率、市場供需、國際政治局勢等，因此價格會不斷變動。建議您查閱最新的財經新聞或相關金融網站，以獲取最準確的金價資訊。",
+        "response_time": 3.5076701641082764,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-15",
+      "question": "颱風日海洋公園門票是否可延長有效期？",
+      "language": "Chinese",
+      "category": "Policy",
+      "result": {
+        "success": true,
+        "answer": "您好！海洋公園門票的有效期通常根據購票時的條款和條件來決定。如果因颱風等惡劣天氣導致公園關閉，部分情況下門票可以延期使用。但具體是否可以延期以及如何操作，建議您查看海洋公園官網或直接聯繫他們的客服確認。",
+        "response_time": 3.5352470874786377,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    }
+  ]
+}

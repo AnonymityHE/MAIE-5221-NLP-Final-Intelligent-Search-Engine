@@ -1,0 +1,731 @@
+{
+  "timestamp": "20251213_203715",
+  "total_questions": 48,
+  "successful": 48,
+  "failed": 0,
+  "success_rate": 100.0,
+  "avg_response_time": 4.979163179794948,
+  "total_time_minutes": 4.434256287415822,
+  "results": [
+    {
+      "id": "EN-1",
+      "question": "What are some common symptoms of hay fever?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "Common hay fever symptoms include sneezing, itchy or watery eyes, runny or stuffy nose, and coughing. These symptoms are caused by an allergic reaction to pollen or other allergens in the air.",
+        "response_time": 4.027551889419556,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-2",
+      "question": "What's the weather forecast for this afternoon in Hong Kong?",
+      "language": "English",
+      "category": "Real-time",
+      "result": {
+        "success": true,
+        "answer": "根据提供的天气信息，今天下午香港的天气预计为：\n- 温度: 18°C (体感 18°C)\n- 天气状况: 小雨\n- 湿度: 83%\n- 风速: 34 km/h, 风向: 东北偏北\n\n请注意，这是基于当前提供的天气信息，实际的下午天气预报可能会有所变化。建议查看最新的天气预报以获取最准确的信息。",
+        "response_time": 6.716706037521362,
+        "tools_used": [
+          "weather"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-3",
+      "question": "What is the standard voltage for household electronics in Hong Kong?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "The standard voltage for household electronics in Hong Kong is 220 volts AC, 50Hz.",
+        "response_time": 4.31817102432251,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-4",
+      "question": "What is 15 multiplied by 24?",
+      "language": "English",
+      "category": "Math",
+      "result": {
+        "success": true,
+        "answer": "15 multiplied by 24 is 360.",
+        "response_time": 1.9321880340576172,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-5",
+      "question": "What are the five official colors of the Olympic rings?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "The five official colors of the Olympic rings are blue, yellow, black, green, and red.",
+        "response_time": 2.4637250900268555,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-6",
+      "question": "How do you say 'thank you' in Cantonese?",
+      "language": "English",
+      "category": "Language",
+      "result": {
+        "success": true,
+        "answer": "In Cantonese, 'thank you' is said as '多謝' (do1 ze6) or '唔該' (m4 goi1), depending on the context. '多謝' is used when receiving a gift or favor, while '唔該' is used when someone has done something for you or when you're asking for help.",
+        "response_time": 10.84650182723999,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-7",
+      "question": "What are the upcoming public holidays in Hong Kong this year?",
+      "language": "English",
+      "category": "Real-time",
+      "result": {
+        "success": true,
+        "answer": "The upcoming public holidays in Hong Kong this year are: \n1. National Day (October 1)\n2. Chung Yeung Festival (October 25)\n3. Christmas Day (December 25)\n4. Boxing Day (December 26)",
+        "response_time": 4.0122480392456055,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-8",
+      "question": "How can I report a lost Octopus card?",
+      "language": "English",
+      "category": "Procedure",
+      "result": {
+        "success": true,
+        "answer": "根据上下文信息，你可以通过以下方式报告丢失的Octopus卡：\n\n1. 立即前往最近的MTR客户服务中心报告丢失。每个MTR车站都有一个服务中心。\n\n2. 拨打Octopus丢失报告热线2266 2266，根据语音提示选择适当的语言和服务选项。\n\n3. 如果你的Octopus卡是个人化的或与信用卡关联的，你可以通过热线报告丢失。如果不是个人化的或与信用卡关联的，则可能无法报告丢失。",
+        "response_time": 7.936599969863892,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-9",
+      "question": "Will it rain in Shenzhen tomorrow?",
+      "language": "English",
+      "category": "Weather",
+      "result": {
+        "success": true,
+        "answer": "根据上下文信息，明天深圳有降雨的可能，因为明天天气预报显示有适度的阵雨或大雨。",
+        "response_time": 2.802309036254883,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-10",
+      "question": "What year was the Hong Kong-Zhuhai-Macau Bridge opened?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "The Hong Kong-Zhuhai-Macau Bridge was opened in the year 2018.",
+        "response_time": 2.605003833770752,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-11",
+      "question": "Who wrote 'Romeo and Juliet'?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "William Shakespeare wrote 'Romeo and Juliet'.",
+        "response_time": 1.9632678031921387,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-12",
+      "question": "How do I apply for a Hong Kong public library card?",
+      "language": "English",
+      "category": "Procedure",
+      "result": {
+        "success": true,
+        "answer": "To apply for a Hong Kong Public Library card, you can visit any Hong Kong public library in person with your Hong Kong Identity Card or other valid identification documents. Fill out the application form and submit it to the library staff. Once your application is processed, you will receive your library card, which will allow you to borrow books and access other library services. For more information, you can visit the Hong Kong Public Libraries website or contact them directly.",
+        "response_time": 6.059967994689941,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-13",
+      "question": "What is the tallest building in Hong Kong?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "The tallest building in Hong Kong is the International Commerce Centre (ICC), which stands at 484 meters (1,588 feet) tall. It was completed in 2010 and is located in Kowloon. As of 2025, there are about 570 high-rise buildings over 150 meters tall in Hong Kong, with the ICC being the tallest among them.",
+        "response_time": 6.856821060180664,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-14",
+      "question": "Give me a simple recipe for fried rice.",
+      "language": "English",
+      "category": "Recipe",
+      "result": {
+        "success": true,
+        "answer": "1. Cook rice and let it cool.\n2. Heat oil in a pan, add chopped onions, garlic, and vegetables of choice.\n3. Add rice to the pan and stir-fry for a few minutes.\n4. Push rice to one side, crack an egg into the pan and scramble it.\n5. Mix everything together, season with soy sauce, salt, and pepper.\n6. Garnish with chopped green onions and serve hot.",
+        "response_time": 5.6717119216918945,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-15",
+      "question": "What is the temperature in Beijing right now?",
+      "language": "English",
+      "category": "Weather",
+      "result": {
+        "success": true,
+        "answer": "The current temperature in Beijing is 1°C, with a feels-like temperature of -1°C.",
+        "response_time": 5.4877800941467285,
+        "tools_used": [
+          "weather"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-16",
+      "question": "What are the operating hours for the Star Ferry between Central and Tsim Sha Tsui?",
+      "language": "English",
+      "category": "Schedule",
+      "result": {
+        "success": true,
+        "answer": "The Star Ferry operates between Central and Tsim Sha Tsui from 6:30 am to 11:30 pm daily.",
+        "response_time": 2.7186930179595947,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-17",
+      "question": "What time is sunset in Hong Kong today?",
+      "language": "English",
+      "category": "Real-time",
+      "result": {
+        "success": true,
+        "answer": "Today's sunset time in Hong Kong is 6:47 PM.",
+        "response_time": 2.0020809173583984,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-18",
+      "question": "What are the general visiting hours for public hospitals in Hong Kong?",
+      "language": "English",
+      "category": "Information",
+      "result": {
+        "success": true,
+        "answer": "General visiting hours for public hospitals in Hong Kong are usually from 12:00 PM to 1:00 PM and 5:00 PM to 7:00 PM daily. However, visiting hours may vary depending on the hospital and the ward, so it's best to check with the specific hospital beforehand.",
+        "response_time": 3.567283868789673,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-19",
+      "question": "What is the chemical formula for water?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "H2O",
+        "response_time": 3.2110679149627686,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-20",
+      "question": "What is the emergency phone number for the police in Hong Kong?",
+      "language": "English",
+      "category": "Emergency",
+      "result": {
+        "success": true,
+        "answer": "The emergency phone number for the police in Hong Kong is 999.",
+        "response_time": 3.7923357486724854,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-21",
+      "question": "In Hong Kong, what is the Voluntary Health Insurance Scheme (VHIS)?",
+      "language": "English",
+      "category": "Policy",
+      "result": {
+        "success": true,
+        "answer": "The Voluntary Health Insurance Scheme (VHIS) is a policy implemented by Hong Kong's Health Bureau to regulate and standardize hospital insurance plans. It is a voluntary scheme that both insurance companies and citizens can choose to participate in. The main objectives of VHIS are to enhance the protection level of hospital insurance products and provide the public with an additional choice for healthcare services. It is particularly beneficial for those who are not covered by any hospital insurance, as it offers them a regulated and standardized insurance option.",
+        "response_time": 6.896852016448975,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-22",
+      "question": "What is the main food eaten during the Dragon Boat Festival in Hong Kong?",
+      "language": "English",
+      "category": "Culture",
+      "result": {
+        "success": true,
+        "answer": "上下文信息中没有提到香港端午节的主要食物。根据我的知识，香港端午节的主要食物是粽子，尤其是咸肉粽。",
+        "response_time": 3.1978759765625,
+        "tools_used": [
+          "local_rag"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-23",
+      "question": "What is the wind speed in Shanghai?",
+      "language": "English",
+      "category": "Weather",
+      "result": {
+        "success": true,
+        "answer": "The wind speed in Shanghai varies depending on the source. According to Yandex, the current wind speed is 6 m/s from the northeast. Windy.app reports wind speeds between 2.2 and 11.2 mph (approximately 1-5 m/s) from the southwest, and another entry mentions speeds between 8.9 and 17.8 mph (approximately 4-8 m/s) from the north. Gusts can reach up to 22.3 mph (approximately 10 m/s).",
+        "response_time": 6.9518561363220215,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-24",
+      "question": "What is the difference between a typhoon warning signal No. 8 and No. 10?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "Typhoon warning signals No. 8 and No. 10 are two different levels of typhoon warnings issued by the Hong Kong Observatory to inform the public about the severity of an approaching typhoon. The main differences between the two signals are the wind speeds and the potential impacts on the region.\n\n1. Typhoon warning signal No. 8: This signal indicates that gale or storm force winds are expected or blowing in Hong Kong, with sustained wind speeds of 63-117 km/h (39-73 mph) and gusts that may exceed 118 km/h (73 mph). During a No. 8 signal, people are advised to stay indoors, and public transportation services may be suspended or reduced. Schools and some businesses may also close.\n\n2. Typhoon warning signal No. 10: This is the highest level of typhoon warning and indicates that hurricane force winds are expected or blowing in Hong Kong, with sustained wind speeds of 118 km/h (73 mph) or more and gusts that may exceed 220 km/h (137 mph). During a No. 10 signal, the public is advised to stay in a safe place and avoid going outside, as the typhoon can cause severe damage to buildings and infrastructure. Most public transportation services, schools, and businesses will be closed during this time.\n\nIn summary, the main difference between a typhoon warning signal No. 8 and No. 10 is the intensity of the wind speeds and the potential impacts on the region, with No. 10 being the most severe and dangerous level of typhoon warning.",
+        "response_time": 25.0488121509552,
+        "tools_used": [
+          "local_rag"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-25",
+      "question": "What planet is known as the Red Planet?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "Mars is known as the Red Planet.",
+        "response_time": 3.2976620197296143,
+        "tools_used": [
+          "weather"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-26",
+      "question": "How many days are in a leap year?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "366 days.",
+        "response_time": 1.7320010662078857,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-27",
+      "question": "How many SARs (Special Administrative Regions) are in China?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "There are currently two SARs in China: Hong Kong and Macau.",
+        "response_time": 2.284085988998413,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-28",
+      "question": "What does the 'MPF' abbreviation stand for in Hong Kong?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "Mandatory Provident Fund.",
+        "response_time": 1.893244981765747,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-29",
+      "question": "What is the capital of Japan?",
+      "language": "English",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "东京",
+        "response_time": 1.6754868030548096,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "EN-30",
+      "question": "What is the maximum claim amount for the Small Claims Tribunal in Hong Kong?",
+      "language": "English",
+      "category": "Legal",
+      "result": {
+        "success": true,
+        "answer": "The maximum claim amount for the Small Claims Tribunal in Hong Kong is HK$75,000.",
+        "response_time": 4.668260097503662,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-1",
+      "question": "如果我發燒和喉嚨痛，應該去看普通科還是專科醫生？",
+      "language": "Chinese",
+      "category": "Medical",
+      "result": {
+        "success": true,
+        "answer": "如果你發燒和喉嚨痛，應該先去看普通科醫生。普通科醫生可以評估你的症狀並提供初步的治療。如果情況嚴重或需要進一步的檢查，普通科醫生會轉介你到專科醫生。",
+        "response_time": 3.0106279850006104,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-2",
+      "question": "香港天文臺現在懸掛的是什麼熱帶氣旋警告信號？",
+      "language": "Chinese",
+      "category": "Real-time",
+      "result": {
+        "success": true,
+        "answer": "根据上下文信息，没有明确指出香港天文台现在悬挂的是哪个级别的热带气旋警告信号。香港的热带气旋警告信号分为1号、3号、8号、9号和10号。10号风球是最高级别的警告信号，表示热带气旋正在严重威胁香港地区。如果您需要了解当前悬挂的信号，请查看香港天文台的最新公告。",
+        "response_time": 4.32417893409729,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-3",
+      "question": "香港的公共圖書館在哪個熱帶氣旋警告信號下會關閉？",
+      "language": "Chinese",
+      "category": "Policy",
+      "result": {
+        "success": true,
+        "answer": "8號或以上熱帶氣旋警告信號下，香港的公共圖書館會關閉。",
+        "response_time": 4.284662961959839,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-4",
+      "question": "1024減去768等於多少？",
+      "language": "Chinese",
+      "category": "Math",
+      "result": {
+        "success": true,
+        "answer": "256",
+        "response_time": 1.6620690822601318,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-5",
+      "question": "構成漢字的'永字八法'指的是哪八個筆劃？",
+      "language": "Chinese",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "永字八法指的是「側（點）」、「勒（橫）」、「努（豎）」、「趯（鉤）」、「策（挑）」、「掠（撇）」、「啄（短撇）」和「磔（捺）」這八個基本筆劃。",
+        "response_time": 3.2478630542755127,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-6",
+      "question": "'早晨'在廣東話裡是什麼意思？",
+      "language": "Chinese",
+      "category": "Language",
+      "result": {
+        "success": true,
+        "answer": "早晨在廣東話裡是“早安”或“早上好”的意思，是一種早晨的問候語。",
+        "response_time": 2.29390287399292,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-7",
+      "question": "香港法定最低時薪是多少？",
+      "language": "Chinese",
+      "category": "Policy",
+      "result": {
+        "success": true,
+        "answer": "香港法定最低時薪為40港元。",
+        "response_time": 1.7979190349578857,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-8",
+      "question": "在香港如何申請一本特區護照？",
+      "language": "Chinese",
+      "category": "Procedure",
+      "result": {
+        "success": true,
+        "answer": "申請香港特別行政區護照的手續如下：\n\n1. 本地遞交申請\n- 申請前準備：入境事務處承諾於收妥全部所需文件、費用及相片後的五個工作天內完成處理申請的程序。未滿十一歲而並未持有香港永久性居民身份證的兒童，其申請的處理時間為十個工作天內。一般而言，申請人可於入境事務處完成處理申請後的下一個工作天領取新護照。若非親身遞交申請書（例如投遞），請預留額外兩至三個工作天處理相關手續。\n\n2. 所需證明文件\n- 16歲或以上人士需準備香港永久性居民身份證/「申請香港永久性居民身份證收據」(ROP140/ROP140A)；\n- 出生證明書（如在香港出生則無需提供）；\n- 證明你在香港特別行政區擁有居留權的文件(例如註明已確立香港永久性居民身份的香港出生證明書)。\n\n3. 申請途徑\n- 申請書lD 843, ID 645, ROP 143 及 ROP 144 可於www.immd.gov.hk 下載；\n- 如有需要，入境事務處可能要求提交其他有關文件或資料。如遞交的證明文件不足，或相片不符合規格，入境事務處將不會處理該項申請，並退回有關申請予申請人。\n\n4. 注意事項\n- 警告：您正在使用舊版瀏覽器（如Internet Explorer），這可能會增加安全風險（如XSS攻擊）。建議立即切換到最新的瀏覽器，以確保安全和最佳體驗。\n\n以上資訊僅供參考，如有任何疑問，建議直接聯絡入境事務處以獲取最準確的資訊。",
+        "response_time": 15.30575704574585,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-9",
+      "question": "明天廣州的空氣質量指數是多少？",
+      "language": "Chinese",
+      "category": "Real-time",
+      "result": {
+        "success": true,
+        "answer": "截至我知識更新的時間（2023年4月），我無法提供實時的數據，如您需要查詢明天的空氣質量指數，建議您查閱當地環保部門提供的實時空氣質量數據，或相關天氣預報網站和應用程序。",
+        "response_time": 2.99401593208313,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-10",
+      "question": "香港會議展覽中心是什麼時候建成的？",
+      "language": "Chinese",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "香港會議展覽中心的第一期工程於1988年11月25日開幕。",
+        "response_time": 2.09926700592041,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-11",
+      "question": "中國四大古典名著是哪幾部？",
+      "language": "Chinese",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "《紅樓夢》、《三國演義》、《水滸傳》、《西遊記》。",
+        "response_time": 2.522545337677002,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-12",
+      "question": "在香港續領駕駛執照需要什麼文件？",
+      "language": "Chinese",
+      "category": "Procedure",
+      "result": {
+        "success": true,
+        "answer": "在香港續領駕駛執照需要以下文件：\n\n1. 有效的身份證明文件（如香港身份證或護照）\n2. 現有的駕駛執照（如適用）\n3. 駕駛執照續領申請表格（TD558）\n4. 駕駛執照續領費用\n\n請注意，如果你需要更新個人資料（如地址），你可能需要提供相關證明文件。建議你提前查詢運輸署的官方網站或致電他們的熱線，以確保你準備了所有必要的文件。",
+        "response_time": 7.954915761947632,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-13",
+      "question": "香港最大的離島是哪個島？",
+      "language": "Chinese",
+      "category": "Knowledge",
+      "result": {
+        "success": true,
+        "answer": "香港最大的離島是大嶼山（Lantau Island），位於香港西南面，面積147.16平方公里。",
+        "response_time": 5.1738128662109375,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-14",
+      "question": "如何製作一杯港式檸檬茶？",
+      "language": "Chinese",
+      "category": "Recipe",
+      "result": {
+        "success": true,
+        "answer": "製作一杯港式檸檬茶的基本步骤如下：\n\n1. 准备材料：红茶茶叶（约2茶匙或30克/公升）、柠檬（1颗）、白砂糖（适量）、水（500毫升或1公升）。\n\n2. 煮茶：将水煮沸后加入红茶茶叶，煮约5分钟（或用微波炉加热2分钟）。注意不要煮太久，以免茶味过苦。\n\n3. 过滤茶叶：煮好的红茶用咖啡滤纸或茶漏过滤掉茶叶，摊凉备用。\n\n4. 处理柠檬：用盐搓洗柠檬表面，切片并去籽（避免苦味）。\n\n5. 制作糖浆：将白砂糖加入少量水中煮至溶解，制成简单糖浆，也可以根据个人口味调整甜度。\n\n6. 混合调配：将凉茶、柠檬片和糖浆混合，根据个人口味调整比例。也可以加入冰块制作冰镇柠檬茶。\n\n7. 可选步骤：加入话梅或小青柠增加风味层次，记得去籽避免苦味。\n\n小贴士：\n- 港式柠檬茶的关键在于茶味浓而不涩，柠檬香而不苦。\n- 可以用\"拉茶\"的方法（将茶在两个容器间反复倾倒）使茶更顺滑。\n- 饮用前可以用勺子轻轻挤压柠檬片释放更多汁液，但不要过度挤压以免释放苦味。\n- 传统的港式柠檬茶会使用特定的红茶拼配，如立顿黄牌或捷荣红茶。",
+        "response_time": 21.722513914108276,
+        "tools_used": [
+          "web_search"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-15",
+      "question": "澳門現在的濕度是多少？",
+      "language": "Chinese",
+      "category": "Weather",
+      "result": {
+        "success": true,
+        "answer": "澳門現在的濕度是約75%。",
+        "response_time": 2.5079588890075684,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-16",
+      "question": "香港電車的首班車和末班車是幾點？",
+      "language": "Chinese",
+      "category": "Schedule",
+      "result": {
+        "success": true,
+        "answer": "香港電車的首班車通常在早上5點30分至6點左右發車，末班車則在午夜12點至凌晨1點左右結束。具體時間可能會因路線和日期有所不同，建議查詢香港電車公司官方網站或致電客服獲取最新資訊。",
+        "response_time": 4.359141826629639,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-17",
+      "question": "今天香港的日出時間是幾點？",
+      "language": "Chinese",
+      "category": "Real-time",
+      "result": {
+        "success": true,
+        "answer": "香港今天的日出时间是上午6點47分。",
+        "response_time": 4.305089950561523,
+        "tools_used": [
+          "weather"
+        ],
+        "workflow_steps": 0
+      }
+    },
+    {
+      "id": "CN-18",
+      "question": "香港的公立醫院急症室收費是多少？",
+      "language": "Chinese",
+      "category": "Medical",
+      "result": {
+        "success": true,
+        "answer": "香港的公立醫院急症室收費為港幣180元。",
+        "response_time": 2.795437812805176,
+        "tools_used": [
+          "direct_llm"
+        ],
+        "workflow_steps": 0
+      }
+    }
+  ]
+}
