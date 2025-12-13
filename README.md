@@ -16,11 +16,21 @@
 
 ---
 
+## 🔗 重要链接
+
+| 资源 | 链接 | 说明 |
+|------|------|------|
+| 📄 **项目报告** | [Final_Report.pdf](Final_Report.pdf) | 20页完整技术报告（含评估结果） |
+| 💻 **GitHub仓库** | [MAIE-5221-NLP-Final](https://github.com/AnonymityHE/MAIE-5221-NLP-Final-Intelligent-Search-Engine) | 完整源代码和文档 |
+| 🌐 **在线演示** | [Cloudflare Pages](https://jude-voice-agent.pages.dev) | 实时交互Demo + 5页Dashboard |
+
+> ⚡ **快速体验**：访问[在线演示](https://jude-voice-agent.pages.dev)，点击 "Experience Jude" 即可开始使用！无需安装任何软件。
+
+---
+
 ## 📖 项目简介
 
 **Jude** 是一个生产级的语音优先AI Agent系统，专为MAIE5221 NLP Final Project开发。系统整合了多模态RAG、实时语音交互、双LLM架构和动态工具编排，提供无缝的智能问答体验。
-
-> 📄 **[查看完整项目报告 (Final_Report.pdf)](Final_Report.pdf)** - 20页详细技术文档，包含系统架构、实现细节、评估结果和部署方案。
 
 ### 🎯 三大核心创新
 

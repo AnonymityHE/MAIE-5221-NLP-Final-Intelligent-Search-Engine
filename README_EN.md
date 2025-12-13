@@ -18,11 +18,21 @@
 
 ---
 
+## 🔗 Important Links
+
+| Resource | Link | Description |
+|----------|------|-------------|
+| 📄 **Project Report** | [Final_Report.pdf](Final_Report.pdf) | 20-page comprehensive technical report |
+| 💻 **GitHub Repository** | [MAIE-5221-NLP-Final](https://github.com/AnonymityHE/MAIE-5221-NLP-Final-Intelligent-Search-Engine) | Complete source code and documentation |
+| 🌐 **Live Demo** | [Cloudflare Pages](https://jude-voice-agent.pages.dev) | Interactive Demo + 5-page Dashboard |
+
+> ⚡ **Quick Try**: Visit the [Live Demo](https://jude-voice-agent.pages.dev), click "Experience Jude" to start! No installation required.
+
+---
+
 ## 📖 Project Overview
 
 **Jude** is a production-grade voice-first AI Agent system developed for MAIE5221 NLP Final Project. The system integrates multimodal RAG, real-time voice interaction, dual-LLM architecture, and dynamic tool orchestration to provide seamless intelligent Q&A experiences.
-
-> 📄 **[View Full Project Report (Final_Report.pdf)](Final_Report.pdf)** - 20-page technical documentation with system architecture, implementation details, evaluation results, and deployment strategies.
 
 ### 🎯 Three Core Innovations
 
